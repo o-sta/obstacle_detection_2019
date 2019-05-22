@@ -24,11 +24,11 @@ class imageMatchingClass{
 		ros::Subscriber subImg,subMskImg;
 		ros::CallbackQueue queue1,queue2;
         cv_bridge::CvImagePtr bridgeImagePre,bridgeImageCur;
-        obstacle_detection::maskImageData midPre,midCur;
+        obstacle_detection_2019::MaskImageData midPre,midCur;
         //送信データ
 		ros::NodeHandle nhPub;
         ros::Publisher pubMatch;
-        obstacle_detection::imageMatchingData matchData;
+        obstacle_detection_2019::ImageMatchingData matchData;
         //マップパラメータ
         float mapW;//width[m]
         float mapH;//height[m]
@@ -45,6 +45,7 @@ class imageMatchingClass{
         //特徴点マッチング
         std::vector< cv::Point2f > featurePointsPre;
         std::vector< cv::Point2f > featurePointsCur;
+        std::vector< cv::Point2f > featurePointsTemp;
 		std::vector<uchar> sts;
 		std::vector<float> ers;
 		int ws;//window size
@@ -68,7 +69,7 @@ class imageMatchingClass{
         void subscribeImageData();//データ受信(RGB画像)
         void subscribeMaskImageData();//データ受信(mask画像)
         void image_callback(const sensor_msgs::ImageConstPtr& msg);
-        void maskImage_callback(const obstacle_detection::maskImageData::ConstPtr& msg);
+        void maskImage_callback(const obstacle_detection_2019::MaskImageData::ConstPtr& msg);
         //--グレースケール化
         void cvtGray();
         //--データ確認

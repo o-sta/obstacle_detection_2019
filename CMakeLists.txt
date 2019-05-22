@@ -154,10 +154,20 @@ add_executable(${PROJECT_NAME}_cc # classification
   src/classification/methods.cpp
   src/classification/debug_main.cpp
 )
-add_executable(${PROJECT_NAME}_rg # ground plane remove
+add_executable(${PROJECT_NAME}_gr # ground plane remove
   src/convCamData/constructor.cpp
   src/convCamData/methods.cpp
   src/convCamData/debug_main.cpp
+)
+add_executable(${PROJECT_NAME}_lrf # ground plane remove
+  src/convLRFData/constructor.cpp
+  src/convLRFData/methods.cpp
+  src/convLRFData/debug_main.cpp
+)
+add_executable(${PROJECT_NAME}_im # ground plane remove
+  src/imageMatching/constructor.cpp
+  src/imageMatching/methods.cpp
+  src/imageMatching/debug_main.cpp
 )
 
 ## Rename C++ executable without prefix
@@ -173,6 +183,8 @@ add_executable(${PROJECT_NAME}_rg # ground plane remove
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_cc ${catkin_LIBRARIES}) # classification
 target_link_libraries(${PROJECT_NAME}_gr ${catkin_LIBRARIES}) # ground plane remove
+target_link_libraries(${PROJECT_NAME}_lrf ${catkin_LIBRARIES}) # ground plane remove
+target_link_libraries(${PROJECT_NAME}_im ${catkin_LIBRARIES}) # ground plane remove
 
 #############
 ## Install ##

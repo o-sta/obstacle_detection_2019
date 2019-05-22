@@ -8,6 +8,10 @@
 #include <sensor_msgs/LaserScan.h>
 //self msg
 #include <obstacle_detection_2019/SensorMapData.h>
+#include <cv_bridge/cv_bridge.h>
+//opencv
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 //クラスの定義
 class convLRFDataClass{
@@ -27,6 +31,8 @@ class convLRFDataClass{
         float mapR;//resolution[m]
         int mapWi;//マップサイズWidth[pixel]
         int mapHi;//マップサイズHeight[pixel]
+        int hMax; //■とりあえず追加
+        int wMax; //■とりあえず追加
         float sensorHigh;//LRFの高さ
         cv::Point2f posLRF;//LRFの位置(2次元マップ上)(未使用)
         //--DEM　(未完成)
@@ -49,7 +55,7 @@ class convLRFDataClass{
         //その他メソッド
         //--センサーデータ受信
         void subscribeSensorData();//データ受信
-        void sensor_callback(const sensor_msgs::ImageConstPtr& msg);
+        void sensor_callback(const sensor_msgs::LaserScan::ConstPtr& msg);
         //--送信データ作成
         void create2dMap();
         //--座標変換

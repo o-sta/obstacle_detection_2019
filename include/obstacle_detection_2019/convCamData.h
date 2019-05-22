@@ -19,6 +19,7 @@
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>
 
+
 //クラスの定義
 class convCamDataClass{
     private:

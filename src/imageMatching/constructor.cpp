@@ -1,4 +1,4 @@
-#include<imageMatching.h>
+#include<obstacle_detection_2019/imageMatching.h>
 
 imageMatchingClass::imageMatchingClass()
 {
@@ -9,7 +9,7 @@ imageMatchingClass::imageMatchingClass()
 	nhSub2.setCallbackQueue(&queue2);
 	subMskImg=nhSub2.subscribe("maskImageData",1,&imageMatchingClass::maskImage_callback,this);
 	//publisher
-    pubMatch= nhPub.advertise<obstacle_detection::imageMatchingData>("imageMatchingData", 1);
+    pubMatch= nhPub.advertise<obstacle_detection_2019::ImageMatchingData>("imageMatchingData", 1);
 
     //localMapParameter
     //後でlaunchから読み込みように変更
