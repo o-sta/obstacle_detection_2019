@@ -16,6 +16,7 @@ void convCamDataClass::sensor_callback(const sensor_msgs::ImageConstPtr& msg)
         msg->encoding.c_str());
         return ;
     }
+    sensorData_subscribed_flag = true; //sta
 }
 
 //床面推定
@@ -216,4 +217,8 @@ void convCamDataClass::clearMessages(){
     smd.pt.clear();
     mid.index.clear();
     mid.pt.clear();
+}
+
+bool convCamDataClass::is_SensorData_subscribed(){
+    return sensorData_subscribed_flag;
 }
