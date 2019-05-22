@@ -79,7 +79,6 @@ class convCamDataClass{
         void createPubDataRANSAC();//2次元ローカルマップ作成, マスク画像作成
         //----DEM　(未完成)
         void createDEM();//DEM作成
-        void groundEstimationRANSAC();
         //--座標変換
         //センサ座標系ー＞マップ座標系
         bool convertToGrid(const float& x,const float& y,int& xg,int& yg);

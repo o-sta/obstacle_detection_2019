@@ -11,7 +11,14 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
   message_generation
+  cv_bridge
+  pcl_ros
 )
+find_package(OpenCV REQUIRED)
+#find_package(pcl_ros REQUIRED)
+find_package(PCL REQUIRED)
+#include_directories(/usr/local/include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${PCL_INCLUDE_DIRS} )
+
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -125,6 +132,8 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
+  ${PCL_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -140,11 +149,16 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_cc 
+add_executable(${PROJECT_NAME}_cc # classification
   src/classification/constructor.cpp
   src/classification/methods.cpp
   src/classification/debug_main.cpp
-  )
+)
+add_executable(${PROJECT_NAME}_rg # ground plane remove
+  src/convCamData/constructor.cpp
+  src/convCamData/methods.cpp
+  src/convCamData/debug_main.cpp
+)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -157,7 +171,8 @@ add_executable(${PROJECT_NAME}_cc
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
- target_link_libraries(${PROJECT_NAME}_cc ${catkin_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}_cc ${catkin_LIBRARIES}) # classification
+target_link_libraries(${PROJECT_NAME}_gr ${catkin_LIBRARIES}) # ground plane remove
 
 #############
 ## Install ##

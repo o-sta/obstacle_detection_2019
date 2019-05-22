@@ -41,7 +41,7 @@ void classificationClass::sortSensorData()
 	// カメラデータ
 	// データサイズチェック
 	if(smdCamera.index.size()!=smdCamera.pt.size()){
-		ROS_ERROR("MessageSize error : (index,pt) = (%d,%d)", smdCamera.index.size(), smdCamera.pt.size());
+		ROS_ERROR("MessageSize error : (index,pt) = (%d,%d)", (int)smdCamera.index.size(), (int)smdCamera.pt.size());
 	}
 	// ソート(バブルソート)
 	for(int i = 0; i < ((int)smdCamera.index.size() - 1); i++){

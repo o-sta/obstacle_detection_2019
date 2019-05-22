@@ -27,7 +27,7 @@ void convLRFDataClass::create2dMap(){
     // sensorMapData smd;
     smd.header = sensorData->header;
     smd.width = mapW;
-    smd.height = mapH;
+    smd.height.data = mapH;
     smd.res = mapR;
     smd.widthInt = (int)(mapW/mapR);
     smd.heightInt = (int)(mapH/mapR);
