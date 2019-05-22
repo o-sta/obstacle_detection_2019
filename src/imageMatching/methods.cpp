@@ -50,9 +50,10 @@ void imageMatchingClass::resetData(){
     featurePointsTemp.clear();
     featurePointsCur.clear();
 }
-void imageMatchingClass::getFeaturePointNum(){
+// ■初期化
+// void imageMatchingClass::getFeaturePointNum(){
 
-}
+// }
 void imageMatchingClass::getFeaturePoints(){
     //キーポイント
     std::vector<cv::KeyPoint> keypoints;
@@ -81,7 +82,7 @@ void imageMatchingClass::getFeaturePoints(){
                     cv::Point2i pt;
                     pt.x=w*clipPixW+(int)itk->pt.x;
                     pt.y=h*clipPixH+(int)itk->pt.y;
-                    if(midCur.index[pt.y*midCur.width + pt.x] >= 0){
+                    if(midCur.index[pt.y*midCur.width.data + pt.x].data >= 0){
                         featurePointsTemp[fpSize++] = pt;
                     }
             }
@@ -99,7 +100,7 @@ void imageMatchingClass::checkMatchingError(){
     //エラーチェックして再格納
     int count=0;//格納数カウント
     for(int k=0;k<featurePointsCur.size();k++){
-        if(midCur.index[(int)featurePointsCur[k].y*midCur.width + (int)featurePointsCur[k].x]>=0 && sts[k]==1){
+        if(midCur.index[(int)featurePointsCur[k].y*midCur.width.data + (int)featurePointsCur[k].x].data>=0 && sts[k]==1){
             featurePointsPre[count] = featurePointsPre[k];
             featurePointsCur[count] = featurePointsCur[k];
             count++;
@@ -122,39 +123,39 @@ void imageMatchingClass::creatMatchingData(){
     matchData.cp.y=0;
     matchData.cp.z=0;
     //リサイズ
-    matchData.index.resize(matchData.widthInt*matchData.heightInt);
+    matchData.index.resize(matchData.widthInt.data*matchData.heightInt.data);
     matchData.data.resize((int)featurePointsCur.size());
     int dataSize=0;//データサイズカウント
 
     //インデックスの中身を初期化
     for(int k=0;k<matchData.index.size();k++){
-        matchData.index[k] = -1;
+        matchData.index[k].data = -1;
     }
     //
     for(int k=0;k<featurePointsCur.size();k++){
         //時刻tのデータ
         int cW = (int)featurePointsCur[k].x;
         int cH = (int)featurePointsCur[k].y;
-        int cIndex = midCur.index[cH*midCur.width + cW];
+        int cIndex = midCur.index[cH*midCur.width.data + cW].data;
         geometry_msgs::Point cPt =  midCur.pt[cIndex];
         //時刻t-Delta_tのデータ
         int pW = (int)featurePointsPre[k].x;
         int pH = (int)featurePointsPre[k].y;
-        int pIndex = midPre.index[pH*midPre.width + pW];
+        int pIndex = midPre.index[pH*midPre.width.data + pW].data;
         geometry_msgs::Point pPt =  midPre.pt[pIndex];
         //マップ位置
-        int xi,yi;
-        if(convertToGrid(cPt.x,cPt.y,xi,zi)){//データ変換
+        int xi,yi,zi;//■ ziを追加した
+        if(convertToGrid(cPt.x,cPt.y,xi,zi)){//データ変換　■ここに問題が？
             //移動量: cur - pre
             float difX=cPt.x - pPt.x;
             float difY=cPt.y - pPt.y;
             //インデックスデータ
-            matchData.index[zi*smd.widthInt+xi] = dataSize;
+            matchData.index[zi*matchData.widthInt.data+xi].data = dataSize; //■わからないので、smdからmatchDataに変更した
             //マップ上の移動量
-            matchData.data[dataSize].x = (int)(difX/midCur.mapRes);
-            matchData.data[dataSize].y = -(int)(difY/midCur.mapRes);
+            matchData.data[dataSize].x.data = (int)(difX/midCur.mapRes.data);
+            matchData.data[dataSize].y.data = -(int)(difY/midCur.mapRes.data);
             //実測の移動角度
-            matchData.data[dataSize].theta = std::atan2(difY/difX);//-PIから+PI
+            matchData.data[dataSize].theta.data = std::atan2(difY,difX);//-PIから+PI ■引数２つ必要　勝手に変更した difY/difX から difY,difX
             //インクリメント
             dataSize++;
         }

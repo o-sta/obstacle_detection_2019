@@ -8,13 +8,14 @@ void convCamDataClass::sensor_callback(const sensor_msgs::ImageConstPtr& msg)
 {
     try{
         bridgeImage=cv_bridge::toCvCopy(msg,sensor_msgs::image_encodings::TYPE_32FC1);
+        ROS_INFO("output is %d, %d\n",msg->width,msg->height);
     }
     catch(cv_bridge::Exception& e) {//エラー処理
         std::cout<<"depth_image_callback Error \n";
         ROS_ERROR("Could not convert from '%s' to 'TYPE_32FC1'.",
         msg->encoding.c_str());
         return ;
-    } 
+    }
 }
 
 //床面推定
@@ -43,7 +44,7 @@ void convCamDataClass::groundEstimationRANSAC(){
             // z_temp=depth_image.at<float>(h,w);
             z_temp = p[w*ch];//上行と同じ内容
             if(z_temp>0.5&&!std::isinf(z_temp)){
-                y_temp=((float)hMax/2-h)*z_temp/f;//高さ算出
+                y_temp=((float)hMax/2-h)*z_temp/f;//高さ算出 ■この計算式どこから？
                 if(std::abs(y_temp+cam_y)<y_th){//高さがy_th未満の時
                     x_temp=-( ((float)w-(float)wMax/2)*z_temp/f-cam_y );
                     //座標系の変換
@@ -72,7 +73,6 @@ void convCamDataClass::groundEstimationRANSAC(){
     b=coefficients->values[1];
     c=coefficients->values[2];
     d=coefficients->values[3];
-
 }
 //
 void convCamDataClass::createPubDataRANSAC(){

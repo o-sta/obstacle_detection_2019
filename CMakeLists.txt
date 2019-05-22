@@ -164,11 +164,11 @@ add_executable(${PROJECT_NAME}_lrf # ground plane remove
   src/convLRFData/methods.cpp
   src/convLRFData/debug_main.cpp
 )
-add_executable(${PROJECT_NAME}_im # ground plane remove
-  src/imageMatching/constructor.cpp
-  src/imageMatching/methods.cpp
-  src/imageMatching/debug_main.cpp
-)
+# add_executable(${PROJECT_NAME}_im # ground plane remove
+#   src/imageMatching/constructor.cpp
+#   src/imageMatching/methods.cpp
+#   src/imageMatching/debug_main.cpp
+# )
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -184,7 +184,9 @@ add_executable(${PROJECT_NAME}_im # ground plane remove
 target_link_libraries(${PROJECT_NAME}_cc ${catkin_LIBRARIES}) # classification
 target_link_libraries(${PROJECT_NAME}_gr ${catkin_LIBRARIES}) # ground plane remove
 target_link_libraries(${PROJECT_NAME}_lrf ${catkin_LIBRARIES}) # ground plane remove
-target_link_libraries(${PROJECT_NAME}_im ${catkin_LIBRARIES}) # ground plane remove
+# target_link_libraries(${PROJECT_NAME}_im ${catkin_LIBRARIES}) # ground plane remove
+
+
 
 #############
 ## Install ##
