@@ -91,7 +91,7 @@ class convCamDataClass{
         void publishMaskImage();//データ送信
         //データクリア
         void clearMessages();
-        //データが含まれているか・・・含まれていれば、true
+        //データを受け取っているか・・・サブスクライブしていれば、true
         bool is_SensorData_subscribed();
 };
 #endif
