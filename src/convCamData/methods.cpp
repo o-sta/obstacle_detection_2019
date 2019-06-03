@@ -8,7 +8,6 @@ void convCamDataClass::sensor_callback(const sensor_msgs::ImageConstPtr& msg)
 {
     try{
         bridgeImage=cv_bridge::toCvCopy(msg,sensor_msgs::image_encodings::TYPE_32FC1);
-        ROS_INFO("output is %d, %d\n",msg->width,msg->height);
     }
     catch(cv_bridge::Exception& e) {//エラー処理
         std::cout<<"depth_image_callback Error \n";
@@ -16,6 +15,7 @@ void convCamDataClass::sensor_callback(const sensor_msgs::ImageConstPtr& msg)
         msg->encoding.c_str());
         return ;
     }
+    sensorData_subscribed_flag = true; //sta
 }
 
 //床面推定
@@ -153,7 +153,7 @@ void convCamDataClass::createPubDataRANSAC(){
                 if(y_temp-y_ground<=0||y_temp-y_ground>height_th){
                     //マスクデータ格納
                     mid.index[h*wMax+w].data = -1;
-                    continue;
+                    continue;//■これ必要？
                 }
                 else{
                     //データ格納
@@ -216,4 +216,8 @@ void convCamDataClass::clearMessages(){
     smd.pt.clear();
     mid.index.clear();
     mid.pt.clear();
+}
+
+bool convCamDataClass::is_SensorData_subscribed(){
+    return sensorData_subscribed_flag;
 }
