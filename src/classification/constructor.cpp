@@ -27,6 +27,8 @@ classificationClass::classificationClass()
 			winIndex[count++] = h * smdCamera.widthInt.data + w;
 		}
 	}
+
+	
 }
 classificationClass::~classificationClass(){
 	winIndex.clear();

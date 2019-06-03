@@ -55,8 +55,6 @@ class convCamDataClass{
         cv::Point2f posCamera;//カメラの位置(2次元マップ上)(未使用)
         //--DEM　(未完成)
         cv::Mat dem;//ステレオカメラセンサによるローカルマップ
-        // センサデータをサブスクライブしたか否かのフラグ (trueで取得した)add_by sta
-        bool sensorData_subscribed_flag;
     public:
         //in constracter.cpp
         //コンストラクタ：クラス定義に呼び出されるメソッド
@@ -91,7 +89,5 @@ class convCamDataClass{
         void publishMaskImage();//データ送信
         //データクリア
         void clearMessages();
-        //データを受け取っているか・・・サブスクライブしていれば、true
-        bool is_SensorData_subscribed();
 };
 #endif

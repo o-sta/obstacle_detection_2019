@@ -10,6 +10,7 @@ imageMatchingClass::imageMatchingClass()
 	subMskImg=nhSub2.subscribe("maskImageData",1,&imageMatchingClass::maskImage_callback,this);
 	//publisher
     pubMatch= nhPub.advertise<obstacle_detection_2019::ImageMatchingData>("imageMatchingData", 1);
+	pubDeb= nhDeb.advertise<sensor_msgs::Image>("debugImageData", 1);
 
     //localMapParameter
     //後でlaunchから読み込みように変更

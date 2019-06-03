@@ -33,21 +33,21 @@ void measurementVelocity::matching_callback(const obstacle_detection_2019::Image
     matchData.index = msg->index;
     matchData.data = msg->data;
 }
-bool measurementVelocity::isPrvClstr(){
+bool measurementVelocity::isPrvClstr(){//prvClstrのデータの有無
 	if(prvClstr.header.seq > 0 ){
 		return true;
 	}
 	return false;
 }
-void measurementVelocity::creatClstrMap(){
+void measurementVelocity::creatClstrMap(){//クラスタ番号を記述したマップを作成
 	//マップセルに対応するクラスタ番号が記載
 	// std::vector<int> curClstMap;
-	curClstrMap.assign(curClstr.widthInt * curClstr.heightInt , -1);
+	curClstrMap.assign(curClstr.widthInt.data * curClstr.heightInt.data , -1);
 
 	//マップの各セルにクラスタ番号を記載
-	for(int i=0; i< curClstr.size; i++){
+	for(int i=0; i< curClstr.size.data; i++){
 		for(int k=0; k<curClstr.data[i].index.size(); k++){
-			curClstrMap[ curClstr.data[i].index[k] ] = i;//セルにクラスタ番号を記述
+			curClstrMap[ curClstr.data[i].index[k].data ] = i;//セルにクラスタ番号を記述
 		}
 	}
 }
@@ -56,7 +56,7 @@ void measurementVelocity::renewClstrData(){
 	prvClstr.data.clear();
 	prvClstrMap.clear();
 	//データ更新
-	prvClstrMap　= curClstrMap;//クラスタマップ
+	prvClstrMap = curClstrMap;//クラスタマップ
 	prvClstr = curClstr;//クラスタデータ
 	//
 	//データクリア（必要かどうかは不明）
@@ -66,53 +66,53 @@ void measurementVelocity::renewClstrData(){
 void measurementVelocity::matchingClstr(){//（途中）
 	//現在のクラスタ -> 1つ前の処理でのクラスタ に対するマッチングを取る
 	//画像マッチングスコア
-	//行：curClstrのクラスタ数, 列：preClstrのクラスタ数, 値0で初期化
-	std::vector<std::vector<int>> imageMathingScore(curClstr.size, std::vector<int>(preClstr.size, 0));
+	//行：curClstrのクラスタ数, 列：prvClstrのクラスタ数, 値0で初期化
+	std::vector<std::vector<int>> imageMathingScore(curClstr.size.data, std::vector<int>(prvClstr.size.data, 0));
 	//matchData（画像マッチングデータ）を走査
-	for(int k = 0; k < matchData.index.size(); k++){//widthInt * heightInt
-		int prvPos = matchData.index[k];
-		int curPos = prvPos + matchData.data[prvPos].x 
-			+ matchData.data[prvPos].y * matchData.widthInt;
+	for(int k = 0; k < matchData.index.size(); k++){//widthInt.data * heightInt.data
+		int prvPos = matchData.index[k].data;
+		int curPos = prvPos + matchData.data[prvPos].x.data
+			+ matchData.data[prvPos].y.data * matchData.widthInt.data;
 		imageMathingScore[ curClstrMap[curPos] ][ prvClstrMap[prvPos] ] ++;//カウントアップ
 	}
 	//位置マッチングスコア
 	//重心位置の差
-	std::vector<std::vector<float>> posMathingScore(curClstr.size, std::vector<float>(preClstr.size, 0));
-	for(int k=0; k < curClstr.size; k++){
-		for(int i=0; i< preClstr.size; i++){
-			float disX = curClstr.data[k].gc.x - preClstr.data[k].gc.x;
-			float disY = curClstr.data[k].gc.y - preClstr.data[k].gc.y;
-			float disZ = curClstr.data[k].gc.z - preClstr.data[k].gc.z;
+	std::vector<std::vector<float>> posMathingScore(curClstr.size.data, std::vector<float>(prvClstr.size.data, 0));
+	for(int k=0; k < curClstr.size.data; k++){
+		for(int i=0; i< prvClstr.size.data; i++){
+			float disX = curClstr.data[k].gc.x - prvClstr.data[k].gc.x;
+			float disY = curClstr.data[k].gc.y - prvClstr.data[k].gc.y;
+			float disZ = curClstr.data[k].gc.z - prvClstr.data[k].gc.z;
 			float dis = std::sqrt( disX*disX +disY*disY + disZ*disZ );
 			posMathingScore[k][i] = dis;
 		}
 	}
 	//サイズマッチングスコア
 	//サイズ（クラスタ内の点数）の差
-	std::vector<std::vector<int>> sizeMathingScore(curClstr.size, std::vector<int>(preClstr.size, 0));
-	for(int k=0; k < curClstr.size; k++){
-		for(int i=0; i< preClstr.size; i++){
-			int curSize = curClstr.data[k].dens;
-			int prvSize = prvClstr.data[k].dens;
+	std::vector<std::vector<int>> sizeMathingScore(curClstr.size.data, std::vector<int>(prvClstr.size.data, 0));
+	for(int k=0; k < curClstr.size.data; k++){
+		for(int i=0; i< prvClstr.size.data; i++){
+			int curSize = curClstr.data[k].dens.data;
+			int prvSize = prvClstr.data[k].dens.data;
 			sizeMathingScore[k][i] = std::abs(curSize - prvSize);
 		}
 	}
 	//マッチング評価
-	// std::vector<int> matchResult(curClstr.size, -1);
-	matchResult.assign(curClstr.size , -1);
-	for(int k=0; k < curClstr.size; k++){
+	// std::vector<int> matchResult(curClstr.size.data, -1);
+	matchResult.assign(curClstr.size.data , -1);
+	for(int k=0; k < curClstr.size.data; k++){
 		//
 		//例外除去
 		//マップセルの占有マスが少ない（1マス以下）
-		if(curClstr.size <= 1){
+		if(curClstr.size.data <= 1){
 			continue;
 		}
 		double evMax = -1;//最大評価値
 		int matchNum = -1;
-		for(int i=0; i< preClstr.size; i++){
+		for(int i=0; i< prvClstr.size.data; i++){
 			//例外除去
 			//マップセルの占有マスが少ない（1マス以下）
-			if(prvClstr.size <= 1){
+			if(prvClstr.size.data <= 1){
 				continue;
 			}
 			//重心位置の差が1m以上
@@ -153,7 +153,7 @@ void measurementVelocity::measurementProcess(){//
 	double dt;
 	ros::Duration rosDt = curClstr.header.stamp - prvClstr.header.stamp;
 	dt = rosDt.toSec();
-	for(int k=0; k < curClstr.size; k++){
+	for(int k=0; k < curClstr.size.data; k++){
 		if( matchResult[k] < 0){
 			cvd.twist[k].linear.x = 0;
 			cvd.twist[k].linear.y = 0;

@@ -14,5 +14,5 @@ std_msgs/Int32 heightInt
 geometry_msgs/Point cp
 #インデックスデータ
 std_msgs/Int32[] index
-#センサデータ
+#マッチングデータ
 obstacle_detection_2019/ImageFlow2D[] data

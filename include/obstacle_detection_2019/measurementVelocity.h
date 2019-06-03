@@ -10,13 +10,15 @@
 #include <obstacle_detection_2019/ClassificationVelocityData.h>
 #include <obstacle_detection_2019/ClassificationData.h>
 #include <obstacle_detection_2019/ImageMatchingData.h>
+//デバッグ用
+#include <pcl_ros/point_cloud.h>
 
 //クラスの定義
 class measurementVelocity{
     private:
         //受信データ
 		ros::NodeHandle nhSub1,nhSub2;
-		ros::Subscriber subCluster,subMatching;
+		ros::Subscriber subCluster,subMatch;
 		ros::CallbackQueue queue1,queue2;
         obstacle_detection_2019::ClassificationData curClstr,prvClstr;
         obstacle_detection_2019::ImageMatchingData matchData;
@@ -28,6 +30,9 @@ class measurementVelocity{
     	std::vector<int> prvClstrMap, curClstrMap;
     	//マッチング評価
 	    std::vector<int> matchResult;
+        //デバッグ用
+		ros::NodeHandle nhDeb;
+        ros::Publisher pubDeb;
     public:
         //in constracter.cpp
         //コンストラクタ：クラス定義に呼び出されるメソッド
@@ -46,9 +51,9 @@ class measurementVelocity{
         //その他メソッド
         //--センサーデータ受信
         void subscribeClusterData();//データ受信
-        void cluster_callback(const obstacle_detection_2019::SensorMapData::ConstPtr& msg);
+        void cluster_callback(const obstacle_detection_2019::ClassificationData::ConstPtr& msg);
         void subscribeImageMatchingData();//データ受信
-        void matching_callback(const obstacle_detection_2019::SensorMapData::ConstPtr& msg);
+        void matching_callback(const obstacle_detection_2019::ImageMatchingData::ConstPtr& msg);
         //--マッチング
         bool isPrvClstr();//連続データがあるか確認
         void creatClstrMap();//クラスタマップ作製
@@ -58,5 +63,7 @@ class measurementVelocity{
         void publishClassificationData();//データ送信
         //データ更新
         void renewClstrData();
+        //デバッグ用のメソッド
+        void visualizedVelocities();
 };
 #endif

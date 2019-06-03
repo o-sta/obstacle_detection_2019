@@ -12,6 +12,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/video/tracking.hpp>//オプティカルフロー用
 #include <opencv2/features2d/features2d.hpp>
+// #include <opencv2/features2d.hpp>
 //self msg
 #include <obstacle_detection_2019/MaskImageData.h>
 #include <obstacle_detection_2019/ImageMatchingData.h>
@@ -49,6 +50,9 @@ class imageMatchingClass{
 		std::vector<uchar> sts;
 		std::vector<float> ers;
 		int ws;//window size
+        //デバッグ用
+		ros::NodeHandle nhDeb;
+        ros::Publisher pubDeb;
     public:
         //in constracter.cpp
         //コンストラクタ：クラス定義に呼び出されるメソッド
@@ -74,6 +78,7 @@ class imageMatchingClass{
         void cvtGray();
         //--データ確認
         bool isBridgeImagePre();//
+        bool isMaskImagePre();//
         //データ更新
         void resetData();
         //特徴点抽出
@@ -86,5 +91,9 @@ class imageMatchingClass{
         bool convertToGrid(const float& x,const float& y,int& xg,int& yg);
         //センサデータ送信
         void publishMatchingData();//データ送信
+        //デバッグ用メソッド
+        void showMatchingMap();
+        void cvArrow(cv::Mat* img, cv::Point2i pt1, cv::Point2i pt2, cv::Scalar color = cv::Scalar(0,200,200), int thickness=4, int lineType=8, int shift=0);
+
 };
 #endif

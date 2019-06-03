@@ -1,7 +1,7 @@
 #sensor map data
 #
 #ROSヘッダ
-std_msgs/Header header 
+std_msgs/Header header
 #マップサイズ
 #実測サイズ
 std_msgs/Float32 width#

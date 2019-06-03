@@ -1,10 +1,10 @@
 #include <ros/ros.h>
-#include <obstacle_detection_2019/imageMatching.h>
+#include <obstacle_detection_2019/measurementVelocity.h>
 
 int main(int argc,char **argv){
-	ros::init(argc,argv,"obstacle_detection_2019_im");
+	ros::init(argc,argv,"obstacle_detection_2019_mv");
 	
-    imageMatchingClass imc; //pan_tilt_control_instance
+    measurementVelocity mv; //pan_tilt_control_instance
 	// while(ros::ok())
 	// {
 	// }

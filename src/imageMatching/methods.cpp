@@ -19,11 +19,35 @@ void imageMatchingClass::image_callback(const sensor_msgs::ImageConstPtr& msg)
         return ;
     } 
 }
+void imageMatchingClass::maskImage_callback(const obstacle_detection_2019::MaskImageData::ConstPtr& msg)
+{
+    midCur.header = msg->header;
+    //--画像データ
+    midCur.width.data = msg->width.data;
+    midCur.height.data = msg->height.data;
+    //--マップデータ
+    midCur.mapWidth.data = msg->mapWidth.data;
+    midCur.mapHeight.data = msg->mapHeight.data;
+    midCur.mapRes.data = msg->mapRes.data;
+    midCur.mapWidthInt.data = msg->mapWidthInt.data;
+    midCur.mapHeightInt.data = msg->mapHeightInt.data;
+    midCur.index = msg->index;
+    midCur.pt = msg->pt;
+    
+}
 void imageMatchingClass::cvtGray(){
     cv::cvtColor(bridgeImageCur->image,grayImgCur,CV_BGR2GRAY);
 }
 bool imageMatchingClass::isBridgeImagePre(){
     if(bridgeImagePre->image.empty()){//要注意
+        return false;
+    }
+    else{
+        return true;
+    }
+}
+bool imageMatchingClass::isMaskImagePre(){
+    if(midPre.pt.empty()){//データの有無を確認
         return false;
     }
     else{
