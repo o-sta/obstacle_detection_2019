@@ -36,6 +36,7 @@ convCamDataClass::convCamDataClass()
 	mapR=0.05;//resolution[m]
 	mapWi=(int)(mapW/mapR);//[pixel]
 	mapHi=(int)(mapH/mapR);//[pixel]
+	sensorData_subscribed_flag = false; //sta
 	
 }
 convCamDataClass::~convCamDataClass(){
