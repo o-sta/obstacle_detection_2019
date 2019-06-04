@@ -21,7 +21,7 @@ class convPCLDataClass{
 		ros::CallbackQueue queue;
         sensor_msgs::PointCloud2 cloud2Data;
     	pcl::PointCloud<pcl::PointXYZRGB> pclData;
-        cv_bridge::CvImagePtr bridgeRgb,bridgeDepth;
+        cv_bridge::CvImage bridgeRgb,bridgeDepth;
         bool sensorData_subscribed_flag;
         //送信データ
 		ros::NodeHandle nhPub1,nhPub2;

@@ -7,13 +7,17 @@ void convPCLDataClass::subscribeSensorData(){//データ受信
 }
 void convPCLDataClass::sensor_callback(const sensor_msgs::PointCloud2::ConstPtr& msg)
 {
-    cloud2Data = *msg;//要確認
+
+    cloud2Data = *msg;
     sensorData_subscribed_flag = true; //sta
 }
 void convPCLDataClass::convCloud2toPCL(){
     pcl::fromROSMsg(cloud2Data,pclData);
 }
 void convPCLDataClass::convPCLtoImages(){
+    if(!pclData.points.size() > 0){
+        return ;
+    }
     //画像Mat
     cv::Mat rgbImage,depthImage;
     //サイズ取得
@@ -27,7 +31,8 @@ void convPCLDataClass::convPCLtoImages(){
     //画像データ作成
     for(int h = 0; h < height; h++){
         cv::Vec3b *pRgb = rgbImage.ptr<cv::Vec3b>(h);
-        cv::Vec3f *pDepth = depthImage.ptr<cv::Vec3f>(h);
+        // cv::Vec3f *pDepth = depthImage.ptr<cv::Vec3f>(h);
+        float *pDepth = depthImage.ptr<float>(h);
         for(int w = 0; w < width; w++){
             int k = h * width + w;
             pRgb[w][0] = pclData.points[k].b;//たぶんBlue (BGR)
@@ -40,19 +45,19 @@ void convPCLDataClass::convPCLtoImages(){
         }
     }
     //ROSヘッダ
-    bridgeRgb->header = cloud2Data.header;
-    bridgeDepth->header = cloud2Data.header;
+    bridgeRgb.header = cloud2Data.header;
+    bridgeDepth.header = cloud2Data.header;
     //エンコーダ
-    bridgeRgb->encoding=sensor_msgs::image_encodings::BGR8;
-    bridgeDepth->encoding=sensor_msgs::image_encodings::TYPE_32FC1;
+    bridgeRgb.encoding=sensor_msgs::image_encodings::BGR8;
+    bridgeDepth.encoding=sensor_msgs::image_encodings::TYPE_32FC1;
     //画像コピー
-    bridgeRgb->image = rgbImage.clone();
-    bridgeDepth->image = depthImage.clone();
+    bridgeRgb.image = rgbImage.clone();
+    bridgeDepth.image = depthImage.clone();
 }
 //publish
 void convPCLDataClass::publishRgbCamData(){//データ送信
-    pubRgb.publish(bridgeRgb->toImageMsg());
+    pubRgb.publish(bridgeRgb.toImageMsg());
 }
 void convPCLDataClass::publishDepthCamData(){//データ送信
-    pubDepth.publish(bridgeDepth->toImageMsg());
+    pubDepth.publish(bridgeDepth.toImageMsg());
 }

@@ -5,7 +5,7 @@ convPCLDataClass::convPCLDataClass()
 {
     //subscriber
 	nhSub.setCallbackQueue(&queue);
-	sub=nhSub.subscribe("/zed/depth",1,&convPCLDataClass::sensor_callback,this);
+	sub=nhSub.subscribe("/zed/point_cloud/cloud_registered",1,&convPCLDataClass::sensor_callback,this);
 	//publisher
     pubRgb= nhPub1.advertise<sensor_msgs::Image>("converted_rgbImage", 1);
 	//マスク画像
