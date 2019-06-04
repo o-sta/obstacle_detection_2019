@@ -175,6 +175,11 @@ add_executable(${PROJECT_NAME}_im # image matching
  src/measureVelocity/methods.cpp
  src/measureVelocity/debug_main.cpp
 )
+add_executable(${PROJECT_NAME}_pcl # point cloud
+  src/convPCLData/constructor.cpp
+  src/convPCLData/methods.cpp
+  src/convPCLData/debug_main.cpp
+)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -192,6 +197,7 @@ add_dependencies(${PROJECT_NAME}_gr ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_lrf ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_im ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_mv ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(${PROJECT_NAME}_pcl ${PROJECT_NAME}_generate_messages_cpp)
 
 
 ## Specify libraries to link a library or executable target against
@@ -200,6 +206,7 @@ target_link_libraries(${PROJECT_NAME}_gr ${catkin_LIBRARIES}) # ground plane rem
 target_link_libraries(${PROJECT_NAME}_lrf ${catkin_LIBRARIES}) # laser range finder
 target_link_libraries(${PROJECT_NAME}_im ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # image matching
 target_link_libraries(${PROJECT_NAME}_mv ${catkin_LIBRARIES} ) # measurement velocity
+target_link_libraries(${PROJECT_NAME}_pcl ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # point cloud
 
 
 
