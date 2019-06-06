@@ -12,9 +12,6 @@
 #include<obstacle_detection_2019/synchronizedImage.h>
 
 
-using namespace sensor_msgs;
-using namespace message_filters;
-
 //クラスの定義
 class syncroImageClass{
     private:
