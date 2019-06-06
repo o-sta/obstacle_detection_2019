@@ -186,6 +186,12 @@ add_executable(${PROJECT_NAME}_syncro # point cloud
   src/synchroImage/methods.cpp
   src/synchroImage/debug_main.cpp
 )
+add_executable(${PROJECT_NAME}_manage # point cloud
+  src/management/constructor.cpp
+  src/management/methods.cpp
+  src/management/debug_main.cpp
+  src/management/debug_methods.cpp
+)
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -204,6 +210,7 @@ add_dependencies(${PROJECT_NAME}_im ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_mv ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_pcl ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_syncro ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(${PROJECT_NAME}_manage ${PROJECT_NAME}_generate_messages_cpp)
 
 
 ## Specify libraries to link a library or executable target against
@@ -213,7 +220,8 @@ target_link_libraries(${PROJECT_NAME}_lrf ${catkin_LIBRARIES}) # laser range fin
 target_link_libraries(${PROJECT_NAME}_im ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # image matching
 target_link_libraries(${PROJECT_NAME}_mv ${catkin_LIBRARIES} ) # measurement velocity
 target_link_libraries(${PROJECT_NAME}_pcl ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # point cloud
-target_link_libraries(${PROJECT_NAME}_syncro ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # point cloud
+target_link_libraries(${PROJECT_NAME}_syncro ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # synchro image
+target_link_libraries(${PROJECT_NAME}_manage ${catkin_LIBRARIES} ) # manege 
 
 
 
