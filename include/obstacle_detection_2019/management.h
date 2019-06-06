@@ -34,7 +34,7 @@ class managementClass{
         //メソッド：関数のようなもの:後でlaunchファイルからの読み込みメソッドを追加
         //in property.cpp
         //セット：内部パラメータの書き込み
-        void setParam(int& temp);//(未使用)
+        void setFromLaunchfile();//launchファイルからの書き込み
         //ゲット：内部パラメータの読み込み
         float& getFrameRate();//設定フレームレートの取得
         bool& getDuplicationFalg();//重複フラグの取得

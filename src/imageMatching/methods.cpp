@@ -55,7 +55,7 @@ bool imageMatchingClass::isMaskImagePre(){
     }
 }
 void imageMatchingClass::resetData(){
-    // bridgeImagePre = bridgeImageCur;//これをしていいのか不明
+    // *bridgeImagePre = *bridgeImageCur;
     //念のためしっかりコピー
     bridgeImagePre->header = bridgeImageCur->header;
     bridgeImagePre->encoding = bridgeImageCur->encoding;
