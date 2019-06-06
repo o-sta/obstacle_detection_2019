@@ -6,6 +6,8 @@ int main(int argc,char **argv){
     managementClass mc; //syncro class
     while(ros::ok()){
         mc.subscribeData();
+        mc.publishRgbCamData();
+        mc.publishDepthCamData();
     }
 
 	return 0;
