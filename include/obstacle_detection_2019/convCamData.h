@@ -74,7 +74,7 @@ class convCamDataClass{
         //in methods.cpp
         //その他メソッド
         //--センサーデータ受信
-        void subscribeSensorData();//データ受信
+        bool subscribeSensorData();//データ受信
         void sensor_callback(const sensor_msgs::ImageConstPtr& msg);
         //--床面推定、床面除去
         //----RANSAC

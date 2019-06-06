@@ -1,9 +1,14 @@
 ﻿#include<obstacle_detection_2019/convCamData.h>
 
 //subscribe
-void convCamDataClass::subscribeSensorData(){//データ受信
-	queue.callOne(ros::WallDuration(1));
+bool convCamDataClass::subscribeSensorData(){//データ受信
+    ros::CallbackQueue::CallOneResult res;
+	res = queue.callOne(ros::WallDuration(1));
+    ROS_INFO_STREAM("subscribe result : " << res);
+    if(res == ros::CallbackQueue::CallOneResult::Called){return true;}
+    return false;
 }
+
 void convCamDataClass::sensor_callback(const sensor_msgs::ImageConstPtr& msg)
 {
     try{
@@ -61,18 +66,18 @@ void convCamDataClass::groundEstimationRANSAC(){
     ground_points->points.resize(k);//
     ground_points->width=ground_points->points.size();
     ground_points->height=1;
-    std::cout<<"ground_points->points.size():"<<ground_points->points.size()<<"\n";
+    ROS_INFO_STREAM("ground_points->points.size():"<<ground_points->points.size()<<"\n");
     //床面式の算出
     seg.setInputCloud (ground_points);
 	seg.segment (*inliers, *coefficients);
-	std::cout << "Model coefficients: " << coefficients->values[0] << " "
-                                      << coefficients->values[1] << " "
-                                      << coefficients->values[2] << " "
-                                      << coefficients->values[3] << std::endl;
     a=coefficients->values[0];
     b=coefficients->values[1];
     c=coefficients->values[2];
     d=coefficients->values[3];
+    ROS_INFO_STREAM("Model coefficients: " << a << " "
+                                        << b << " "
+                                        << c << " "
+                                        << d << "\n");
 }
 //
 void convCamDataClass::createPubDataRANSAC(){

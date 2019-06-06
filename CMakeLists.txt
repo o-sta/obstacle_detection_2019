@@ -160,6 +160,11 @@ add_executable(${PROJECT_NAME}_gr # ground plane remove
   src/convCamData/methods.cpp
   src/convCamData/debug_main.cpp
 )
+add_executable(${PROJECT_NAME}_gr2 # ground plane remove2
+  src/convCamData/constructor.cpp
+  src/convCamData/methods.cpp
+  src/convCamData/debug_main_genmsg.cpp
+)
 add_executable(${PROJECT_NAME}_lrf # laser range finder
   src/convLRFData/constructor.cpp
   src/convLRFData/methods.cpp
@@ -171,7 +176,7 @@ add_executable(${PROJECT_NAME}_im # image matching
    src/imageMatching/debug_main.cpp
    src/imageMatching/debug_methods.cpp
  )
- add_executable(${PROJECT_NAME}_mv # image matching
+ add_executable(${PROJECT_NAME}_mv # measure Velocity
  src/measureVelocity/constructor.cpp
  src/measureVelocity/methods.cpp
  src/measureVelocity/debug_main.cpp
@@ -206,6 +211,7 @@ add_executable(${PROJECT_NAME}_manage # manage
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(${PROJECT_NAME}_cc ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_gr ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(${PROJECT_NAME}_gr2 ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_lrf ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_im ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_mv ${PROJECT_NAME}_generate_messages_cpp)
@@ -217,6 +223,7 @@ add_dependencies(${PROJECT_NAME}_manage ${PROJECT_NAME}_generate_messages_cpp)
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_cc ${catkin_LIBRARIES}) # classification
 target_link_libraries(${PROJECT_NAME}_gr ${catkin_LIBRARIES}) # ground plane remove
+target_link_libraries(${PROJECT_NAME}_gr2 ${catkin_LIBRARIES}) # ground plane remove
 target_link_libraries(${PROJECT_NAME}_lrf ${catkin_LIBRARIES}) # laser range finder
 target_link_libraries(${PROJECT_NAME}_im ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # image matching
 target_link_libraries(${PROJECT_NAME}_mv ${catkin_LIBRARIES} ) # measurement velocity
