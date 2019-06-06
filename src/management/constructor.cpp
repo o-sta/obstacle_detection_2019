@@ -1,6 +1,8 @@
 #include<obstacle_detection_2019/management.h>
 
-managementClass::managementClass(){
+managementClass::managementClass()
+    :frameRate(2),dupImageFlag(false)
+{
     //subscriber
 	nhSub.setCallbackQueue(&queue);
 	sub=nhSub.subscribe("syncronized_image",1,&managementClass::callback,this);

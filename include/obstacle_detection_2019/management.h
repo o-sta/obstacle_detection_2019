@@ -19,9 +19,10 @@ class managementClass{
         //送信データ
 		ros::NodeHandle nhPub1,nhPub2;
         ros::Publisher pubRgb,pubDepth;
-        // cv_bridge::CvImage bridgeRgb,bridgeDepth;
         sensor_msgs::Image rgbImage,depthImage;
-        //
+        //処理速度管理パラメータ
+        float frameRate;//処理フレームレート
+        bool dupImageFlag;//重複データ検出フラグ
         
     public:
         //in constracter.cpp
@@ -35,13 +36,16 @@ class managementClass{
         //セット：内部パラメータの書き込み
         void setParam(int& temp);//(未使用)
         //ゲット：内部パラメータの読み込み
-        int& getParam();//(未使用)
+        float& getFrameRate();//設定フレームレートの取得
+        bool& getDuplicationFalg();//重複フラグの取得
         //
         //in methods.cpp
         //その他メソッド
         //--センサーデータ受信
         void subscribeData();
         void callback(const obstacle_detection_2019::synchronizedImage::ConstPtr& imageMsg);
+        //--データ重複チェック
+        void checkDuplication(const obstacle_detection_2019::synchronizedImage::ConstPtr& imageMsg);
         //データ送信
         void publishRgbCamData();
         void publishDepthCamData();

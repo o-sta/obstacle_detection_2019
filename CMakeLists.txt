@@ -186,11 +186,12 @@ add_executable(${PROJECT_NAME}_syncro # point cloud
   src/synchroImage/methods.cpp
   src/synchroImage/debug_main.cpp
 )
-add_executable(${PROJECT_NAME}_manage # point cloud
+add_executable(${PROJECT_NAME}_manage # manage
   src/management/constructor.cpp
   src/management/methods.cpp
   src/management/debug_main.cpp
   src/management/debug_methods.cpp
+  src/management/property.cpp
 )
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
