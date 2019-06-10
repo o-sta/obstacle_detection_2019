@@ -74,6 +74,7 @@ classificationClass::classificationClass()
 	//デバッグ用
 	//publisher
     pubDeb= nhDeb.advertise<sensor_msgs::Image>("windowImage", 1);
+    pubDebPcl= nhDebPcl.advertise<sensor_msgs::PointCloud2>("visualizedCluster", 1);
 }
 classificationClass::~classificationClass(){
 	winIndex.clear();

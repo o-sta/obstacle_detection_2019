@@ -49,3 +49,74 @@ void classificationClass::showSearchWindows(){
     //Publish
 	pubDeb.publish(viewCvData->toImageMsg());
 }
+void classificationClass::showCluster(){
+    //障害物カラーレパートリー
+	float colors[12][3] ={{255,0,0},{0,255,0},{0,0,255},{255,255,0},{0,255,255},{255,0,255},{127,255,0},{0,127,255},{127,0,255},{255,127,0},{0,255,127},{255,0,127}};//色リスト
+    //表示用ポイントクラウド
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr viewCloud(new  pcl::PointCloud<pcl::PointXYZRGB>);
+    //初期化
+    //データ数の計算
+    int pointNum = 0;//総データ数
+    for(int i = 0; i < cd.data.size(); i++){
+        pointNum += (int)cd.data[i].pt.size();
+    }
+    //
+    //表示高さ幅設定(点１つでは見えにくいため表示数を増やす)
+    //表示範囲, 表示個数
+    //z+zUnder <= z <= z+zUpper
+    //(zUpper - zUnder)/zDelta
+    float zUpper =0.5;
+    float zUnder = -0.5;
+    float zDelta =0.05;
+    int zLoop = (int)((zUpper - zUnder)/zDelta) + 1;//ループ回数(z軸表示幅)
+    //データ数再計算
+    pointNum = pointNum * zLoop;
+	viewCloud->points.clear();
+	viewCloud->points.resize(pointNum);
+    
+    //要素追加用の仮変数
+	pcl::PointXYZRGB cloudTemp;
+    //追加済み要素数カウント
+    int count = 0;
+    //pointCloudデータ作成
+    viewCloud->width = count;
+    viewCloud->height = 1;
+    //各クラスタごとの処理
+    for(int i = 0; i < cd.data.size(); i++){
+        //非表示処理
+        //--データ数が閾値以下の時
+        if(cd.data[i].size.data < 10){
+            continue;
+        }
+        //カラー設定
+        cloudTemp.r=colors[i%12][0];
+        cloudTemp.g=colors[i%12][1];
+        cloudTemp.b=colors[i%12][2];
+        //各データごとの処理
+        for(int k = 0; k < cd.data[i].pt.size(); k++){  
+            cloudTemp.x=cd.data[i].pt[k].y;//y軸              
+            cloudTemp.y=-cd.data[i].pt[k].x;//逆向きのx軸
+            //表示幅分点を追加
+            for(int n=0; n<= (int)((zUpper - zUnder)/zDelta); n++){
+                cloudTemp.z=cd.data[i].pt[k].z + zUnder + n*zDelta;//z軸 + 表示範囲            
+                //ポイントクラウドに追加
+                viewCloud->points[count++] = cloudTemp;
+                viewCloud->width = count;
+            }
+        }
+        
+    }
+	
+	std::cout<<"viewCloud->points.size():"<<viewCloud->points.size()<<"\n";
+    //データがないとき
+	if(viewCloud->width <= 0)
+	{
+        ROS_INFO("No point cloud data!");
+		return ;
+	}
+	sensor_msgs::PointCloud2 viewMsgs;
+	pcl::toROSMsg (*viewCloud, viewMsgs);
+	viewMsgs.header.frame_id="/zed_camera_center";
+	pubDebPcl.publish(viewMsgs);
+
+}
