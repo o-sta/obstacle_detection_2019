@@ -11,7 +11,7 @@ managementClass::managementClass()
     pubRgb= nhPub1.advertise<sensor_msgs::Image>("converted_rgbImage", 1);
 	//depth
     pubDepth= nhPub2.advertise<sensor_msgs::Image>("converted_depthImage", 1);
-
+    setFromLaunchfile();
 }
 managementClass::~managementClass(){
 
