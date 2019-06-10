@@ -246,6 +246,22 @@ void classificationClass::classificationDBSCAN(){//カメラ
 	//データリサイズ
 	cd.data.resize(cd.size.data);
 }
+//追加
+//使用する窓を選択
+//入力:角度(deg)
+//反時計回り, y軸を0度と置く
+//出力:使用する窓番号
+int classificationClass::selectWindow(int& angle){
+	int selectNum = winDivNum / 2;//カメラ正面方向の窓番号
+	if(std::abs(angle) > winDivDeg/2){//正面方向ではない
+		//angle / winDivDeg
+		//第一象限ではマイナス
+		//第二象限ではプラス
+		//selectNumは正面の番号
+		selectNum = selectNum + (angle / winDivDeg);
+	}
+	return selectNum;
+}
 
 void classificationClass::publishClassificationData(){//データ送信
     pub.publish(cd);
