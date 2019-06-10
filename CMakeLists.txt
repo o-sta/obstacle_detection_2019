@@ -154,6 +154,8 @@ add_executable(${PROJECT_NAME}_cc # classification
   src/classification/constructor.cpp
   src/classification/methods.cpp
   src/classification/debug_main.cpp
+  src/classification/debug_methods.cpp
+  src/classification/property.cpp
 )
 add_executable(${PROJECT_NAME}_gr # ground plane remove
   src/convCamData/constructor.cpp
