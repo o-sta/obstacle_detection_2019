@@ -31,8 +31,6 @@ class convCamDataClass{
         //送信データ
 		ros::NodeHandle nhPub1,nhPub2;
         ros::Publisher pubConv,pubMask;
-        obstacle_detection_2019::SensorMapData smd;
-        obstacle_detection_2019::MaskImageData mid;
         //add by sta
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
         pcl::PointIndices::Ptr inliers;
@@ -57,6 +55,9 @@ class convCamDataClass{
         cv::Mat dem;//ステレオカメラセンサによるローカルマップ
         // センサデータをサブスクライブしたか否かのフラグ (trueで取得した)add_by sta
         bool sensorData_subscribed_flag;
+    protected:
+        obstacle_detection_2019::SensorMapData smd;
+        obstacle_detection_2019::MaskImageData mid;
     public:
         //in constracter.cpp
         //コンストラクタ：クラス定義に呼び出されるメソッド
