@@ -7,22 +7,25 @@
 #include <opencv2/highgui.hpp>
 #include <sensor_msgs/point_cloud2_iterator.h>
 
+// デバッグ用クラス
+// convCamDataClassを継承しています
 class d_convCamDataClass : public convCamDataClass{
     private:
         sensor_msgs::PointCloud2Ptr d_point_msg; //パブリッシュ用ポイントクラウド
-        ros::NodeHandle d_nhPub1;
-        ros::Publisher d_pubPcl;
+        ros::NodeHandle d_nhPub1, d_nhPub2;
+        ros::Publisher d_pubPcl, d_pubImg;
+        cv_bridge::CvImagePtr d_cvb;
     public:
         d_convCamDataClass()
-        :d_point_msg(new sensor_msgs::PointCloud2)
+        :d_point_msg(new sensor_msgs::PointCloud2),d_cvb(new cv_bridge::CvImage)
         {
             d_pubPcl = d_nhPub1.advertise<sensor_msgs::PointCloud2>("d_ground_pointcloud", 1);
+            d_pubImg = d_nhPub2.advertise<sensor_msgs::Image>("d_ground_image", 1);
         }
         ~d_convCamDataClass(){
         }
-        // SensorMapData を sensor_msgs::PointCloud2 に変換
+        // SensorMapData (smd) を sensor_msgs::PointCloud2 (d_point_msg) に変換
         void d_smd2pcl(){
-            d_point_msg->header.stamp = ros::Time::now();
             d_point_msg->header = smd.header;
             d_point_msg->height = smd.heightInt.data;
             d_point_msg->width = smd.widthInt.data;
@@ -51,12 +54,31 @@ class d_convCamDataClass : public convCamDataClass{
                 iter_rgb[2] = 255;
             }
         }
-        // pcl をパブリッシュ
+        // sensor_msgs::PointCloud2 (d_point_msg) をパブリッシュする
         void d_publish_pcl(){
             d_pubPcl.publish(d_point_msg);
         }
-        // MaskImageData を sensor_msgs::
-        void d_publish_pcl(){
-            
+        // MaskImageData (mid) を cv_bridge (d_cvb) に変換する
+        void d_mid2mat(){
+            int pixel_height = mid.height.data;
+            int pixel_width = mid.width.data;
+            cv::Vec3b *it_w;
+            d_cvb->image = cv::Mat(pixel_height, pixel_width, CV_8UC3);
+            d_cvb->image = cv::Scalar(50,50,50);
+            ROS_INFO_STREAM("height : width  =  " << pixel_height << " : " << pixel_width);
+            d_cvb->header = mid.header;
+            d_cvb->encoding = "rgb8";
+            for (int i=0; i<pixel_height; i++){
+                it_w = d_cvb->image.ptr<cv::Vec3b>(i);
+                for(int j=0; j<pixel_width; j++){
+                    if(mid.index[i*pixel_width+j].data != -1){
+                        it_w[j][0] = 255;
+                    }
+                }
+            }
+        }
+        // cv_bridge (d_mat) を に変換してパブリッシュする
+        void d_publish_img(){
+            d_pubImg.publish(d_cvb->toImageMsg());
         }
 };

@@ -20,8 +20,10 @@ int main(int argc,char **argv){
 			ccd.createPubDataRANSAC();
 			ccd.publishConvCamData();
 			ccd.publishMaskImage();
-			ccd.d_smd2pcl();
-			ccd.d_publish_pcl();
+			// ccd.d_smd2pcl();
+			// ccd.d_publish_pcl();
+			ccd.d_mid2mat();
+			ccd.d_publish_img();
 		}
 		loop_rate.sleep();
 	}
