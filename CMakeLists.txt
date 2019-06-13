@@ -150,13 +150,13 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_cc # classification
-#   src/classification/constructor.cpp
-#   src/classification/methods.cpp
-#   src/classification/debug_main.cpp
-#   src/classification/debug_methods.cpp
-#   src/classification/property.cpp
-# )
+add_executable(${PROJECT_NAME}_cc # classification
+  src/classification/constructor.cpp
+  src/classification/methods.cpp
+  src/classification/debug_main.cpp
+  src/classification/debug_methods.cpp
+  src/classification/property.cpp
+)
 add_executable(${PROJECT_NAME}_gr # ground plane remove
   src/convCamData/constructor.cpp
   src/convCamData/methods.cpp
@@ -207,7 +207,7 @@ add_executable(${PROJECT_NAME}_manage # manage
 
 
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-# add_dependencies(${PROJECT_NAME}_cc ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(${PROJECT_NAME}_cc ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_gr ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_lrf ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_im ${PROJECT_NAME}_generate_messages_cpp)
@@ -218,7 +218,7 @@ add_dependencies(${PROJECT_NAME}_manage ${PROJECT_NAME}_generate_messages_cpp)
 
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_cc ${catkin_LIBRARIES}) # classification
+target_link_libraries(${PROJECT_NAME}_cc ${catkin_LIBRARIES}) # classification
 target_link_libraries(${PROJECT_NAME}_gr ${catkin_LIBRARIES}) # ground plane remove
 target_link_libraries(${PROJECT_NAME}_lrf ${catkin_LIBRARIES}) # laser range finder
 target_link_libraries(${PROJECT_NAME}_im ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # image matching

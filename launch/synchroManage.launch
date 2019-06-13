@@ -1,6 +1,6 @@
 <launch>
  <node pkg="obstacle_detection_2019" name="obstacle_detection_2019_syncro" type="obstacle_detection_2019_syncro"/>
  <node pkg="obstacle_detection_2019" name="obstacle_detection_2019_manage" type="obstacle_detection_2019_manage" output="screen">
-  <param name="frameRate" value="30"/>
+  <param name="frameRate" value="20"/>
 </node>
 </launch>

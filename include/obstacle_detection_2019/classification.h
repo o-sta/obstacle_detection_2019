@@ -13,6 +13,7 @@
 #include <sensor_msgs/image_encodings.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <pcl_ros/point_cloud.h>
 
 //クラスの定義
 class classificationClass{
@@ -36,8 +37,8 @@ class classificationClass{
         int winDivNum;//(int)( ステレオカメラの視野角の半分(45度) / winDivDeg ) * 2 + 1
         std::vector< std::vector<int> > winIndex2;
         //----デバッグ用
-		ros::NodeHandle nhDeb;
-        ros::Publisher pubDeb;
+		ros::NodeHandle nhDeb,nhDebPcl;
+        ros::Publisher pubDeb,pubDebPcl;
         //--
     public:
         //in constracter.cpp
@@ -74,5 +75,6 @@ class classificationClass{
         void clearMessages();
         //追加  
         void showSearchWindows();
+        void showCluster();
 };
 #endif
