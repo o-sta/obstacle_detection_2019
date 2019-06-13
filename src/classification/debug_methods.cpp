@@ -118,5 +118,4 @@ void classificationClass::showCluster(){
 	pcl::toROSMsg (*viewCloud, viewMsgs);
 	viewMsgs.header.frame_id="/zed_camera_center";
 	pubDebPcl.publish(viewMsgs);
-
 }

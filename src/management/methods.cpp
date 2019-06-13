@@ -7,6 +7,7 @@ void managementClass::subscribeData(){//データ受信
 void managementClass::callback(const obstacle_detection_2019::synchronizedImage::ConstPtr& imageMsg){
     //重複チェック
     checkDuplication(imageMsg);
+    culcDifTime(imageMsg);
     //データコピー
     rgbImage = imageMsg->rgb;
     depthImage = imageMsg->depth;

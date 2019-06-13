@@ -51,6 +51,8 @@ class managementClass{
         void publishDepthCamData();
         //デバッグ
         void delayTime();
-        void culcDifTime();
+        void culcPastTime();
+        void culcDifTime(const obstacle_detection_2019::synchronizedImage::ConstPtr& imageMsg);
+
 };
 #endif
