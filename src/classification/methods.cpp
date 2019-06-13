@@ -45,6 +45,7 @@ void classificationClass::sortSensorData()
 	}
 	// ソート(バブルソート)
 	for(int i = 0; i < ((int)smdCamera.index.size() - 1); i++){
+		std::cout<<"i:"<<i<<std::endl;
 		for(int j= ((int)smdCamera.index.size() - 1); j > i; j--){
 			if(smdCamera.index[j].data < smdCamera.index[j - 1].data){
 				//index, pt の組 を入れ替えていく
@@ -53,6 +54,8 @@ void classificationClass::sortSensorData()
 			}
 		}
 	}
+	// sort(fruits.begin(), fruits.end(), 
+	// 	[](const fruit& x, const fruit& y) { return x.name < y.name;});
 }
 //データ前処理(カメラデータ)
 void classificationClass::compressSensorData()
@@ -120,7 +123,6 @@ void classificationClass::creatMapIndex(){
 	}
 }
 void classificationClass::classificationDBSCAN(){//カメラ
-
 
 	// 送信データ作成
 	// clustedData cd;

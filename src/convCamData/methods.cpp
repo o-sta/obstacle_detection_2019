@@ -114,7 +114,8 @@ void convCamDataClass::createPubDataRANSAC(){
     smd.cp.x=0;
     smd.cp.y=0;
     smd.cp.z=0;
-    smd.index.resize(smd.heightInt.data*smd.widthInt.data);
+    // smd.index.resize(smd.heightInt.data*smd.widthInt.data);
+    smd.index.resize(hMax*wMax);
     smd.pt.resize(hMax*wMax);
     //マスクデータ
     mid.header = bridgeImage->header;
@@ -158,14 +159,14 @@ void convCamDataClass::createPubDataRANSAC(){
                 if(y_temp-y_ground<=0||y_temp-y_ground>height_th){
                     //マスクデータ格納
                     mid.index[h*wMax+w].data = -1;
-                    continue;//■これ必要？
                 }
                 else{
                     //データ格納
                     int xi,zi;//仮変数
                     if(convertToGrid(x_temp,z_temp,xi,zi)){//データ変換
                         //インデックスデータ
-                        smd.index[zi*smd.widthInt.data+xi].data = k;
+                        // smd.index[zi*smd.widthInt.data+xi].data = k;
+                        smd.index[k].data = zi*smd.widthInt.data+xi;
                         //マップデータ格納
                         smd.pt[k].x=x_temp;//横方向
                         smd.pt[k].y=z_temp;//奥行
@@ -189,6 +190,7 @@ void convCamDataClass::createPubDataRANSAC(){
         }
     }
     //サイズ調整
+    smd.index.resize(k);
     smd.pt.resize(k);
     //マップデータをmaskImageDataにコピー
     mid.pt = smd.pt;
