@@ -1,7 +1,7 @@
 #include<obstacle_detection_2019/management.h>
 
 managementClass::managementClass()
-    :frameRate(2),dupImageFlag(false)
+    :frameRate(20),dupImageFlag(false)
 {
     //subscriber
 	nhSub.setCallbackQueue(&queue);

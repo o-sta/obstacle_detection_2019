@@ -161,6 +161,7 @@ add_executable(${PROJECT_NAME}_gr # ground plane remove
   src/convCamData/constructor.cpp
   src/convCamData/methods.cpp
   src/convCamData/debug_main.cpp
+  src/convCamData/debug_method.cpp
 )
 add_executable(${PROJECT_NAME}_lrf # laser range finder
   src/convLRFData/constructor.cpp

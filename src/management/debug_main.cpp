@@ -9,7 +9,7 @@ int main(int argc,char **argv){
         mc.subscribeData();
         //debug to desplay times
         mc.delayTime();
-        mc.culcDifTime();
+        mc.culcPastTime();
         //publish
         mc.publishRgbCamData();
         mc.publishDepthCamData();
