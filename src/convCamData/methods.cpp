@@ -114,9 +114,11 @@ void convCamDataClass::createPubDataRANSAC(){
     smd.cp.x=0;
     smd.cp.y=0;
     smd.cp.z=0;
-    // smd.index.resize(smd.heightInt.data*smd.widthInt.data);
-    smd.index.resize(hMax*wMax);
-    smd.pt.resize(hMax*wMax);
+    smd.index.resize(smd.heightInt.data*smd.widthInt.data);
+    smd.size.resize(smd.heightInt.data*smd.widthInt.data);
+    smd.pt.resize(smd.heightInt.data*smd.widthInt.data);
+    // smd.index.resize(hMax*wMax);
+    // smd.pt.resize(hMax*wMax);
     //マスクデータ
     mid.header = bridgeImage->header;
     //--画像データ
@@ -141,10 +143,15 @@ void convCamDataClass::createPubDataRANSAC(){
     for(int h=0;h<smd.heightInt.data;h++){
         for(int w=0;w<smd.widthInt.data;w++){
             smd.index[h*smd.heightInt.data+w].data=-1;
+            smd.size[h*smd.heightInt.data+w].data=0;
+            smd.pt[h*smd.heightInt.data+w].x = 0;
+            smd.pt[h*smd.heightInt.data+w].y = 0;
+            smd.pt[h*smd.heightInt.data+w].z = 0;
         }
     }
     //
-    int k=0;
+    int countMid=0;
+    int countSmd=0;
     //2次元ローカルマップの作成
     for(int h=0;h<hMax;h++){//画像すべてを走査
         //画素高速アクセス用パラメータ(先頭アドレス)
@@ -165,17 +172,27 @@ void convCamDataClass::createPubDataRANSAC(){
                     int xi,zi;//仮変数
                     if(convertToGrid(x_temp,z_temp,xi,zi)){//データ変換
                         //インデックスデータ
-                        // smd.index[zi*smd.widthInt.data+xi].data = k;
-                        smd.index[k].data = zi*smd.widthInt.data+xi;
+                        int index = smd.index[zi*smd.widthInt.data+xi].data;
+                        //データがすでに格納されているか
+                        if(index < 0){
+                            //データがまだ無い場合
+                            smd.index[zi*smd.widthInt.data+xi].data = countSmd;
+                            index = countSmd++;//データ数をインクリメント, indexをsmd.index配列の末尾に設定 
+                        }
+                        //データサイズのインクリメント
+                        smd.size[zi*smd.widthInt.data+xi].data++;
                         //マップデータ格納
-                        smd.pt[k].x=x_temp;//横方向
-                        smd.pt[k].y=z_temp;//奥行
-                        smd.pt[k].z=y_temp;//高さ
+                        smd.pt[index].x += x_temp;//横方向
+                        smd.pt[index].y += z_temp;//奥行
+                        smd.pt[index].z += y_temp;//高さ
                         //
                         //マスクデータ格納
-                        mid.index[h*wMax+w].data = k;
-                        //
-                        k++;//インクリメント
+                        mid.index[h*wMax+w].data = countMid;
+                        mid.pt[countMid].x=x_temp;//横方向
+                        mid.pt[countMid].y=z_temp;//奥行
+                        mid.pt[countMid].z=y_temp;//高さ
+                        //Midのデータ数をインクリメント
+                        countMid++;
                     }
                     else{
                         //マスクデータ格納
@@ -190,10 +207,20 @@ void convCamDataClass::createPubDataRANSAC(){
         }
     }
     //サイズ調整
-    smd.index.resize(k);
-    smd.pt.resize(k);
-    //マップデータをmaskImageDataにコピー
-    mid.pt = smd.pt;
+    // smd.index.resize(k);
+    smd.pt.resize(countSmd);
+    mid.pt.resize(countMid);
+    //smdデータptの平均値を算出
+    for(int k = 0; k < smd.size.size(); k++){
+        if(smd.size[k].data > 0){
+            //インデックス( マップセル->データ番号) を取得
+            int index = smd.index[k].data;
+            //データサイズで割る
+            smd.pt[index].x /= smd.size[k].data;//横方向
+            smd.pt[index].y /= smd.size[k].data;//奥行
+            smd.pt[index].z /= smd.size[k].data;//高さ
+        }
+    }
 }
 bool convCamDataClass::convertToGrid(const float& x,const float& y,int& xg,int& yg){
 	//マップ上の中心座標(ふつうは　センサ位置＝マップ中心座標　のため　cx=cy=0)

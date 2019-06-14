@@ -45,7 +45,6 @@ void classificationClass::sortSensorData()
 	}
 	// ソート(バブルソート)
 	for(int i = 0; i < ((int)smdCamera.index.size() - 1); i++){
-		std::cout<<"i:"<<i<<std::endl;
 		for(int j= ((int)smdCamera.index.size() - 1); j > i; j--){
 			if(smdCamera.index[j].data < smdCamera.index[j - 1].data){
 				//index, pt の組 を入れ替えていく
