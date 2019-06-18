@@ -9,12 +9,16 @@ int main(int argc,char **argv){
 	{
 		ROS_INFO("subscribeSensorDataCamera");
 		cc.subscribeSensorDataCamera();
-		ROS_INFO("sortSensorData");
-		cc.sortSensorData();
-		// ROS_INFO("compressSensorData");
-		// cc.compressSensorData();
-		// ROS_INFO("creatMapIndex");
-		// cc.creatMapIndex();
+		ROS_INFO("classificationDBSCAN");
+		cc.classificationDBSCAN();
+		ROS_INFO("publishClassificationData");
+		cc.publishClassificationData();
+		ROS_INFO("showCluster");
+		cc.showCluster();
+		ROS_INFO("clearMessages");
+		cc.clearMessages();
+		
+		
 	}
     // ros::spin();
 	return 0;
