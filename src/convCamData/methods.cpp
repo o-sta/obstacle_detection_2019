@@ -130,6 +130,7 @@ void convCamDataClass::createPubDataRANSAC(){
     mid.mapRes.data = mapR;
     mid.mapWidthInt.data = (int)(mapW/mapR);
     mid.mapHeightInt.data = (int)(mapH/mapR);
+    mid.pt.resize(wMax*hMax);
     //--インデックスデータ(maskImageData)
     // 画像ピクセル位置 -> マップデータへの対応付け
     // 画像ピクセル(h,w) -> マップデータ

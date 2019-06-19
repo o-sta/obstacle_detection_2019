@@ -219,7 +219,8 @@ void classificationClass::classificationDBSCAN(){//カメラ
 			// taskIndex[n] / smdCamera.widthInt * smdCamera.res : マップ上端から障害物セルまでの距離
 			float y=(smdCamera.height.data/2.0+smdCamera.cp.y) - taskIndex[n] / smdCamera.widthInt.data * smdCamera.res.data;
 			//奥行yに対する評価式らしい
-			int evalCount=(int)( -35*y*y+1200 );
+			// int evalCount=(int)( -35*y*y+1200 );
+			int evalCount=10;
 			//評価式よりカウントが小さい時: スキップ
 			if(count < evalCount){
 				continue;
@@ -243,6 +244,13 @@ void classificationClass::classificationDBSCAN(){//カメラ
 				searchedIndex[tempIndex[m]] = -1;
 			}
 		}
+		if(cd.data[clusterNum].size.data==0){
+			mapIndex[cd.data[clusterNum].index[0].data] = -1;
+			cd.size.data -=1;
+			continue;
+		}
+		//リサイズ
+		cd.data[clusterNum].index.resize(cd.data[clusterNum].size.data);
 		//追加したデータをマップから削除
 		for(int n=0; n < cd.data[clusterNum].index.size(); n++){
 			//mapIndex[データ番号[n]->マップ位置] = データ無し
@@ -255,7 +263,6 @@ void classificationClass::classificationDBSCAN(){//カメラ
 		cd.data[clusterNum].gc.y /= cd.data[clusterNum].dens.data;
 		cd.data[clusterNum].gc.z /= cd.data[clusterNum].dens.data;
 		//リサイズ
-		cd.data[clusterNum].index.resize(cd.data[clusterNum].size.data);
 		cd.data[clusterNum].pt.resize(cd.data[clusterNum].size.data);
 	}
 	// DBSCAN終了
@@ -285,6 +292,7 @@ void classificationClass::publishClassificationData(){//データ送信
 void classificationClass::clearMessages(){
     smdCamera.index.clear();
     smdCamera.pt.clear();
+    smdCamera.size.clear();
     smdLRF.index.clear();
     smdLRF.pt.clear();
 	cd.data.clear();

@@ -18,7 +18,6 @@ int main(int argc,char **argv){
 		ROS_INFO("clearMessages");
 		cc.clearMessages();
 		
-		
 	}
     // ros::spin();
 	return 0;
