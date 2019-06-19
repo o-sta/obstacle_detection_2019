@@ -11,12 +11,16 @@ classificationClass::classificationClass()
 	//publisher
     pub= nhPub.advertise<obstacle_detection_2019::ClassificationData>("classificationData", 1);
 
+	//後でlaunchファイル
+	float mapResolusion =0.05;//resolution[m]
+	int mapWidth =160;//resolution[m]
+	int mapHeight =160;//resolution[m]
 	//窓定義
 	// std::vector<int> winIndex;//基準点（コア点）から参照値
 	float heightWin = 0.1;// 0.1[m] 
 	float widthWin = 0.4;// 0.4[m] 
-	int heightWinInt = (int32_t)((float)heightWin/smdCamera.res.data)*2 + 1;// heightWin / 解像度 *2 + 1
-	int widthWinInt = (int32_t)((float)widthWin/smdCamera.res.data)*2 + 1;// widthWin / 解像度 *2 + 1
+	int heightWinInt = (int32_t)((float)heightWin/mapResolusion)*2 + 1;// heightWin / 解像度 *2 + 1
+	int widthWinInt = (int32_t)((float)widthWin/mapResolusion)*2 + 1;// widthWin / 解像度 *2 + 1
 
 	winIndex.resize(heightWinInt * widthWinInt);
 	int count = 0;//カウント用
@@ -25,20 +29,21 @@ classificationClass::classificationClass()
 			if(h==0 && w==0 ){
 				continue;
 			}
-			winIndex[count++] = h * smdCamera.widthInt.data + w;
+			winIndex[count++] = h * mapWidth + w;
 		}
 	}
 	//追加
 	//launch ファイル読み出し
-	setWindowParam();
+	// setWindowParam();
 	//窓定義2(上のコードを消すまで使用変数の語尾に2を追加)
 	// std::vector< std::vector<int> > winIndex2;//基準点（コア点）から参照座標
 	winIndex2.resize(winDivNum);//分割個数でリサイズ
 	//実測窓サイズ
 	float heightWin2 = 0.1;// 0.1[m] 
 	float widthWin2 = 0.4;// 0.4[m] 
-	int heightWinInt2 = (int32_t)((float)heightWin2/smdCamera.res.data)*2 + 1;// heightWin / 解像度 *2 + 1
-	int widthWinInt2 = (int32_t)((float)widthWin2/smdCamera.res.data)*2 + 1;// widthWin / 解像度 *2 + 1
+	
+	int heightWinInt2 = (int32_t)((float)heightWin2/mapResolusion)*2 + 1;// heightWin / 解像度 *2 + 1
+	int widthWinInt2 = (int32_t)((float)widthWin2/mapResolusion)*2 + 1;// widthWin / 解像度 *2 + 1
 
 	//各窓ごとに定義
 	for(int k=0; k<winIndex2.size(); k++){
@@ -51,8 +56,8 @@ classificationClass::classificationClass()
 		float searchRangeH = widthWin2* cos(thetaAbs) + heightWin2*sin(thetaAbs);
 		float searchRangeW = widthWin2* sin(thetaAbs) + heightWin2*cos(thetaAbs);
 		//セル数に変換
-		int searchRangeHInt = (int32_t)((float)searchRangeH/smdCamera.res.data)*2 + 1;// heightWin / 解像度 *2 + 1
-		int searchRangeWInt = (int32_t)((float)searchRangeW/smdCamera.res.data)*2 + 1;// widthWin / 解像度 *2 + 1
+		int searchRangeHInt = (int32_t)((float)searchRangeH/mapResolusion)*2 + 1;// heightWin / 解像度 *2 + 1
+		int searchRangeWInt = (int32_t)((float)searchRangeW/mapResolusion)*2 + 1;// widthWin / 解像度 *2 + 1
 		//リサイズ用カウンタ
 		int count2 = 0;
 		winIndex2[k].resize(searchRangeHInt*searchRangeWInt);
@@ -65,7 +70,7 @@ classificationClass::classificationClass()
 				//座標が窓内に存在するか
 				if(std::abs(dw) < widthWinInt2/2.0 && std::abs(dh) < heightWinInt2/2.0){
 					//探索インデックスに追加
-					winIndex2[k][count2++] = h * smdCamera.widthInt.data + w;
+					winIndex2[k][count2++] = h * mapWidth + w;
 				}
 			}
 		}

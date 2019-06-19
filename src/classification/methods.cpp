@@ -15,6 +15,7 @@ void classificationClass::cameraMap_callback(const obstacle_detection_2019::Sens
     smdCamera.heightInt = msg->heightInt;
     smdCamera.cp = msg->cp;
     smdCamera.index = msg->index;
+    smdCamera.size = msg->size;
     smdCamera.pt = msg->pt;
 }
 void classificationClass::subscribeSensorDataLRF(){//LRFデータ受信
@@ -31,96 +32,98 @@ void classificationClass::laserMap_callback(const obstacle_detection_2019::Senso
     smdLRF.heightInt = msg->heightInt;
     smdLRF.cp = msg->cp;
     smdLRF.index = msg->index;
+    smdLRF.size = msg->size;
     smdLRF.pt = msg->pt;
 }
-void classificationClass::sortSensorData()
-{	
-	// ソート内容
-	// index[j]の大きさによってソート
-	// 
-	// カメラデータ
-	// データサイズチェック
-	if(smdCamera.index.size()!=smdCamera.pt.size()){
-		ROS_ERROR("MessageSize error : (index,pt) = (%d,%d)", (int)smdCamera.index.size(), (int)smdCamera.pt.size());
-	}
-	// ソート(バブルソート)
-	for(int i = 0; i < ((int)smdCamera.index.size() - 1); i++){
-		for(int j= ((int)smdCamera.index.size() - 1); j > i; j--){
-			if(smdCamera.index[j].data < smdCamera.index[j - 1].data){
-				//index, pt の組 を入れ替えていく
-				 std::iter_swap(smdCamera.index.begin()+j, smdCamera.index.begin()+ j-1);
-				 std::iter_swap(smdCamera.pt.begin()+j, smdCamera.pt.begin()+ j-1);
-			}
-		}
-	}
-}
-//データ前処理(カメラデータ)
-void classificationClass::compressSensorData()
-{
-	// sensorData
-	// index : センサデータ番号k -> マップ位置 index[i]
-	// index[i] 
-	// -> マップ位置(w,h) : 
-	// w=index[i] % widthInt
-	// h=index[i] / heightInt 
+// void classificationClass::sortSensorData()
+// {	
+// 	// ソート内容
+// 	// index[j]の大きさによってソート
+// 	// 
+// 	// カメラデータ
+// 	// データサイズチェック
+// 	if(smdCamera.index.size()!=smdCamera.pt.size()){
+// 		ROS_ERROR("MessageSize error : (index,pt) = (%d,%d)", (int)smdCamera.index.size(), (int)smdCamera.pt.size());
+// 	}
+// 	// ソート(バブルソート)
+// 	for(int i = 0; i < ((int)smdCamera.index.size() - 1); i++){
+// 		for(int j= ((int)smdCamera.index.size() - 1); j > i; j--){
+// 			if(smdCamera.index[j].data < smdCamera.index[j - 1].data){
+// 				//index, pt の組 を入れ替えていく
+// 				 std::iter_swap(smdCamera.index.begin()+j, smdCamera.index.begin()+ j-1);
+// 				 std::iter_swap(smdCamera.pt.begin()+j, smdCamera.pt.begin()+ j-1);
+// 			}
+// 		}
+// 	}
+// 	// sort(fruits.begin(), fruits.end(), 
+// 	// 	[](const fruit& x, const fruit& y) { return x.name < y.name;});
+// }
+// //データ前処理(カメラデータ)
+// void classificationClass::compressSensorData()
+// {
+// 	// sensorData
+// 	// index : センサデータ番号k -> マップ位置 index[i]
+// 	// index[i] 
+// 	// -> マップ位置(w,h) : 
+// 	// w=index[i] % widthInt
+// 	// h=index[i] / heightInt 
 
-	// 圧縮後データ 初期化
-	// compressedSensorData compCamData;
-	compCamData.width = smdCamera.widthInt;
-	compCamData.height = smdCamera.heightInt;
-	compCamData.index.resize(smdCamera.index.size());
-	compCamData.pt.resize(smdCamera.index.size());
-	compCamData.size.resize(smdCamera.index.size());
-	int k=0;//compCamData number
+// 	// 圧縮後データ 初期化
+// 	// compressedSensorData compCamData;
+// 	compCamData.width = smdCamera.widthInt;
+// 	compCamData.height = smdCamera.heightInt;
+// 	compCamData.index.resize(smdCamera.index.size());
+// 	compCamData.pt.resize(smdCamera.index.size());
+// 	compCamData.size.resize(smdCamera.index.size());
+// 	int k=0;//compCamData number
 
-	// 圧縮処理
-	for(int i = 0; i < smdCamera.index.size(); ){
-		int index = smdCamera.index[i].data;
-		//データ（1つ目を追加）
-		compCamData.index[k].data = index;
-		compCamData.pt[k].x = smdCamera.pt[i].x;
-		compCamData.pt[k].y = smdCamera.pt[i].y;
-		compCamData.pt[k].z = smdCamera.pt[i].z;
-		compCamData.size[k].data = 1;
-		//indexが等しければさらに追加 : データサイズと点の3次元位置を加算
-		for(int j=index+1; j<smdCamera.index.size() && index == smdCamera.index[j].data;j++){
-			//データ追加
-			compCamData.pt[k].x += smdCamera.pt[i].x;
-			compCamData.pt[k].y += smdCamera.pt[i].y;
-			compCamData.pt[k].z += smdCamera.pt[i].z;
-			compCamData.size[k].data += 1;
-		}
-		//3次元位置(平均)を算出
-		compCamData.pt[k].x /= compCamData.size[k].data;
-		compCamData.pt[k].y /= compCamData.size[k].data;
-		compCamData.pt[k].z /= compCamData.size[k].data;
-		//追加したデータ分だけ移動
-		i += compCamData.size[k].data;
-	}
-	//サイズのリサイズ
-	compCamData.index.resize(k);
-	compCamData.pt.resize(k);
-	compCamData.size.resize(k);
-}
-void classificationClass::creatMapIndex(){
-	//マップセルデータ -> 圧縮データ のインデックス
-	//size=mapWidth*mapHeight
-	mapIndex.resize(smdCamera.widthInt.data*smdCamera.heightInt.data);
-	for(int k=0; k<mapIndex.size(); k++){
-		mapIndex[k] = -1;
-	}
-	// compCamData.index[k] について
-	// compCamData.index[k] == マップ上の位置
-	// k == データ番号
-	// mapIndexについて
-	// mapIndex[画像位置] == 圧縮データのデータ参照番号
-	// map位置から圧縮データ番号への参照　が目的
-	for(int k=0; k<compCamData.index.size(); k++){
-		mapIndex[ compCamData.index[k].data ] = k;
-	}
-}
+// 	// 圧縮処理
+// 	for(int i = 0; i < smdCamera.index.size(); ){
+// 		int index = smdCamera.index[i].data;
+// 		//データ（1つ目を追加）
+// 		compCamData.index[k].data = index;
+// 		compCamData.pt[k].x = smdCamera.pt[i].x;
+// 		compCamData.pt[k].y = smdCamera.pt[i].y;
+// 		compCamData.pt[k].z = smdCamera.pt[i].z;
+// 		compCamData.size[k].data = 1;
+// 		//indexが等しければさらに追加 : データサイズと点の3次元位置を加算
+// 		for(int j=index+1; j<smdCamera.index.size() && index == smdCamera.index[j].data;j++){
+// 			//データ追加
+// 			compCamData.pt[k].x += smdCamera.pt[i].x;
+// 			compCamData.pt[k].y += smdCamera.pt[i].y;
+// 			compCamData.pt[k].z += smdCamera.pt[i].z;
+// 			compCamData.size[k].data += 1;
+// 		}
+// 		//3次元位置(平均)を算出
+// 		compCamData.pt[k].x /= compCamData.size[k].data;
+// 		compCamData.pt[k].y /= compCamData.size[k].data;
+// 		compCamData.pt[k].z /= compCamData.size[k].data;
+// 		//追加したデータ分だけ移動
+// 		i += compCamData.size[k].data;
+// 	}
+// 	//サイズのリサイズ
+// 	compCamData.index.resize(k);
+// 	compCamData.pt.resize(k);
+// 	compCamData.size.resize(k);
+// }
+// void classificationClass::creatMapIndex(){
+// 	//マップセルデータ -> 圧縮データ のインデックス
+// 	//size=mapWidth*mapHeight
+// 	mapIndex.resize(smdCamera.widthInt.data*smdCamera.heightInt.data);
+// 	for(int k=0; k<mapIndex.size(); k++){
+// 		mapIndex[k] = -1;
+// 	}
+// 	// compCamData.index[k] について
+// 	// compCamData.index[k] == マップ上の位置
+// 	// k == データ番号
+// 	// mapIndexについて
+// 	// mapIndex[画像位置] == 圧縮データのデータ参照番号
+// 	// map位置から圧縮データ番号への参照　が目的
+// 	for(int k=0; k<compCamData.index.size(); k++){
+// 		mapIndex[ compCamData.index[k].data ] = k;
+// 	}
+// }
 void classificationClass::classificationDBSCAN(){//カメラ
-
 
 	// 送信データ作成
 	// clustedData cd;
@@ -135,7 +138,15 @@ void classificationClass::classificationDBSCAN(){//カメラ
 	cd.size.data = 0;
 	//障害物データ数確保
 	cd.data.resize(smdCamera.index.size());
-	
+
+	//mapIndexデータ
+	// mapIndex = -1 -> searched or not include obstacle point
+	std::vector<int> mapIndex;
+	// mapIndex.insert(mapIndex.end(), smdCamera.index.begin(), smdCamera.index.end());
+	mapIndex.resize(smdCamera.index.size());
+	for(int k=0; k < mapIndex.size(); k++){
+		mapIndex[k] = smdCamera.index[k].data;
+	}
 	// DBSCAN開始
 	for(int k = 0; k < mapIndex.size(); k++){//k : 0 -> widthInt * heightInt -1 
 		//マップセルにデータがない場合：スキップ
@@ -179,6 +190,7 @@ void classificationClass::classificationDBSCAN(){//カメラ
 				int pos = taskIndex[n] + winIndex[m];
 				int posW = taskIndex[n] % smdCamera.widthInt.data;
 				int moveW = winIndex[m] % smdCamera.widthInt.data;
+				//ここの処理, 後で確認
 				int difW = posW + moveW;
 				if(pos < 0 || pos >= (int)mapIndex.size()
 					|| difW < 0 || difW > smdCamera.widthInt.data ){
@@ -190,7 +202,7 @@ void classificationClass::classificationDBSCAN(){//カメラ
 					continue;
 				}
 				//点の数（密度）を追加
-				count += compCamData.size[ mapIndex[pos] ].data;
+				count += smdCamera.size[ mapIndex[pos] ].data;
 
 				//探査済みの場合：スキップ
 				if(searchedIndex[pos]< 0){
@@ -207,7 +219,8 @@ void classificationClass::classificationDBSCAN(){//カメラ
 			// taskIndex[n] / smdCamera.widthInt * smdCamera.res : マップ上端から障害物セルまでの距離
 			float y=(smdCamera.height.data/2.0+smdCamera.cp.y) - taskIndex[n] / smdCamera.widthInt.data * smdCamera.res.data;
 			//奥行yに対する評価式らしい
-			int evalCount=(int)( -35*y*y+1200 );
+			// int evalCount=(int)( -35*y*y+1200 );
+			int evalCount=10;
 			//評価式よりカウントが小さい時: スキップ
 			if(count < evalCount){
 				continue;
@@ -216,14 +229,12 @@ void classificationClass::classificationDBSCAN(){//カメラ
 			// データ代入
 			//mapIndex[k] <<< k=taskIndex[n] 
 			cd.data[clusterNum].size.data += 1;
-			cd.data[clusterNum].dens.data += compCamData.size[ mapIndex[taskIndex[n]] ].data;
-			cd.data[clusterNum].gc.x += compCamData.pt[ mapIndex[taskIndex[n]] ].x*compCamData.size[ mapIndex[taskIndex[n]] ].data ;
-			cd.data[clusterNum].gc.y += compCamData.pt[ mapIndex[taskIndex[n]] ].y*compCamData.size[ mapIndex[taskIndex[n]] ].data ;
-			cd.data[clusterNum].gc.z += compCamData.pt[ mapIndex[taskIndex[n]] ].z*compCamData.size[ mapIndex[taskIndex[n]] ].data ;
-			cd.data[clusterNum].index[cd.data[clusterNum].size.data - 1].data = taskIndex[n];//マップセルに対するインデックス
-			cd.data[clusterNum].pt[cd.data[clusterNum].size.data - 1] = compCamData.pt[ mapIndex[taskIndex[n]] ];
-			//追加したデータをマップから削除
-			mapIndex[taskIndex[n]] = -1;
+			cd.data[clusterNum].dens.data += smdCamera.size[ mapIndex[taskIndex[n]] ].data;
+			cd.data[clusterNum].gc.x += smdCamera.pt[ mapIndex[taskIndex[n]] ].x*smdCamera.size[ mapIndex[taskIndex[n]] ].data ;
+			cd.data[clusterNum].gc.y += smdCamera.pt[ mapIndex[taskIndex[n]] ].y*smdCamera.size[ mapIndex[taskIndex[n]] ].data ;
+			cd.data[clusterNum].gc.z += smdCamera.pt[ mapIndex[taskIndex[n]] ].z*smdCamera.size[ mapIndex[taskIndex[n]] ].data ;
+			cd.data[clusterNum].index[cd.data[clusterNum].size.data - 1].data = taskIndex[n];//マップセルに対するインデックス, 1データ番号->マップセル
+			cd.data[clusterNum].pt[cd.data[clusterNum].size.data - 1] = smdCamera.pt[ mapIndex[taskIndex[n]] ];
 			//重複探査防止
 			// tempIndex（タスク候補点をタスクに追加）
 			for(int m=0; m < tempIndex.size(); m++){
@@ -233,13 +244,25 @@ void classificationClass::classificationDBSCAN(){//カメラ
 				searchedIndex[tempIndex[m]] = -1;
 			}
 		}
+		if(cd.data[clusterNum].size.data==0){
+			mapIndex[cd.data[clusterNum].index[0].data] = -1;
+			cd.size.data -=1;
+			continue;
+		}
+		//リサイズ
+		cd.data[clusterNum].index.resize(cd.data[clusterNum].size.data);
+		//追加したデータをマップから削除
+		for(int n=0; n < cd.data[clusterNum].index.size(); n++){
+			//mapIndex[データ番号[n]->マップ位置] = データ無し
+			mapIndex[cd.data[clusterNum].index[n].data] = -1;
+		}
+			
 		//タスクデータ探査終了
 		//平均点算出
 		cd.data[clusterNum].gc.x /= cd.data[clusterNum].dens.data;
 		cd.data[clusterNum].gc.y /= cd.data[clusterNum].dens.data;
 		cd.data[clusterNum].gc.z /= cd.data[clusterNum].dens.data;
 		//リサイズ
-		cd.data[clusterNum].index.resize(cd.data[clusterNum].size.data);
 		cd.data[clusterNum].pt.resize(cd.data[clusterNum].size.data);
 	}
 	// DBSCAN終了
@@ -269,10 +292,11 @@ void classificationClass::publishClassificationData(){//データ送信
 void classificationClass::clearMessages(){
     smdCamera.index.clear();
     smdCamera.pt.clear();
+    smdCamera.size.clear();
     smdLRF.index.clear();
     smdLRF.pt.clear();
 	cd.data.clear();
-	compCamData.index.clear();
-	compCamData.pt.clear();
-	compCamData.size.clear();
+	// compCamData.index.clear();
+	// compCamData.pt.clear();
+	// compCamData.size.clear();
 }
