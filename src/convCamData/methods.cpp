@@ -21,12 +21,39 @@ void convCamDataClass::sensor_callback(const sensor_msgs::ImageConstPtr& msg)
         return ;
     }
     sensorData_subscribed_flag = true; //sta
+    //追加
+    manage();
+}
+
+void convCamDataClass::configCallback(obstacle_detection_2019::convCamDataConfig &config, uint32_t level) {
+	ROS_INFO("Reconfigure Request: %d %f %f %f %f %f %f", 
+		config.ransacNum, config.ransacDistanceThreshold,
+		config.ransacEpsAngle, config.estimateCandidateY,
+		config.estimateCameraHeight, config.estimateGroundThreshold,
+		config.estimateHeightThreshold
+		);
+    //ransacパラメータ
+    ransacNum = config.ransacNum;
+    distanceThreshold = config.ransacDistanceThreshold;
+    epsAngle = config.ransacEpsAngle;
+    //ground パラメータ
+    groundCandidateY = config.estimateCandidateY;
+    camHeight = config.estimateCameraHeight;
+    ground_th = config.estimateGroundThreshold;
+    height_th = config.estimateHeightThreshold;
+}
+//manage method
+void convCamDataClass::manage(){
+    groundEstimationRANSAC();
+    createPubDataRANSAC();
+    publishConvCamData();
+    publishMaskImage();
 }
 
 //床面推定
 void convCamDataClass::groundEstimationRANSAC(){
-    //y_th:床面候補点抽出用の閾値（高さ）
-    //cam_y:カメラの高さ
+    //groundCandidateY:床面候補点抽出用の閾値（高さ）
+    //camHeight:カメラの高さ
     //a,b,c,d: ax+by+cz+d=d 床面の式
     //床面推定用のポイントクラウド変数
     pcl::PointCloud<pcl::PointXYZ>::Ptr ground_points(new pcl::PointCloud<pcl::PointXYZ>);
@@ -50,8 +77,8 @@ void convCamDataClass::groundEstimationRANSAC(){
             z_temp = p[w*ch];//上行と同じ内容
             if(z_temp>0.5&&!std::isinf(z_temp)){
                 y_temp=((float)hMax/2-h)*z_temp/f;//高さ算出 ■この計算式どこから？
-                if(std::abs(y_temp+cam_y)<y_th){//高さがy_th未満の時
-                    x_temp=-( ((float)w-(float)wMax/2)*z_temp/f-cam_y );
+                if(std::abs(y_temp+camHeight)<groundCandidateY){//高さがgroundCandidateY未満の時
+                    x_temp=-( ((float)w-(float)wMax/2)*z_temp/f-camHeight );
                     //座標系の変換
                     p_temp.x=z_temp;
                     p_temp.y=x_temp;
@@ -87,12 +114,12 @@ void convCamDataClass::createPubDataRANSAC(){
     int ch = bridgeImage->image.channels();//チャンネル数
     //床面式の確認と再設定
 	//const float ground_th=0.20;//床面式から高さground_thまでのデータを床面とする
-    if(std::abs(d-cam_y>=0.15)){//推定値があまりにも変な場合
+    if(std::abs(d-camHeight>=0.15)){//推定値があまりにも変な場合
         //事前に決めた値を使用
 		a=-0.08;
 		b=0;
 		c=1;
-		d=cam_y-ground_th;
+		d=camHeight-ground_th;
 	}
 	else{
 		d-=ground_th;
@@ -161,7 +188,7 @@ void convCamDataClass::createPubDataRANSAC(){
             z_temp = p[w*ch];//
             if(z_temp>0.5&&!std::isinf(z_temp)){
                 y_temp=((float)hMax/2-h)*z_temp/f;//高さ算出
-                x_temp=-( ((float)w-(float)wMax/2)*z_temp/f-cam_y );
+                x_temp=-( ((float)w-(float)wMax/2)*z_temp/f-camHeight );
                 float y_ground=(-a*z_temp-b*x_temp-d)/c;//床面の高さを算出
                 //高さが床面以上height_th以下の範囲を検出
                 if(y_temp-y_ground<=0||y_temp-y_ground>height_th){

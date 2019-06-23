@@ -18,8 +18,9 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>
-
-
+// rqt_reconfige
+#include <dynamic_reconfigure/server.h>
+#include <obstacle_detection_2019/convCamDataConfig.h>
 //クラスの定義
 class convCamDataClass{
     private:
@@ -39,9 +40,13 @@ class convCamDataClass{
         //床面除去パラメータ
         float f;//焦点距離、画像パラメータ
         //--RANSAC
+        int ransacNum;
+        float distanceThreshold;
+        float epsAngle;
+        //--床面
         float a,b,c,d;
-        float y_th;
-        float cam_y;
+        float groundCandidateY;
+        float camHeight;
         float ground_th;
         float height_th;
         //マップパラメータ
@@ -55,6 +60,9 @@ class convCamDataClass{
         cv::Mat dem;//ステレオカメラセンサによるローカルマップ
         // センサデータをサブスクライブしたか否かのフラグ (trueで取得した)add_by sta
         bool sensorData_subscribed_flag;
+        //--rqt_reconfigure
+        dynamic_reconfigure::Server<obstacle_detection_2019::convCamDataConfig> server;
+        dynamic_reconfigure::Server<obstacle_detection_2019::convCamDataConfig>::CallbackType fc;
     protected:
         obstacle_detection_2019::SensorMapData smd;
         obstacle_detection_2019::MaskImageData mid;
@@ -68,7 +76,7 @@ class convCamDataClass{
         //メソッド：関数のようなもの:後でlaunchファイルからの読み込みメソッドを追加
         //in property.cpp
         //セット：内部パラメータの書き込み
-        void setParam(int& temp);//(未使用)
+        void setLaunchParam();//launchファイルから書き込み
         //ゲット：内部パラメータの読み込み
         int& getParam();//(未使用)
         //
@@ -77,6 +85,10 @@ class convCamDataClass{
         //--センサーデータ受信
         bool subscribeSensorData();//データ受信
         void sensor_callback(const sensor_msgs::ImageConstPtr& msg);
+        //--rqt_reconfigureからの読み込み
+        void configCallback(obstacle_detection_2019::convCamDataConfig &config, uint32_t level);
+        //--manage
+        void manage();
         //--床面推定、床面除去
         //----RANSAC
         void groundEstimationRANSAC();

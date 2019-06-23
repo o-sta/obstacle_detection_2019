@@ -2,13 +2,10 @@
 
 
 void classificationClass::showSearchWindows(){
-	// 後でlaunch
-    int mapWidth =160;//resolution[m]
-	int mapHeight =160;//resolution[m]
     //
-    cv::Mat view= cv::Mat::zeros(mapWidth, mapHeight,CV_8UC3);
+    cv::Mat view= cv::Mat::zeros(mapWidthInt, mapHeightInt,CV_8UC3);
     //マップ対角線の半分の半分距離
-    float halfLen = std::sqrt(mapWidth*mapWidth + mapHeight*mapHeight)/4;
+    float halfLen = std::sqrt(mapWidthInt*mapWidthInt + mapHeightInt*mapHeightInt)/4;
     cv::Point2i sp[9];
     //描画対象9つの座標を設定
     for(int k=0; k<9; k++){
@@ -16,22 +13,22 @@ void classificationClass::showSearchWindows(){
         int deg = minCamDeg + winDivDeg/2 + winDivDeg * k;
 		float theta = (float)(deg)/180.0*M_PI;
         //中心からの相対座標->画像座標
-        sp[k].x = (int)(halfLen * sin(theta)) + mapWidth/2;
-        sp[k].y = -(int)(halfLen * cos(theta)) + mapHeight/2;
+        sp[k].x = (int)(halfLen * sin(theta)) + mapWidthInt/2;
+        sp[k].y = -(int)(halfLen * cos(theta)) + mapHeightInt/2;
     }
     //9つの座標に対する, 探索窓を描画
     for(int k=0; k<9; k++){
         //角度算出 と x軸=0度 -> y軸=0度に回転
-        int angle = ((int)( atan2(mapHeight/2 - sp[k].y,sp[k].x-mapWidth/2)/M_PI *180) -90 );
+        int angle = ((int)( atan2(mapHeightInt/2 - sp[k].y,sp[k].x-mapWidthInt/2)/M_PI *180) -90 );
         //使用窓番号選択
         int num = selectWindow(angle);
         //窓内を探索
         for(int m=0; m < winIndex2[num].size(); m++){
-            int w = sp[k].x + winIndex2[num][m] % mapWidth;
-            int h = sp[k].y + winIndex2[num][m] / mapWidth;
+            int w = sp[k].x + winIndex2[num][m] % mapWidthInt;
+            int h = sp[k].y + winIndex2[num][m] / mapWidthInt;
             
-            if(w < 0 || w >= mapWidth
-                || h < 0 || h >= mapHeight ){
+            if(w < 0 || w >= mapWidthInt
+                || h < 0 || h >= mapHeightInt ){
                     //マップ範囲外検索
                     continue;
             }

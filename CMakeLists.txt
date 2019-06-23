@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   cv_bridge
   pcl_ros
+  dynamic_reconfigure
 )
 find_package(OpenCV REQUIRED)
 #find_package(pcl_ros REQUIRED)
@@ -103,11 +104,12 @@ generate_messages(
 ##     and list every .cfg file to be processed
 
 ## Generate dynamic reconfigure parameters in the 'cfg' folder
-# generate_dynamic_reconfigure_options(
-#   cfg/DynReconf1.cfg
-#   cfg/DynReconf2.cfg
-# )
-
+# configファイルを追加
+generate_dynamic_reconfigure_options(
+  cfg/classification.cfg
+  cfg/convCamData.cfg
+  # cfg/DynReconf2.cfg
+)
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -162,6 +164,7 @@ add_executable(${PROJECT_NAME}_gr # ground plane remove
   src/convCamData/methods.cpp
   src/convCamData/debug_main.cpp
   src/convCamData/debug_method.cpp
+  src/convCamData/property.cpp
 )
 add_executable(${PROJECT_NAME}_lrf # laser range finder
   src/convLRFData/constructor.cpp
@@ -215,7 +218,9 @@ add_dependencies(${PROJECT_NAME}_mv ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_pcl ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_syncro ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_manage ${PROJECT_NAME}_generate_messages_cpp)
-
+# c++ ROSノードのDynamic Reconfigureの依存の追加
+add_dependencies(${PROJECT_NAME}_cc ${PROJECT_NAME}_gencfg)
+add_dependencies(${PROJECT_NAME}_gr ${PROJECT_NAME}_gencfg)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_cc ${catkin_LIBRARIES}) # classification

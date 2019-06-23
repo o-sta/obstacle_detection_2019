@@ -6,6 +6,7 @@ void classificationClass::subscribeSensorDataCamera(){//Cameraデータ受信
 }
 void classificationClass::cameraMap_callback(const obstacle_detection_2019::SensorMapData::ConstPtr& msg)
 {
+	ROS_INFO("subscribedSensorDataCamera");
     //データをコピー
     smdCamera.header = msg->header;
     smdCamera.width = msg->width;
@@ -17,6 +18,8 @@ void classificationClass::cameraMap_callback(const obstacle_detection_2019::Sens
     smdCamera.index = msg->index;
     smdCamera.size = msg->size;
     smdCamera.pt = msg->pt;
+	//move manage method
+	manage();
 }
 void classificationClass::subscribeSensorDataLRF(){//LRFデータ受信
 	queue2.callOne(ros::WallDuration(1));
@@ -34,95 +37,89 @@ void classificationClass::laserMap_callback(const obstacle_detection_2019::Senso
     smdLRF.index = msg->index;
     smdLRF.size = msg->size;
     smdLRF.pt = msg->pt;
+	manage();
 }
-// void classificationClass::sortSensorData()
-// {	
-// 	// ソート内容
-// 	// index[j]の大きさによってソート
-// 	// 
-// 	// カメラデータ
-// 	// データサイズチェック
-// 	if(smdCamera.index.size()!=smdCamera.pt.size()){
-// 		ROS_ERROR("MessageSize error : (index,pt) = (%d,%d)", (int)smdCamera.index.size(), (int)smdCamera.pt.size());
-// 	}
-// 	// ソート(バブルソート)
-// 	for(int i = 0; i < ((int)smdCamera.index.size() - 1); i++){
-// 		for(int j= ((int)smdCamera.index.size() - 1); j > i; j--){
-// 			if(smdCamera.index[j].data < smdCamera.index[j - 1].data){
-// 				//index, pt の組 を入れ替えていく
-// 				 std::iter_swap(smdCamera.index.begin()+j, smdCamera.index.begin()+ j-1);
-// 				 std::iter_swap(smdCamera.pt.begin()+j, smdCamera.pt.begin()+ j-1);
-// 			}
-// 		}
-// 	}
-// 	// sort(fruits.begin(), fruits.end(), 
-// 	// 	[](const fruit& x, const fruit& y) { return x.name < y.name;});
-// }
-// //データ前処理(カメラデータ)
-// void classificationClass::compressSensorData()
-// {
-// 	// sensorData
-// 	// index : センサデータ番号k -> マップ位置 index[i]
-// 	// index[i] 
-// 	// -> マップ位置(w,h) : 
-// 	// w=index[i] % widthInt
-// 	// h=index[i] / heightInt 
+void classificationClass::configCallback(obstacle_detection_2019::classificationConfig &config, uint32_t level) {
+	ROS_INFO("Reconfigure Request: %d %f %f", 
+		config.windowDivisionDegree, config.windowHeight,
+		config.windowWidth
+		// config.str_param.c_str(), 
+		// config.bool_param?"True":"False", 
+		// config.size
+		);
 
-// 	// 圧縮後データ 初期化
-// 	// compressedSensorData compCamData;
-// 	compCamData.width = smdCamera.widthInt;
-// 	compCamData.height = smdCamera.heightInt;
-// 	compCamData.index.resize(smdCamera.index.size());
-// 	compCamData.pt.resize(smdCamera.index.size());
-// 	compCamData.size.resize(smdCamera.index.size());
-// 	int k=0;//compCamData number
+    //窓パラメータ-->dynamic_reconfigure
+    winDivDeg = config.windowDivisionDegree;
+    winDivNum = (int)( (maxCamDeg - minCamDeg) / winDivDeg ) + 1;//後でチェック
+    heightWin = config.windowHeight;
+    widthWin = config.windowWidth;
+	//窓定義
+	// std::vector<int> winIndex;//基準点（コア点）から参照値
+	int heightWinInt = (int32_t)((float)heightWin/mapRes)*2 + 1;// heightWin / 解像度 *2 + 1
+	int widthWinInt = (int32_t)((float)widthWin/mapRes)*2 + 1;// widthWin / 解像度 *2 + 1
 
-// 	// 圧縮処理
-// 	for(int i = 0; i < smdCamera.index.size(); ){
-// 		int index = smdCamera.index[i].data;
-// 		//データ（1つ目を追加）
-// 		compCamData.index[k].data = index;
-// 		compCamData.pt[k].x = smdCamera.pt[i].x;
-// 		compCamData.pt[k].y = smdCamera.pt[i].y;
-// 		compCamData.pt[k].z = smdCamera.pt[i].z;
-// 		compCamData.size[k].data = 1;
-// 		//indexが等しければさらに追加 : データサイズと点の3次元位置を加算
-// 		for(int j=index+1; j<smdCamera.index.size() && index == smdCamera.index[j].data;j++){
-// 			//データ追加
-// 			compCamData.pt[k].x += smdCamera.pt[i].x;
-// 			compCamData.pt[k].y += smdCamera.pt[i].y;
-// 			compCamData.pt[k].z += smdCamera.pt[i].z;
-// 			compCamData.size[k].data += 1;
-// 		}
-// 		//3次元位置(平均)を算出
-// 		compCamData.pt[k].x /= compCamData.size[k].data;
-// 		compCamData.pt[k].y /= compCamData.size[k].data;
-// 		compCamData.pt[k].z /= compCamData.size[k].data;
-// 		//追加したデータ分だけ移動
-// 		i += compCamData.size[k].data;
-// 	}
-// 	//サイズのリサイズ
-// 	compCamData.index.resize(k);
-// 	compCamData.pt.resize(k);
-// 	compCamData.size.resize(k);
-// }
-// void classificationClass::creatMapIndex(){
-// 	//マップセルデータ -> 圧縮データ のインデックス
-// 	//size=mapWidth*mapHeight
-// 	mapIndex.resize(smdCamera.widthInt.data*smdCamera.heightInt.data);
-// 	for(int k=0; k<mapIndex.size(); k++){
-// 		mapIndex[k] = -1;
-// 	}
-// 	// compCamData.index[k] について
-// 	// compCamData.index[k] == マップ上の位置
-// 	// k == データ番号
-// 	// mapIndexについて
-// 	// mapIndex[画像位置] == 圧縮データのデータ参照番号
-// 	// map位置から圧縮データ番号への参照　が目的
-// 	for(int k=0; k<compCamData.index.size(); k++){
-// 		mapIndex[ compCamData.index[k].data ] = k;
-// 	}
-// }
+	winIndex.resize(heightWinInt * widthWinInt);
+	int count = 0;//カウント用
+	for(int h = -heightWinInt/2; h <= heightWinInt/2; h++ ){
+		for(int w = -widthWinInt/2; w <= widthWinInt/2; w++){
+			if(h==0 && w==0 ){
+				continue;
+			}
+			winIndex[count++] = h * mapWidthInt + w;
+		}
+	}
+	//追加
+	//launch ファイル読み出し
+	// setWindowParam();
+	//窓定義2(上のコードを消すまで使用変数の語尾に2を追加)
+	// std::vector< std::vector<int> > winIndex2;//基準点（コア点）から参照座標
+	winIndex2.resize(winDivNum);//分割個数でリサイズ
+	//各窓ごとに定義
+	for(int k=0; k<winIndex2.size(); k++){
+		int deg = minCamDeg + winDivDeg/2 + winDivDeg * k;
+		//探索範囲の算出
+		//窓の傾き角度(センサ正面を0度, 反時計回りを正)
+		float theta = (float)(deg)/180.0*M_PI;
+		float thetaAbs = std::abs(theta);
+		//探索サイズ
+		float searchRangeH = widthWin* cos(thetaAbs) + heightWin*sin(thetaAbs);
+		float searchRangeW = widthWin* sin(thetaAbs) + heightWin*cos(thetaAbs);
+		//セル数に変換
+		int searchRangeHInt = (int32_t)((float)searchRangeH/mapRes)*2 + 1;// heightWin / 解像度 *2 + 1
+		int searchRangeWInt = (int32_t)((float)searchRangeW/mapRes)*2 + 1;// widthWin / 解像度 *2 + 1
+		//リサイズ用カウンタ
+		int count2 = 0;
+		winIndex2[k].resize(searchRangeHInt*searchRangeWInt);
+		for(int h = -searchRangeHInt/2; h <= searchRangeHInt/2; h++ ){
+			for(int w = -searchRangeWInt/2; w <= searchRangeWInt/2; w++){
+				//h,wは, すでに探索セル(探索窓中心座標)からの座標差を示している
+				//回転行列
+				float dw = w*cos(theta) + h*sin(theta);
+				float dh = -w*sin(theta) + h*cos(theta);
+				//座標が窓内に存在するか
+				if(std::abs(dw) < widthWinInt/2.0 && std::abs(dh) < heightWinInt/2.0){
+					//探索インデックスに追加
+					winIndex2[k][count2++] = h * mapWidthInt + w;
+				}
+			}
+		}
+		winIndex2[k].resize(count2);
+	}
+}
+void classificationClass::manage(){
+	//
+	ROS_INFO("classificationDBSCAN");
+	classificationDBSCAN();
+	if(!isClassificationData()){
+		ROS_INFO("No Classification data");
+	}
+	ROS_INFO("publishClassificationData");
+	publishClassificationData();
+	ROS_INFO("showCluster");
+	showCluster();
+	ROS_INFO("clearMessages");
+	clearMessages();
+}
 void classificationClass::classificationDBSCAN(){//カメラ
 
 	// 送信データ作成
