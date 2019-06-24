@@ -10,7 +10,6 @@ int main(int argc,char **argv){
 	int lr_value = 60; //loop rate value
 	ros::param::param("loop_rate", lr_value, lr_value);
     d_convCamDataClass ccd;
-	//ROS_INFO_STREAM("convCamDataClass instance generated.\n");
 	ros::Rate loop_rate(lr_value);
 	ros::Time ransac_time = ros::Time::now();
 	while (ros::ok()) {
