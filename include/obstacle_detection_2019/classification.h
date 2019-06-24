@@ -28,7 +28,7 @@ class classificationClass{
         ros::Publisher pub;
         obstacle_detection_2019::ClassificationData cd;
         //クラスタリング処理
-        std::vector<int> mapIndex;//
+        // std::vector<int> mapIndex;//
     	std::vector<int> winIndex;//基準点（コア点）から参照値
         obstacle_detection_2019::CompressedSensorData compCamData;
         //--追加
@@ -62,9 +62,9 @@ class classificationClass{
         void subscribeSensorDataLRF();//データ受信
         void laserMap_callback(const obstacle_detection_2019::SensorMapData::ConstPtr& msg);
         //--クラスタリング
-        void sortSensorData();//カメラデータソート
-        void compressSensorData();//データ圧縮
-        void creatMapIndex();
+        // void sortSensorData();//カメラデータソート
+        // void compressSensorData();//データ圧縮
+        // void creatMapIndex();
         void classificationDBSCAN();//DBSCAN
         //追加  
         int selectWindow(int& angle);//窓選択
