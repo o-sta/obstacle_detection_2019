@@ -6,9 +6,9 @@ classificationClass::classificationClass()
 	,widthWin(0.4),heightWin(0.1),minPts(10)
 {
 	//subscriber
-	nhSub1.setCallbackQueue(&queue1);
+	// nhSub1.setCallbackQueue(&queue1);
 	subCam=nhSub1.subscribe("/cameraMapData",1,&classificationClass::cameraMap_callback,this);
-	nhSub2.setCallbackQueue(&queue2);
+	// nhSub2.setCallbackQueue(&queue2);
 	subLRF=nhSub2.subscribe("/lrf",1,&classificationClass::laserMap_callback,this);
 	//publisher
     pub= nhPub.advertise<obstacle_detection_2019::ClassificationData>("classificationData", 1);

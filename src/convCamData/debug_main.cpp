@@ -6,7 +6,7 @@
 
 //このプログラムは受け取ったデータを外部に送信します。
 int main(int argc,char **argv){
-	ros::init(argc,argv,"obstacle_detection_2019_rg");
+	ros::init(argc,argv,"obstacle_detection_2019_gr");
 
     convCamDataClass ccd;
 	ros::spin();

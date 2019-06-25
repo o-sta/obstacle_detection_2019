@@ -4,7 +4,7 @@
  <arg name="camera/minDeg" default="-45"/>
  <arg name="camera/maxDeg" default="45"/>
  <!-- <arg name="camera/focus" default="350.505"/> -->
- <arg name="camera/focus" default="711.010"/>
+ <arg name="camera/focus" default="701.010"/>
  <!--map-->
  <arg name="localMap/width/float" default="8.0"/>
  <arg name="localMap/height/float" default="8.0"/>
@@ -16,7 +16,7 @@
  <arg name="window/minPts" default="10"/>
  <!--node-->
  <!--ground removement-->
- <node pkg="obstacle_detection_2019" name="obstacle_detection_2019_gr" type="obstacle_detection_2019_gr">
+ <node pkg="obstacle_detection_2019" name="obstacle_detection_2019_gr" type="obstacle_detection_2019_gr" >
    <!--camera parameter-->
    <!-- <param name="camera/minDeg" value="$(arg camera/minDeg)"/>
    <param name="camera/maxDeg" value="$(arg camera/maxDeg)"/> -->

@@ -116,8 +116,8 @@ void classificationClass::manage(){
 	}
 	ROS_INFO("publishClassificationData");
 	publishClassificationData();
-	// ROS_INFO("showCluster");
-	// showCluster();
+	ROS_INFO("showCluster");
+	showCluster();
 	ROS_INFO("clearMessages");
 	clearMessages();
 }

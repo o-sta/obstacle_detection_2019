@@ -4,14 +4,15 @@ convCamDataClass::convCamDataClass()
 	:cloud(new pcl::PointCloud<pcl::PointXYZ>),
 	inliers (new pcl::PointIndices),
 	coefficients(new pcl::ModelCoefficients),
-	f(711.010),mapW(8.0),mapH(8.0),mapR(0.05),
+	// f(701.010),mapW(8.0),mapH(8.0),mapR(0.05),
+	f(350.505),mapW(8.0),mapH(8.0),mapR(0.05),
 	ransacNum(500),distanceThreshold(0.1),epsAngle(15.0),
 	groundCandidateY(0.3),camHeight(0.4125),ground_th(0.2),height_th(1.0)
 {
 
 	//subscriber
-	nhSub.setCallbackQueue(&queue);
-	sub=nhSub.subscribe("/zed/depth/depth_registered",1,&convCamDataClass::sensor_callback,this);
+	sub=nhSub.subscribe("/converted_depthImage",1,&convCamDataClass::sensor_callback,this);
+	// sub=nhSub.subscribe("/zed/depth/depth_registered",1,&convCamDataClass::sensor_callback,this);
 	//publisher
     pubConv= nhPub1.advertise<obstacle_detection_2019::SensorMapData>("cameraMapData", 1);
 	//マスク画像
