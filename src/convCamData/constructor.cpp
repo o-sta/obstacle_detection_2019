@@ -4,7 +4,7 @@ convCamDataClass::convCamDataClass()
 	:cloud(new pcl::PointCloud<pcl::PointXYZ>),
 	inliers (new pcl::PointIndices),
 	coefficients(new pcl::ModelCoefficients),
-	f(350.505),mapW(8.0),mapH(8.0),mapR(0.05),
+	f(711.010),mapW(8.0),mapH(8.0),mapR(0.05),
 	ransacNum(500),distanceThreshold(0.1),epsAngle(15.0),
 	groundCandidateY(0.3),camHeight(0.4125),ground_th(0.2),height_th(1.0)
 {

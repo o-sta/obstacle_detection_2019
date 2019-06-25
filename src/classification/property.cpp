@@ -18,6 +18,7 @@ void classificationClass::setLaunchParam(){
     
     n.getParam("window/height",heightWin);
     n.getParam("window/width",widthWin);
+    n.getParam("window/minPts",minPts);
 	//窓定義
 	// std::vector<int> winIndex;//基準点（コア点）から参照値
 	int heightWinInt = (int32_t)((float)heightWin/mapRes)*2 + 1;// heightWin / 解像度 *2 + 1

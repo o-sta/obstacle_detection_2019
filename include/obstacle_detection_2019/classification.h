@@ -37,6 +37,7 @@ class classificationClass{
         int minCamDeg, maxCamDeg;
         //--窓パラメータ
         float heightWin,widthWin;//窓の大きさ 
+        int minPts;
         int winDivDeg;
         int winDivNum;//(int)( ステレオカメラの視野角の半分(45度) / winDivDeg ) * 2 + 1
         std::vector< std::vector<int> > winIndex2;

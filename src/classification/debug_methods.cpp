@@ -97,7 +97,7 @@ void classificationClass::showCluster(){
         //各データごとの処理
         for(int k = 0; k < cd.data[i].pt.size(); k++){  
             cloudTemp.x=cd.data[i].pt[k].y;//y軸              
-            cloudTemp.y=-cd.data[i].pt[k].x;//逆向きのx軸
+            cloudTemp.y=cd.data[i].pt[k].x;//逆向きのx軸
             //表示幅分点を追加
             for(int n=0; n<= (int)((zUpper - zUnder)/zDelta); n++){
                 cloudTemp.z=cd.data[i].pt[k].z + zUnder + n*zDelta;//z軸 + 表示範囲            

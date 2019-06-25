@@ -3,7 +3,7 @@
 classificationClass::classificationClass()
 	:minCamDeg(-45),maxCamDeg(45),winDivDeg(10),winDivNum(9)
 	,mapWidth(8.0),mapHeight(8.0),mapRes(0.05),mapWidthInt(160),mapHeightInt(160)
-	,widthWin(0.4),heightWin(0.1)
+	,widthWin(0.4),heightWin(0.1),minPts(10)
 {
 	//subscriber
 	nhSub1.setCallbackQueue(&queue1);

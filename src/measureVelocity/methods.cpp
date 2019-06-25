@@ -33,8 +33,20 @@ void measurementVelocity::matching_callback(const obstacle_detection_2019::Image
     matchData.index = msg->index;
     matchData.data = msg->data;
 }
+bool measurementVelocity::isCurClstr(){//curClstrのデータの有無
+	if(curClstr.header.seq > 0 ){
+		return true;
+	}
+	return false;
+}
 bool measurementVelocity::isPrvClstr(){//prvClstrのデータの有無
 	if(prvClstr.header.seq > 0 ){
+		return true;
+	}
+	return false;
+}
+bool measurementVelocity::isMatchData(){//matchDataのデータの有無
+	if(matchData.header.seq > 0 ){
 		return true;
 	}
 	return false;
@@ -68,6 +80,8 @@ void measurementVelocity::matchingClstr(){//（途中）
 	//画像マッチングスコア
 	//行：curClstrのクラスタ数, 列：prvClstrのクラスタ数, 値0で初期化
 	std::vector<std::vector<int>> imageMathingScore(curClstr.size.data, std::vector<int>(prvClstr.size.data, 0));
+
+	ROS_INFO("matchData sousa");
 	//matchData（画像マッチングデータ）を走査
 	for(int k = 0; k < matchData.index.size(); k++){//widthInt.data * heightInt.data
 		int prvPos = matchData.index[k].data;
@@ -75,6 +89,7 @@ void measurementVelocity::matchingClstr(){//（途中）
 			+ matchData.data[prvPos].y.data * matchData.widthInt.data;
 		imageMathingScore[ curClstrMap[curPos] ][ prvClstrMap[prvPos] ] ++;//カウントアップ
 	}
+	ROS_INFO("position");
 	//位置マッチングスコア
 	//重心位置の差
 	std::vector<std::vector<float>> posMathingScore(curClstr.size.data, std::vector<float>(prvClstr.size.data, 0));
@@ -87,6 +102,7 @@ void measurementVelocity::matchingClstr(){//（途中）
 			posMathingScore[k][i] = dis;
 		}
 	}
+	ROS_INFO("size");
 	//サイズマッチングスコア
 	//サイズ（クラスタ内の点数）の差
 	std::vector<std::vector<int>> sizeMathingScore(curClstr.size.data, std::vector<int>(prvClstr.size.data, 0));
@@ -97,6 +113,8 @@ void measurementVelocity::matchingClstr(){//（途中）
 			sizeMathingScore[k][i] = std::abs(curSize - prvSize);
 		}
 	}
+	ROS_INFO("matching");
+	ROS_INFO_STREAM(curClstr.size.data <<","<<prvClstr.size.data);
 	//マッチング評価
 	// std::vector<int> matchResult(curClstr.size.data, -1);
 	matchResult.assign(curClstr.size.data , -1);
@@ -117,14 +135,14 @@ void measurementVelocity::matchingClstr(){//（途中）
 			}
 			//重心位置の差が1m以上
 			//--移動距離
-			if(posMathingScore[i][k] >= 1.0){
+			if(posMathingScore[k][i] >= 1.0){
 				continue;
 			}
 			double ev;//評価値
 			//評価式 : 要検討
 			ev = imageMathingScore[k][i] //画像マッチングスコア
-				+ (1 / (1 + posMathingScore[i][k]) ) //重心位置マッチングスコア
-				+ (1 / (2 * (1 + sizeMathingScore[i][k])) );//サイズマッチングスコア
+				+ (1 / (1 + posMathingScore[k][i]) ) //重心位置マッチングスコア
+				+ (1 / (2 * (1 + sizeMathingScore[k][i])) );//サイズマッチングスコア
 			//評価値が最大評価値よりも大きいとき
 			if(evMax < ev){
 				//ベストマッチング値を更新
@@ -149,10 +167,22 @@ void measurementVelocity::measurementProcess(){//
     cvd.cp = curClstr.cp;
     cvd.size = curClstr.size;
     cvd.data = curClstr.data;
+    cvd.twist.resize(curClstr.size.data);
 	//経過時間の計算（速度算出用）
 	double dt;
 	ros::Duration rosDt = curClstr.header.stamp - prvClstr.header.stamp;
 	dt = rosDt.toSec();
+	//ROS_INFO(" curClstr.size.data, matchResult: %d, %d", curClstr.size.data, (int)matchResult.size());
+	//ROS_INFO("cvd.twist: %d", (int)cvd.twist.size());
+	std::vector<int> trackNumTemp;
+	if(trackNum.size()){
+		trackNumTemp.resize(trackNum.size());
+		for(int k=0; k<trackNum.size();k++){
+			trackNumTemp[k] = trackNum[k];
+		}
+	}
+	trackNum = std::vector<int>(curClstr.size.data, 0);
+
 	for(int k=0; k < curClstr.size.data; k++){
 		if( matchResult[k] < 0){
 			cvd.twist[k].linear.x = 0;
@@ -175,6 +205,15 @@ void measurementVelocity::measurementProcess(){//
 			cvd.twist[k].angular.x = 0;
 			cvd.twist[k].angular.y = 0;
 			cvd.twist[k].angular.z = 0;
+			//追跡回数インクリメント
+			if(trackNumTemp.size()){
+				trackNum[k] = trackNumTemp[matchResult[k]] + 1;
+			}
+			else{
+				trackNum[k]++;
+			}
+			ROS_INFO("trackNum[k]: %d", trackNum[k]);
+
 		}
 	}
 }

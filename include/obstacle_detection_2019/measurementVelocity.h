@@ -33,6 +33,7 @@ class measurementVelocity{
         //デバッグ用
 		ros::NodeHandle nhDeb;
         ros::Publisher pubDeb;
+        std::vector<int> trackNum;
     public:
         //in constracter.cpp
         //コンストラクタ：クラス定義に呼び出されるメソッド
@@ -45,7 +46,6 @@ class measurementVelocity{
         //セット：内部パラメータの書き込み
         void setParam(int& temp);//(未使用)
         //ゲット：内部パラメータの読み込み
-        int& getParam();//(未使用)
         //
         //in methods.cpp
         //その他メソッド
@@ -56,6 +56,8 @@ class measurementVelocity{
         void matching_callback(const obstacle_detection_2019::ImageMatchingData::ConstPtr& msg);
         //--マッチング
         bool isPrvClstr();//連続データがあるか確認
+        bool isCurClstr();//curClstrのデータの有無
+        bool isMatchData();//matchDataのデータの有無
         void creatClstrMap();//クラスタマップ作製
         void matchingClstr();//マッチング処理（途中）
         void measurementProcess();//計測処理

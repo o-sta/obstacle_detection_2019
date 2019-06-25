@@ -181,6 +181,7 @@ add_executable(${PROJECT_NAME}_im # image matching
  src/measureVelocity/constructor.cpp
  src/measureVelocity/methods.cpp
  src/measureVelocity/debug_main.cpp
+ src/measureVelocity/debug_methods.cpp
 )
 add_executable(${PROJECT_NAME}_pcl # point cloud
   src/convPCLData/constructor.cpp
