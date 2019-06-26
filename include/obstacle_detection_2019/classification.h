@@ -87,6 +87,7 @@ class classificationClass{
         void clearMessages();
         //追加  
         void showSearchWindows();
+        void showSearchWindows(int angle);
         void showCluster();
 };
 #endif

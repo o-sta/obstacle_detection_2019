@@ -6,9 +6,10 @@ void classificationClass::showSearchWindows(){
     cv::Mat view= cv::Mat::zeros(mapWidthInt, mapHeightInt,CV_8UC3);
     //マップ対角線の半分の半分距離
     float halfLen = std::sqrt(mapWidthInt*mapWidthInt + mapHeightInt*mapHeightInt)/4;
-    cv::Point2i sp[9];
+    std::vector<cv::Point2i> sp;
+    sp.resize(winIndex2.size());
     //描画対象9つの座標を設定
-    for(int k=0; k<9; k++){
+    for(int k=0; k< winIndex2.size(); k++){
         //y軸を0度
         int deg = minCamDeg + winDivDeg/2 + winDivDeg * k;
 		float theta = (float)(deg)/180.0*M_PI;
@@ -17,19 +18,29 @@ void classificationClass::showSearchWindows(){
         sp[k].y = -(int)(halfLen * cos(theta)) + mapHeightInt/2;
     }
     //9つの座標に対する, 探索窓を描画
-    for(int k=0; k<9; k++){
+    for(int k=0; k< winIndex2.size(); k++){
+        // if(k != (int)(winIndex2.size()/2)){
+        //     continue;
+        // }
         //角度算出 と x軸=0度 -> y軸=0度に回転
         int angle = ((int)( atan2(mapHeightInt/2 - sp[k].y,sp[k].x-mapWidthInt/2)/M_PI *180) -90 );
         //使用窓番号選択
         int num = selectWindow(angle);
         //窓内を探索
         for(int m=0; m < winIndex2[num].size(); m++){
-            int w = sp[k].x + winIndex2[num][m] % mapWidthInt;
-            int h = sp[k].y + winIndex2[num][m] / mapWidthInt;
-            
+            // ROS_INFO("m:%d",m);
+            int kk = sp[k].x + sp[k].y * mapWidthInt;
+            kk += winIndex2[num][m];
+            int w = kk % mapWidthInt;
+            int h = kk / mapWidthInt;
+            // int w = sp[k].x + winIndex2[num][m] % mapWidthInt;
+            // int h = sp[k].y + winIndex2[num][m] / mapWidthInt;
+            // ROS_INFO("w,h:%d,%d",w,h);
+            // ROS_INFO("w,h:%d,%d",winIndex2[num][m] % mapWidthInt,winIndex2[num][m] / mapWidthInt);
             if(w < 0 || w >= mapWidthInt
                 || h < 0 || h >= mapHeightInt ){
                     //マップ範囲外検索
+                    ROS_INFO("Error");
                     continue;
             }
             //Matに描画
@@ -41,6 +52,63 @@ void classificationClass::showSearchWindows(){
             view.at<cv::Vec3b>(h, w)[2] = r;
         }
     }
+    // ROS_INFO("sss");
+    //表示データのPublish
+    //cvBridgeデータ作成
+	cv_bridge::CvImagePtr viewCvData(new cv_bridge::CvImage);
+	viewCvData->encoding=sensor_msgs::image_encodings::BGR8;
+    //データコピー
+	viewCvData->image=view.clone();
+    //Publish
+	pubDeb.publish(viewCvData->toImageMsg());
+}
+
+void classificationClass::showSearchWindows(int angle){
+
+    //使用窓番号選択
+    int num = selectWindow(angle);
+    if( (int)winIndex2.size() <= num){
+        return ;
+    }
+    //
+    cv::Mat view= cv::Mat::zeros(mapWidthInt, mapHeightInt,CV_8UC3);
+    //マップ対角線の半分の半分距離
+    float halfLen = std::sqrt(mapWidthInt*mapWidthInt + mapHeightInt*mapHeightInt)/4;
+    cv::Point2i sp;
+    //描画対象9つの座標を設定
+    //y軸を0度
+    int deg = minCamDeg + winDivDeg/2 + winDivDeg * num;
+    float theta = (float)(deg)/180.0*M_PI;
+    //中心からの相対座標->画像座標
+    sp.x = (int)(halfLen * sin(theta)) + mapWidthInt/2;
+    sp.y = -(int)(halfLen * cos(theta)) + mapHeightInt/2;
+    //9つの座標に対する, 探索窓を描画
+    //窓内を探索
+    for(int m=0; m < winIndex2[num].size(); m++){
+        // ROS_INFO("m:%d",m);
+        int kk = sp.x + sp.y * mapWidthInt;
+        kk += winIndex2[num][m];
+        int w = kk % mapWidthInt;
+        int h = kk / mapWidthInt;
+        // int w = sp.x + winIndex2[num][m] % mapWidthInt;
+        // int h = sp.y + winIndex2[num][m] / mapWidthInt;
+        // ROS_INFO("w,h:%d,%d",w,h);
+        // ROS_INFO("w,h:%d,%d",winIndex2[num][m] % mapWidthInt,winIndex2[num][m] / mapWidthInt);
+        if(w < 0 || w >= mapWidthInt
+            || h < 0 || h >= mapHeightInt ){
+                //マップ範囲外検索
+                ROS_INFO("Error");
+                continue;
+        }
+        //Matに描画
+        uint8_t b = 255;
+        uint8_t g = 200;
+        uint8_t r = 200;
+        view.at<cv::Vec3b>(h, w)[0] = b;
+        view.at<cv::Vec3b>(h, w)[1] = g;
+        view.at<cv::Vec3b>(h, w)[2] = r;
+    }
+    // ROS_INFO("sss");
     //表示データのPublish
     //cvBridgeデータ作成
 	cv_bridge::CvImagePtr viewCvData(new cv_bridge::CvImage);
