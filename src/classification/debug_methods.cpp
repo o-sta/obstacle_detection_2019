@@ -19,24 +19,16 @@ void classificationClass::showSearchWindows(){
     }
     //9つの座標に対する, 探索窓を描画
     for(int k=0; k< winIndex2.size(); k++){
-        // if(k != (int)(winIndex2.size()/2)){
-        //     continue;
-        // }
         //角度算出 と x軸=0度 -> y軸=0度に回転
         int angle = ((int)( atan2(mapHeightInt/2 - sp[k].y,sp[k].x-mapWidthInt/2)/M_PI *180) -90 );
         //使用窓番号選択
         int num = selectWindow(angle);
         //窓内を探索
         for(int m=0; m < winIndex2[num].size(); m++){
-            // ROS_INFO("m:%d",m);
             int kk = sp[k].x + sp[k].y * mapWidthInt;
             kk += winIndex2[num][m];
             int w = kk % mapWidthInt;
             int h = kk / mapWidthInt;
-            // int w = sp[k].x + winIndex2[num][m] % mapWidthInt;
-            // int h = sp[k].y + winIndex2[num][m] / mapWidthInt;
-            // ROS_INFO("w,h:%d,%d",w,h);
-            // ROS_INFO("w,h:%d,%d",winIndex2[num][m] % mapWidthInt,winIndex2[num][m] / mapWidthInt);
             if(w < 0 || w >= mapWidthInt
                 || h < 0 || h >= mapHeightInt ){
                     //マップ範囲外検索
@@ -52,7 +44,6 @@ void classificationClass::showSearchWindows(){
             view.at<cv::Vec3b>(h, w)[2] = r;
         }
     }
-    // ROS_INFO("sss");
     //表示データのPublish
     //cvBridgeデータ作成
 	cv_bridge::CvImagePtr viewCvData(new cv_bridge::CvImage);
@@ -63,8 +54,13 @@ void classificationClass::showSearchWindows(){
 	pubDeb.publish(viewCvData->toImageMsg());
 }
 
-void classificationClass::showSearchWindows(int angle){
+void classificationClass::showSearchWindows(float x, float y){
 
+    int angle = -((int)( atan2(y,x)/M_PI *180) -90 );
+    if(angle<minCamDeg || angle > maxCamDeg){
+        ROS_INFO("angle Error: %d",angle);
+        return ;
+    }
     //使用窓番号選択
     int num = selectWindow(angle);
     if( (int)winIndex2.size() <= num){
@@ -80,8 +76,8 @@ void classificationClass::showSearchWindows(int angle){
     int deg = minCamDeg + winDivDeg/2 + winDivDeg * num;
     float theta = (float)(deg)/180.0*M_PI;
     //中心からの相対座標->画像座標
-    sp.x = (int)(halfLen * sin(theta)) + mapWidthInt/2;
-    sp.y = -(int)(halfLen * cos(theta)) + mapHeightInt/2;
+    sp.x = (int)((x + mapWidth/2) / mapRes);
+    sp.y = (int)((mapHeight/2 - y) / mapRes);
     //9つの座標に対する, 探索窓を描画
     //窓内を探索
     for(int m=0; m < winIndex2[num].size(); m++){
@@ -90,10 +86,6 @@ void classificationClass::showSearchWindows(int angle){
         kk += winIndex2[num][m];
         int w = kk % mapWidthInt;
         int h = kk / mapWidthInt;
-        // int w = sp.x + winIndex2[num][m] % mapWidthInt;
-        // int h = sp.y + winIndex2[num][m] / mapWidthInt;
-        // ROS_INFO("w,h:%d,%d",w,h);
-        // ROS_INFO("w,h:%d,%d",winIndex2[num][m] % mapWidthInt,winIndex2[num][m] / mapWidthInt);
         if(w < 0 || w >= mapWidthInt
             || h < 0 || h >= mapHeightInt ){
                 //マップ範囲外検索

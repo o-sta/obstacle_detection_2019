@@ -6,7 +6,6 @@ void classificationClass::subscribeSensorDataCamera(){//Cameraデータ受信
 }
 void classificationClass::cameraMap_callback(const obstacle_detection_2019::SensorMapData::ConstPtr& msg)
 {
-	ROS_INFO("subscribedSensorDataCamera");
     //データをコピー
     smdCamera.header = msg->header;
     smdCamera.width = msg->width;
@@ -75,8 +74,7 @@ void classificationClass::configCallback(obstacle_detection_2019::classification
 	//窓定義2(上のコードを消すまで使用変数の語尾に2を追加)
 	// std::vector< std::vector<int> > winIndex2;//基準点（コア点）から参照座標
 	winIndex2.resize(winDivNum);//分割個数でリサイズ
-	ROS_INFO("originF--H,W:%f,%f",heightWin,widthWin);
-	ROS_INFO("originI--H,W:%d,%d",heightWinInt,widthWinInt);
+	// ROS_INFO("originI--H,W:%d,%d",heightWinInt,widthWinInt);
 	//各窓ごとに定義
 	for(int k=0; k<winIndex2.size(); k++){
 		int deg = minCamDeg + winDivDeg/2 + winDivDeg * k;
@@ -86,8 +84,6 @@ void classificationClass::configCallback(obstacle_detection_2019::classification
 		// float theta = (float)(-deg)/180.0*M_PI;
 		float thetaAbs = std::abs(theta);
 		//探索サイズ
-		// float searchRangeH = widthWin* cos(thetaAbs) + heightWin*sin(thetaAbs);
-		// float searchRangeW = widthWin* sin(thetaAbs) + heightWin*cos(thetaAbs);
 		float searchRangeW = widthWin* cos(thetaAbs) + heightWin*sin(thetaAbs);
 		float searchRangeH = widthWin* sin(thetaAbs) + heightWin*cos(thetaAbs);
 		//セル数に変換
@@ -96,44 +92,31 @@ void classificationClass::configCallback(obstacle_detection_2019::classification
 		//リサイズ用カウンタ
 		int count2 = 0;
 		winIndex2[k].resize(searchRangeHInt*searchRangeWInt);
-
-        // if(k == (int)(winIndex2.size()/2)){
-		ROS_INFO("deg,H,W:%d,%d,%d",deg,searchRangeHInt,searchRangeWInt);
-        // }
 		for(int h = -searchRangeHInt/2; h <= searchRangeHInt/2; h++ ){
 			for(int w = -searchRangeWInt/2; w <= searchRangeWInt/2; w++){
 				//h,wは, すでに探索セル(探索窓中心座標)からの座標差を示している
 				//回転行列
 				float dw = w*cos(theta) + h*sin(theta);
 				float dh = -w*sin(theta) + h*cos(theta);
-				// ROS_INFO("H,W:%d,%d",(int)dh,(int)dw);
-				// ROS_INFO("ifH,ifW:%d,%d",std::abs((int)dh) <= heightWinInt/2.0,std::abs((int)dw) <= widthWinInt/2.0);
 				//座標が窓内に存在するか
 				if(std::abs((int)dw) <= widthWinInt/2.0 && std::abs((int)dh) <= heightWinInt/2.0){
 					//探索インデックスに追加
-					// ROS_INFO("add H,W:%d,%d",(int)dh,(int)dw);
 					winIndex2[k][count2++] = h * mapWidthInt + w;
-					// winIndex2[k][count2++] = (int)dh * mapWidthInt + (int)dw;
 				}
 			}
 		}
 		winIndex2[k].resize(count2);
 	}
-	showSearchWindows();
-	showSearchWindows((int)config.debugAngle+minCamDeg);
+	showSearchWindows(config.debugX, config.debugY);
 }
 void classificationClass::manage(){
 	//
-	ROS_INFO("classificationDBSCAN");
 	classificationDBSCAN();
 	if(!isClassificationData()){
 		ROS_INFO("No Classification data");
 	}
-	ROS_INFO("publishClassificationData");
 	publishClassificationData();
-	ROS_INFO("showCluster");
 	showCluster();
-	ROS_INFO("clearMessages");
 	clearMessages();
 }
 void classificationClass::classificationDBSCAN(){//カメラ
