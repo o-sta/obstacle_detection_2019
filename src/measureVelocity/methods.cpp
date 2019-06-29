@@ -168,10 +168,13 @@ void measurementVelocity::measurementProcess(){//
     cvd.size = curClstr.size;
     cvd.data = curClstr.data;
     cvd.twist.resize(curClstr.size.data);
+    cvd.match.resize(curClstr.size.data);
+    cvd.trackingNum.resize(curClstr.size.data);
 	//経過時間の計算（速度算出用）
 	double dt;
 	ros::Duration rosDt = curClstr.header.stamp - prvClstr.header.stamp;
 	dt = rosDt.toSec();
+	cvd.dt = dt;
 	//ROS_INFO(" curClstr.size.data, matchResult: %d, %d", curClstr.size.data, (int)matchResult.size());
 	//ROS_INFO("cvd.twist: %d", (int)cvd.twist.size());
 	std::vector<int> trackNumTemp;
@@ -184,6 +187,7 @@ void measurementVelocity::measurementProcess(){//
 	trackNum = std::vector<int>(curClstr.size.data, 0);
 
 	for(int k=0; k < curClstr.size.data; k++){
+		cvd.match[k] = matchResult[k];
 		if( matchResult[k] < 0){
 			cvd.twist[k].linear.x = 0;
 			cvd.twist[k].linear.y = 0;
@@ -212,6 +216,7 @@ void measurementVelocity::measurementProcess(){//
 			else{
 				trackNum[k]++;
 			}
+			cvd.trackingNum[k] = trackNum[k];
 			ROS_INFO("trackNum[k]: %d", trackNum[k]);
 
 		}
