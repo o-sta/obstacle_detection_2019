@@ -1,0 +1,73 @@
+//多重インクルード防止
+#ifndef INCLUDE_VELOCITY_ESTIMATION_CLASS
+#define INCLUDE_VELOCITY_ESTIMATION_CLASS
+//include haeders
+#include <ros/ros.h>
+#include <ros/callback_queue.h>
+//self msg
+#include <obstacle_detection_2019/ClassificationVelocityData.h>
+//追加（デバッグ用）
+#include <cv_bridge/cv_bridge.h>
+#include <sensor_msgs/image_encodings.h>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <pcl_ros/point_cloud.h>
+// rqt_reconfige
+#include <dynamic_reconfigure/server.h>
+#include <obstacle_detection_2019/estimationConfig.h>
+//クラスの定義
+class estimationClass{
+    private:
+        //受信データ
+		ros::NodeHandle nhSub1;
+		ros::Subscriber sub;
+    	obstacle_detection_2019::ClassificationVelocityData preClstr, curClstr;//速度データ付きのクラスタデータ
+        //送信データ
+		ros::NodeHandle nhPub;
+        ros::Publisher pub;
+        obstacle_detection_2019::ClassificationVelocityData filtedClstr;//速度データ付きのクラスタデータ
+
+        
+		//---calmanfilter
+		std::vector<Eigen::MatrixXd,Eigen::aligned_allocator<Eigen::MatrixXd> > xh_t;
+		std::vector<Eigen::MatrixXd,Eigen::aligned_allocator<Eigen::MatrixXd> > sig_xh_t;
+		std::vector<Eigen::MatrixXd,Eigen::aligned_allocator<Eigen::MatrixXd> > xh_t_1;
+		std::vector<Eigen::MatrixXd,Eigen::aligned_allocator<Eigen::MatrixXd> > sig_xh_t_1;
+		Eigen::MatrixXd sig_ut;
+		Eigen::MatrixXd del_t;
+		Eigen::MatrixXd sig_x0;
+		Eigen::MatrixXd sig_wk;
+		Eigen::MatrixXd I;
+        //--rqt_reconfigure
+        dynamic_reconfigure::Server<obstacle_detection_2019::estimationConfig> server;
+        dynamic_reconfigure::Server<obstacle_detection_2019::estimationConfig>::CallbackType f;
+    public:
+        //in constracter.cpp
+        //コンストラクタ：クラス定義に呼び出されるメソッド
+        estimationClass();
+        //デストラクタ：クラスが消滅するときに呼びだされるメソッド
+        ~estimationClass();
+        //
+        //メソッド:後でlaunchファイルからの読み込みメソッドを追加
+        //in property.cpp
+        //セット：内部パラメータの書き込み
+        void setLaunchParam();//launchファイルからの探索窓パラメータ書き込み
+        //ゲット：内部パラメータの読み込み
+        bool isPreCluster();
+        //
+        //in methods.cpp
+        //その他メソッド
+        //--メソッド管理
+        void manage();
+        //--センサーデータ受信
+        void cluster_callback(const obstacle_detection_2019::ClassificationVelocityData::ConstPtr& msg);
+        //--rqt_reconfigureからの読み込み
+        void configCallback(obstacle_detection_2019::estimationConfig &config, uint32_t level);
+        //処理
+		void kalmanFilter(void);
+        // データ送信
+        void publishData();//データ送信
+        // データ更新
+        void renewMessages();
+};
+#endif

@@ -108,6 +108,7 @@ generate_messages(
 generate_dynamic_reconfigure_options(
   cfg/classification.cfg
   cfg/convCamData.cfg
+  cfg/estimation.cfg
   # cfg/DynReconf2.cfg
 )
 ###################################
@@ -200,6 +201,12 @@ add_executable(${PROJECT_NAME}_manage # manage
   src/management/debug_methods.cpp
   src/management/property.cpp
 )
+add_executable(${PROJECT_NAME}_estimate # manage
+  src/estimationVelocity/constructor.cpp
+  src/estimationVelocity/methods.cpp
+  src/estimationVelocity/debug_main.cpp
+  src/estimationVelocity/property.cpp
+)
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -219,9 +226,11 @@ add_dependencies(${PROJECT_NAME}_mv ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_pcl ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_syncro ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_manage ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(${PROJECT_NAME}_estimate ${PROJECT_NAME}_generate_messages_cpp)
 # c++ ROSノードのDynamic Reconfigureの依存の追加
 add_dependencies(${PROJECT_NAME}_cc ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_gr ${PROJECT_NAME}_gencfg)
+add_dependencies(${PROJECT_NAME}_estimate ${PROJECT_NAME}_gencfg)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_cc ${catkin_LIBRARIES}) # classification
@@ -232,6 +241,7 @@ target_link_libraries(${PROJECT_NAME}_mv ${catkin_LIBRARIES} ) # measurement vel
 target_link_libraries(${PROJECT_NAME}_pcl ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # point cloud
 target_link_libraries(${PROJECT_NAME}_syncro ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # synchro image
 target_link_libraries(${PROJECT_NAME}_manage ${catkin_LIBRARIES} ) # manege 
+target_link_libraries(${PROJECT_NAME}_estimate ${catkin_LIBRARIES} ) # estimate 
 
 
 
