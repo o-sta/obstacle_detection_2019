@@ -9,7 +9,7 @@ measurementVelocity::measurementVelocity()
 	nhSub2.setCallbackQueue(&queue2);
 	subMatch=nhSub2.subscribe("/imageMatchingData",1,&measurementVelocity::matching_callback,this);
 	//publisher
-    pub= nhPub.advertise<obstacle_detection_2019::ClassificationVelocityData>("publishdata", 1);
+    pub= nhPub.advertise<obstacle_detection_2019::ClassificationVelocityData>("measurementVelocityCluster", 1);
 
 	//初回処理防止用
 	prvClstr.header.seq = 0;
