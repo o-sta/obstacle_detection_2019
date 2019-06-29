@@ -6,7 +6,6 @@
 #include <ros/callback_queue.h>
 //self msg
 #include <obstacle_detection_2019/SensorMapData.h>
-#include <obstacle_detection_2019/CompressedSensorData.h>
 #include <obstacle_detection_2019/ClassificationVelocityData.h>
 #include <obstacle_detection_2019/ClassificationData.h>
 #include <obstacle_detection_2019/ImageMatchingData.h>
