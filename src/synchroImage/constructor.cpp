@@ -1,7 +1,7 @@
 #include<obstacle_detection_2019/synchroImage.h>
 
 syncroImageClass::syncroImageClass()
-	:rgb_sub(nhSub, "/zed/left/image_rect_color", 1),depth_sub(nhSub, "/zed/depth/depth_registered", 1)//,sync(message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sensor_msgs::Image>(10), rgb_sub, depth_sub)
+	:rgb_sub(nhSub, "/zed_node/left/image_rect_color", 1),depth_sub(nhSub, "/zed_node/depth/depth_registered", 1)//,sync(message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sensor_msgs::Image>(10), rgb_sub, depth_sub)
     ,sync(MySyncPolicy(10),rgb_sub, depth_sub)
 {
     //subscriber

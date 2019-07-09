@@ -8,7 +8,7 @@ void imageMatchingClass::showMatchingMap(){
     int height = matchData.heightInt.data;//画像縦幅    
     //
     //出力表示用Matデータ、0で初期化、RGB　8bit
-    cv::Mat viewData = cv::Mat::zeros(cv::Size(width,height),CV_8U);
+    cv::Mat viewData = cv::Mat::zeros(cv::Size(width,height),CV_8UC3);
 
     //matchDataの走査と矢印描画
     // w = k % width (k -> w)
@@ -31,6 +31,37 @@ void imageMatchingClass::showMatchingMap(){
         //始点終点
         cv::Point2i p1 = cv::Point2i(w,h);//始点
         cv::Point2i p2 = cv::Point2i(w + matchX, h + matchY);//終点
+        cvArrow(&viewData, p1, p2);
+    }
+    //表示データのPublish
+    //cvBridgeデータ作成
+	cv_bridge::CvImagePtr viewCvData(new cv_bridge::CvImage);
+	viewCvData->encoding=sensor_msgs::image_encodings::BGR8;
+    //データコピー
+	viewCvData->image=viewData.clone();
+    //Publish
+	pubDeb.publish(viewCvData->toImageMsg());
+}
+void imageMatchingClass::showMatchingImage(){
+    // matchDataを使用(ImageMatchingData.msg)
+    int width = matchData.widthInt.data;//画像横幅
+    int height = matchData.heightInt.data;//画像縦幅    
+    //
+    //出力表示用Matデータ、0で初期化、RGB　8bit
+    cv::Mat viewData = bridgeImageCur->image.clone();
+
+    //matchDataの走査と矢印描画
+    // w = k % width (k -> w)
+    // h = k / width (k -> h)
+    // k = h * width + w (w,h -> k)
+    for(int k = 0; k < featurePointsCur.size(); k++){        
+        //始点終点
+        int cw = (int)featurePointsCur[k].x;
+        int ch = (int)featurePointsCur[k].y;
+        int pw = (int)featurePointsPre[k].x;
+        int ph = (int)featurePointsPre[k].y;
+        cv::Point2i p1 = cv::Point2i(pw,ph);//始点
+        cv::Point2i p2 = cv::Point2i(cw, ch);//終点
         cvArrow(&viewData, p1, p2);
     }
     //表示データのPublish

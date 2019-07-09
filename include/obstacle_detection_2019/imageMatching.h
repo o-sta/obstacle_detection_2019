@@ -26,6 +26,7 @@ class imageMatchingClass{
 		ros::CallbackQueue queue1,queue2;
         cv_bridge::CvImagePtr bridgeImagePre,bridgeImageCur;
         obstacle_detection_2019::MaskImageData midPre,midCur;
+        bool imgCurOnce,imgPreOnce;
         //送信データ
 		ros::NodeHandle nhPub;
         ros::Publisher pubMatch;
@@ -77,8 +78,10 @@ class imageMatchingClass{
         //--グレースケール化
         void cvtGray();
         //--データ確認
+        bool isBridgeImageCur();//
         bool isBridgeImagePre();//
         bool isMaskImagePre();//
+        bool isFpointPre();
         //データ更新
         void resetData();
         //特徴点抽出
@@ -93,6 +96,7 @@ class imageMatchingClass{
         void publishMatchingData();//データ送信
         //デバッグ用メソッド
         void showMatchingMap();
+        void showMatchingImage();
         void cvArrow(cv::Mat* img, cv::Point2i pt1, cv::Point2i pt2, cv::Scalar color = cv::Scalar(0,200,200), int thickness=4, int lineType=8, int shift=0);
 
 };

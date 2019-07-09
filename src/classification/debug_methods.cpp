@@ -56,7 +56,7 @@ void classificationClass::showSearchWindows(){
 
 void classificationClass::showSearchWindows(float x, float y){
 
-    int angle = -((int)( atan2(y,x)/M_PI *180) -90 );
+    int angle = -((int)( atan2(y,x)/M_PI *180)  );
     if(angle<minCamDeg || angle > maxCamDeg){
         ROS_INFO("angle Error: %d",angle);
         return ;

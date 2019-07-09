@@ -1,11 +1,12 @@
 #include<obstacle_detection_2019/imageMatching.h>
 
 imageMatchingClass::imageMatchingClass()
+	:imgCurOnce(false),imgPreOnce(false)
 {
 
 	//subscriber
 	nhSub1.setCallbackQueue(&queue1);
-	subImg=nhSub1.subscribe("/zed/left/image_rect_color",1,&imageMatchingClass::image_callback,this);
+	subImg=nhSub1.subscribe("/converted_rgbImage",1,&imageMatchingClass::image_callback,this);
 	nhSub2.setCallbackQueue(&queue2);
 	subMskImg=nhSub2.subscribe("maskImageData",1,&imageMatchingClass::maskImage_callback,this);
 	//publisher
@@ -31,6 +32,7 @@ imageMatchingClass::imageMatchingClass()
 	maxPoint=10;
 	//window size
 	ws=13;
+	
 }
 imageMatchingClass::~imageMatchingClass(){
 	

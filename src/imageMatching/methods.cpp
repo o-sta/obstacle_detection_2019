@@ -11,6 +11,8 @@ void imageMatchingClass::image_callback(const sensor_msgs::ImageConstPtr& msg)
 {
     try{
         bridgeImageCur=cv_bridge::toCvCopy(msg,sensor_msgs::image_encodings::BGR8);
+        ROS_INFO("callBack");
+        imgCurOnce=true;
     }
     catch(cv_bridge::Exception& e) {//エラー処理
         std::cout<<"depth_image_callback Error \n";
@@ -38,8 +40,16 @@ void imageMatchingClass::maskImage_callback(const obstacle_detection_2019::MaskI
 void imageMatchingClass::cvtGray(){
     cv::cvtColor(bridgeImageCur->image,grayImgCur,CV_BGR2GRAY);
 }
+bool imageMatchingClass::isBridgeImageCur(){
+    if(!imgCurOnce){//
+        return false;
+    }
+    else{
+        return true;
+    }
+}
 bool imageMatchingClass::isBridgeImagePre(){
-    if(bridgeImagePre->image.empty()){//要注意
+    if(!imgPreOnce){//
         return false;
     }
     else{
@@ -54,12 +64,29 @@ bool imageMatchingClass::isMaskImagePre(){
         return true;
     }
 }
+bool imageMatchingClass::isFpointPre(){
+    if((int)featurePointsTemp.size() > 0){//データの有無を確認
+        return true;
+    }
+    else{
+        return false;
+    }
+}    
 void imageMatchingClass::resetData(){
     // *bridgeImagePre = *bridgeImageCur;
     //念のためしっかりコピー
-    bridgeImagePre->header = bridgeImageCur->header;
-    bridgeImagePre->encoding = bridgeImageCur->encoding;
-    bridgeImagePre->image = bridgeImageCur->image.clone();
+    ROS_INFO("!imgCurOnce:%d", !imgCurOnce);
+    if(!imgCurOnce){
+        return ;
+    }
+    bridgeImagePre = bridgeImageCur;
+    // bridgeImagePre->header = bridgeImageCur->header;
+    // bridgeImagePre->encoding = bridgeImageCur->encoding;
+    // bridgeImagePre->image = bridgeImageCur->image.clone();
+    imgPreOnce=true;
+    if(midCur.header.seq <= 0){
+        return ;
+    }
     // maskImageData
     midPre = midCur;
     //グレースケール画像
@@ -69,7 +96,7 @@ void imageMatchingClass::resetData(){
         featurePointsPre = featurePointsCur;
     }
     else{
-        featurePointsPre = featurePointsCur;
+        featurePointsPre = featurePointsTemp;
     }
     featurePointsTemp.clear();
     featurePointsCur.clear();
@@ -100,6 +127,7 @@ void imageMatchingClass::getFeaturePoints(){
                 [](const cv::KeyPoint& x, const cv::KeyPoint& y) {return  x.response > y.response;});
             //keypointの中から特徴点を抽出
             //各エリアごとの特徴点取得数をカウント
+            // ROS_INFO("keypoints.size():%d",(int)keypoints.size());
             int count=0;
             for(std::vector<cv::KeyPoint>::iterator itk = keypoints.begin();
                 itk != keypoints.end() && count <= maxPoint; ++itk){
@@ -108,6 +136,7 @@ void imageMatchingClass::getFeaturePoints(){
                     pt.y=h*clipPixH+(int)itk->pt.y;
                     if(midCur.index[pt.y*midCur.width.data + pt.x].data >= 0){
                         featurePointsTemp[fpSize++] = pt;
+                        count++;
                     }
             }
         }
@@ -116,17 +145,24 @@ void imageMatchingClass::getFeaturePoints(){
     featurePointsTemp.resize(fpSize);
 }
 void imageMatchingClass::featureMatching(){
-    cv::calcOpticalFlowPyrLK(grayImgPre,grayImgCur, featurePointsPre, featurePointsCur, sts, ers,
+    ROS_INFO("featurePointsPre.size, featurePointsTemp.size=%d,%d", (int)featurePointsPre.size(), (int)featurePointsTemp.size());
+    cv::calcOpticalFlowPyrLK(grayImgPre,grayImgCur, featurePointsPre, featurePointsTemp, sts, ers,
         cv::Size(ws,ws),3,
         cvTermCriteria (CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 30, 0.05), 1);
 }
 void imageMatchingClass::checkMatchingError(){
     //エラーチェックして再格納
     int count=0;//格納数カウント
-    for(int k=0;k<featurePointsCur.size();k++){
-        if(midCur.index[(int)featurePointsCur[k].y*midCur.width.data + (int)featurePointsCur[k].x].data>=0 && sts[k]==1){
+    featurePointsCur.resize(featurePointsTemp.size());
+    // ROS_INFO("midCur.index.size() :%d",(int)midCur.index.size());
+    // ROS_INFO("midCur.width.data*midCur.height.datamidCur.height.data :%d",midCur.height.data*midCur.width.data);
+    // ROS_INFO("featurePointsPre.size() :%d",(int)featurePointsPre.size());
+    // ROS_INFO("featurePointsCur.size() :%d",(int)featurePointsCur.size());
+    for(int k=0;k<featurePointsTemp.size();k++){
+        // ROS_INFO("(int)featurePointsTemp[k].y*midCur.width.data + (int)featurePointsTemp[k].x:%d",(int)featurePointsTemp[k].y*midCur.width.data + (int)featurePointsTemp[k].x);
+        if(sts[k]==1 && midCur.index[(int)featurePointsTemp[k].y*midCur.width.data + (int)featurePointsTemp[k].x].data>=0 ){
             featurePointsPre[count] = featurePointsPre[k];
-            featurePointsCur[count] = featurePointsCur[k];
+            featurePointsCur[count] = featurePointsTemp[k];
             count++;
         }
     }
