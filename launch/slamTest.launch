@@ -1,8 +1,5 @@
 <launch>
-<!--  <node pkg="tf" type="static_transform_publisher" name="OdomToBase_footprint" args="0 0 0 0 0 0 1 odom base_link 100" />-->
-<!--  <node pkg="tf" type="static_transform_publisher" name="FootprintToLink" args="0 0 0.5 0 0 0 1 base_footprint base_link 100" /> -->
-  <node pkg="tf" type="static_transform_publisher" name="LinkToScan" args="0 0 0.5 0 0 0 1 base_link base_scan 100" />
-  <node pkg="tf" type="static_transform_publisher" name="LinkToCamera" args="0 0 0.5 0 0 0 1 base_link zed_camera_center 100" />
+  <node pkg="tf" type="static_transform_publisher" name="LinkToScan" args="0 0 0.3 0 0 0 1 base_link base_scan 100" />
   <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
     <remap from="scan" to="scan"/>
     <param name="base_frame" value="base_link"/>
@@ -12,7 +9,7 @@
 
   <node pkg="urg_node" type="urg_node" name="urg_node">
     <param name="ip_address" value="172.16.0.10"/>
-    <param name="frame_id" value="zed_camera_center" />
+    <param name="frame_id" value="base_scan" />
     <remap from="scan" to="scan" />
   </node>
 
