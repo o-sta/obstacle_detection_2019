@@ -83,6 +83,7 @@ void imageMatchingClass::resetData(){
     // bridgeImagePre->header = bridgeImageCur->header;
     // bridgeImagePre->encoding = bridgeImageCur->encoding;
     // bridgeImagePre->image = bridgeImageCur->image.clone();
+    imgCurOnce=false;
     imgPreOnce=true;
     if(midCur.header.seq <= 0){
         return ;
@@ -98,8 +99,10 @@ void imageMatchingClass::resetData(){
     else{
         featurePointsPre = featurePointsTemp;
     }
+    ROS_INFO("reset featurePointsPre.size, featurePointsTemp.size=%d,%d", (int)featurePointsPre.size(), (int)featurePointsTemp.size());
     featurePointsTemp.clear();
     featurePointsCur.clear();
+    // ROS_INFO("reset featurePointsPre.size, featurePointsTemp.size=%d,%d", (int)featurePointsPre.size(), (int)featurePointsTemp.size());
 }
 // ■初期化
 // void imageMatchingClass::getFeaturePointNum(){
@@ -146,7 +149,10 @@ void imageMatchingClass::getFeaturePoints(){
 }
 void imageMatchingClass::featureMatching(){
     ROS_INFO("featurePointsPre.size, featurePointsTemp.size=%d,%d", (int)featurePointsPre.size(), (int)featurePointsTemp.size());
-    cv::calcOpticalFlowPyrLK(grayImgPre,grayImgCur, featurePointsPre, featurePointsTemp, sts, ers,
+    // cv::calcOpticalFlowPyrLK(grayImgPre,grayImgCur, featurePointsPre, featurePointsTemp, sts, ers,
+    //     cv::Size(ws,ws),3,
+    //     cvTermCriteria (CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 30, 0.05), 1);
+    cv::calcOpticalFlowPyrLK(grayImgCur,grayImgPre, featurePointsTemp, featurePointsPre, sts, ers,
         cv::Size(ws,ws),3,
         cvTermCriteria (CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 30, 0.05), 1);
 }
@@ -158,14 +164,22 @@ void imageMatchingClass::checkMatchingError(){
     // ROS_INFO("midCur.width.data*midCur.height.datamidCur.height.data :%d",midCur.height.data*midCur.width.data);
     // ROS_INFO("featurePointsPre.size() :%d",(int)featurePointsPre.size());
     // ROS_INFO("featurePointsCur.size() :%d",(int)featurePointsCur.size());
+    int countSts=0;
     for(int k=0;k<featurePointsTemp.size();k++){
         // ROS_INFO("(int)featurePointsTemp[k].y*midCur.width.data + (int)featurePointsTemp[k].x:%d",(int)featurePointsTemp[k].y*midCur.width.data + (int)featurePointsTemp[k].x);
-        if(sts[k]==1 && midCur.index[(int)featurePointsTemp[k].y*midCur.width.data + (int)featurePointsTemp[k].x].data>=0 ){
-            featurePointsPre[count] = featurePointsPre[k];
-            featurePointsCur[count] = featurePointsTemp[k];
-            count++;
+        if(sts[k]){
+            countSts++;
+            // ROS_INFO("sts is ok: [%d]",k);
+            if(midCur.index[(int)featurePointsTemp[k].y*midCur.width.data + (int)featurePointsTemp[k].x].data>=0 ){
+                // ROS_INFO("in map: [%d]",k);
+                featurePointsPre[count] = featurePointsPre[k];
+                featurePointsCur[count] = featurePointsTemp[k];
+                count++;
+            }
         }
     }
+    ROS_INFO("sts: [%d]",countSts);
+    ROS_INFO("in map: [%d]",count);
     //リサイズ
     featurePointsPre.resize(count);
     featurePointsCur.resize(count);
@@ -196,13 +210,20 @@ void imageMatchingClass::creatMatchingData(){
         //時刻tのデータ
         int cW = (int)featurePointsCur[k].x;
         int cH = (int)featurePointsCur[k].y;
+        // ROS_INFO("cH*midCur.width.data + cW:,%d", cH*midCur.width.data + cW);
         int cIndex = midCur.index[cH*midCur.width.data + cW].data;
         geometry_msgs::Point cPt =  midCur.pt[cIndex];
         //時刻t-Delta_tのデータ
+        // ROS_INFO("featurePointsPre[%d](x,y):,%f,%f", k,featurePointsPre[k].x, featurePointsPre[k].y);
         int pW = (int)featurePointsPre[k].x;
         int pH = (int)featurePointsPre[k].y;
+        // ROS_INFO("pH,pW:,%d,%d", pH, pW);
         int pIndex = midPre.index[pH*midPre.width.data + pW].data;
         geometry_msgs::Point pPt =  midPre.pt[pIndex];
+        if(pPt.x < 0 || pPt.y < 0){
+            ROS_INFO("Continue");
+            continue;
+        }
         //マップ位置
         int xi,yi,zi;//■ ziを追加した
         if(convertToGrid(cPt.x,cPt.y,xi,zi)){//データ変換　■ここに問題が？
@@ -212,6 +233,7 @@ void imageMatchingClass::creatMatchingData(){
             //インデックスデータ
             matchData.index[zi*matchData.widthInt.data+xi].data = dataSize; //■わからないので、smdからmatchDataに変更した
             //マップ上の移動量
+            ROS_INFO("cPt.x,cPt.y,pPt.x,pPt.y:%f,%f,%f,%f",cPt.x,cPt.y,pPt.x,pPt.y);
             matchData.data[dataSize].x.data = (int)(difX/midCur.mapRes.data);
             matchData.data[dataSize].y.data = -(int)(difY/midCur.mapRes.data);
             //実測の移動角度

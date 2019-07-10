@@ -28,6 +28,7 @@ void imageMatchingClass::showMatchingMap(){
         //マッチング先までの偏差
         int matchX = matchData.data[dataNum].x.data;
         int matchY = matchData.data[dataNum].y.data;
+        // ROS_INFO("h,w,mx,my:%d,%d,%d,%d",h,w,matchX,matchY);
         //始点終点
         cv::Point2i p1 = cv::Point2i(w,h);//始点
         cv::Point2i p2 = cv::Point2i(w + matchX, h + matchY);//終点

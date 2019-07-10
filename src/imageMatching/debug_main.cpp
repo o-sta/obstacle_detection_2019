@@ -12,8 +12,8 @@ int main(int argc,char **argv){
 		imc.subscribeImageData();
 		ROS_INFO("subscribeMaskImageData");
 		imc.subscribeMaskImageData();
-		ROS_INFO("if(imc.isBridgeImagePre() && imc.isMaskImagePre())=%d,%d",
-			imc.isBridgeImagePre(), imc.isMaskImagePre());
+		// ROS_INFO("if(imc.isBridgeImagePre() && imc.isMaskImagePre())=%d,%d",
+		// 	imc.isBridgeImagePre(), imc.isMaskImagePre());
 		if(imc.isBridgeImageCur()){
 			ROS_INFO("cvtGray");
 			imc.cvtGray();
@@ -35,8 +35,8 @@ int main(int argc,char **argv){
 			ROS_INFO("publishMatchingData");
 			//publish
 			imc.publishMatchingData();
-			// imc.showMatchingMap();
-			imc.showMatchingImage();
+			imc.showMatchingMap();
+			// imc.showMatchingImage();
 		}
 		ROS_INFO("resetData");
 		//データ更新
