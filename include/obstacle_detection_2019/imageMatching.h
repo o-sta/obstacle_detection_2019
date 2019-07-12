@@ -51,6 +51,7 @@ class imageMatchingClass{
 		std::vector<uchar> sts;
 		std::vector<float> ers;
 		int ws;//window size
+        std::vector<int> tranckNumCur, tranckNumPre;
         //デバッグ用
 		ros::NodeHandle nhDeb;
         ros::Publisher pubDeb;
@@ -86,6 +87,8 @@ class imageMatchingClass{
         void resetData();
         //特徴点抽出
         void getFeaturePoints();//特徴点抽出
+        bool dicideAddPoints();//特徴点追加判断
+        void addPreFeaturePoints();//特徴点追加
         void featureMatching();//特徴点マッチング
         void checkMatchingError();//エラーチェック
         void creatMatchingData();//

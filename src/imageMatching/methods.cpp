@@ -103,6 +103,10 @@ void imageMatchingClass::resetData(){
     featurePointsTemp.clear();
     featurePointsCur.clear();
     // ROS_INFO("reset featurePointsPre.size, featurePointsTemp.size=%d,%d", (int)featurePointsPre.size(), (int)featurePointsTemp.size());
+    //追跡回数
+    tranckNumPre = tranckNumCur;
+    tranckNumCur.clear();
+
 }
 // ■初期化
 // void imageMatchingClass::getFeaturePointNum(){
@@ -146,15 +150,71 @@ void imageMatchingClass::getFeaturePoints(){
     }
     //特徴点リサイズ
     featurePointsTemp.resize(fpSize);
+    //追跡数リサイズ, 0で初期化
+    tranckNumCur.resize(fpSize,0);
+}
+bool imageMatchingClass::dicideAddPoints(){
+    if(featurePointsTemp.size() > featurePointsPre.size()){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+void imageMatchingClass::addPreFeaturePoints(){
+    //キーポイント
+    std::vector<cv::KeyPoint> keypoints;
+    //特徴点抽出器
+    auto detector = cv::FastFeatureDetector::create(maxDetectPoint,false);
+    //画像を分割して均等に特徴点を抽出
+    int clipPixH=(int)grayImgCur.rows / nh;
+    int clipPixW=(int)grayImgCur.cols / nw;
+    //特徴点リサイズ
+    std::vector<cv::Point2f> featureTemp;
+    featureTemp.resize(maxPoint*nh*nw);
+    int fpSize=0;//特徴点サイズカウンタ
+    for(int h=0;h<nh;h++){
+        for(int w=0;w<nw;w++){
+            //画像分割
+            clipImg=grayImgCur(cv::Rect(w*clipPixW,h*clipPixH,clipPixW,clipPixH));
+            //キーポイントを抽出
+            detector->detect(clipImg, keypoints);
+            //レスポンスが強い順（降順）にソート
+            sort(keypoints.begin(),keypoints.end(),
+                [](const cv::KeyPoint& x, const cv::KeyPoint& y) {return  x.response > y.response;});
+            //keypointの中から特徴点を抽出
+            //各エリアごとの特徴点取得数をカウント
+            // ROS_INFO("keypoints.size():%d",(int)keypoints.size());
+            int count=0;
+            for(std::vector<cv::KeyPoint>::iterator itk = keypoints.begin();
+                itk != keypoints.end() && count <= maxPoint; ++itk){
+                    cv::Point2i pt;
+                    pt.x=w*clipPixW+(int)itk->pt.x;
+                    pt.y=h*clipPixH+(int)itk->pt.y;
+                    if(midCur.index[pt.y*midCur.width.data + pt.x].data >= 0){
+                        featureTemp[fpSize++] = pt;
+                        count++;
+                    }
+            }
+        }
+    }
+    //特徴点リサイズ
+    featureTemp.resize(fpSize);
+    //insert
+    // featurePointsPre.insert(featurePointsPre.end(),featureTemp.size());
+    featurePointsPre.reserve(featurePointsPre.size() + featureTemp.size());
+    std::copy(featureTemp.begin(), featureTemp.end(), std::back_inserter(featurePointsPre));
+    //追跡回数を初期化0で挿入
+    tranckNumPre.resize(featurePointsPre.size(),0);
 }
 void imageMatchingClass::featureMatching(){
     ROS_INFO("featurePointsPre.size, featurePointsTemp.size=%d,%d", (int)featurePointsPre.size(), (int)featurePointsTemp.size());
-    // cv::calcOpticalFlowPyrLK(grayImgPre,grayImgCur, featurePointsPre, featurePointsTemp, sts, ers,
-    //     cv::Size(ws,ws),3,
-    //     cvTermCriteria (CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 30, 0.05), 1);
-    cv::calcOpticalFlowPyrLK(grayImgCur,grayImgPre, featurePointsTemp, featurePointsPre, sts, ers,
+    cv::calcOpticalFlowPyrLK(grayImgPre,grayImgCur, featurePointsPre, featurePointsTemp, sts, ers,
         cv::Size(ws,ws),3,
         cvTermCriteria (CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 30, 0.05), 1);
+    // cv::calcOpticalFlowPyrLK(grayImgCur,grayImgPre, featurePointsTemp, featurePointsPre, sts, ers,
+    //     cv::Size(ws,ws),3,
+    //     cvTermCriteria (CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 30, 0.05), 1);
 }
 void imageMatchingClass::checkMatchingError(){
     //エラーチェックして再格納
@@ -174,6 +234,7 @@ void imageMatchingClass::checkMatchingError(){
                 // ROS_INFO("in map: [%d]",k);
                 featurePointsPre[count] = featurePointsPre[k];
                 featurePointsCur[count] = featurePointsTemp[k];
+                tranckNumCur[count] = tranckNumPre[k] + 1;
                 count++;
             }
         }
