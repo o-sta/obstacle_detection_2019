@@ -196,6 +196,11 @@ add_executable(${PROJECT_NAME}_manage # manage
   src/management/debug_methods.cpp
   src/management/property.cpp
 )
+add_executable(${PROJECT_NAME}_person # detectPersonHOG
+  src/detectPersonHOG/main.cpp
+  src/detectPersonHOG/methods.cpp
+)
+
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -215,6 +220,7 @@ add_dependencies(${PROJECT_NAME}_mv ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_pcl ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_syncro ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_manage ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(${PROJECT_NAME}_person ${PROJECT_NAME}_generate_messages_cpp)
 
 
 ## Specify libraries to link a library or executable target against
@@ -226,6 +232,7 @@ target_link_libraries(${PROJECT_NAME}_mv ${catkin_LIBRARIES} ) # measurement vel
 target_link_libraries(${PROJECT_NAME}_pcl ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # point cloud
 target_link_libraries(${PROJECT_NAME}_syncro ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # synchro image
 target_link_libraries(${PROJECT_NAME}_manage ${catkin_LIBRARIES} ) # manege 
+target_link_libraries(${PROJECT_NAME}_person ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # manege 
 
 
 
