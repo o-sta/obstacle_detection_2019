@@ -35,8 +35,8 @@ int main(int argc,char **argv){
 			ROS_INFO("publishMatchingData");
 			//publish
 			imc.publishMatchingData();
-			imc.showMatchingMap();
-			// imc.showMatchingImage();
+			// imc.showMatchingMap();
+			imc.showMatchingImage();
 		}
 		ROS_INFO("resetData");
 		//データ更新
