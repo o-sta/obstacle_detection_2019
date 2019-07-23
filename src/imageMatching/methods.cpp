@@ -123,18 +123,20 @@ void imageMatchingClass::getFeaturePoints(){
     //特徴点リサイズ
     featurePointsTemp.resize(maxPoint*nh*nw);
     int fpSize=0;//特徴点サイズカウンタ
+    ROS_INFO("for");
     for(int h=0;h<nh;h++){
         for(int w=0;w<nw;w++){
             //画像分割
             clipImg=grayImgCur(cv::Rect(w*clipPixW,h*clipPixH,clipPixW,clipPixH));
             //キーポイントを抽出
             detector->detect(clipImg, keypoints);
+            ROS_INFO("keypoints.size():%d",(int)keypoints.size());
             //レスポンスが強い順（降順）にソート
             sort(keypoints.begin(),keypoints.end(),
                 [](const cv::KeyPoint& x, const cv::KeyPoint& y) {return  x.response > y.response;});
             //keypointの中から特徴点を抽出
             //各エリアごとの特徴点取得数をカウント
-            // ROS_INFO("keypoints.size():%d",(int)keypoints.size());
+            ROS_INFO("featurePointsTemp.size(),fpSize : %d, %d",(int)featurePointsTemp.size(),fpSize);
             int count=0;
             for(std::vector<cv::KeyPoint>::iterator itk = keypoints.begin();
                 itk != keypoints.end() && count <= maxPoint; ++itk){
@@ -148,10 +150,15 @@ void imageMatchingClass::getFeaturePoints(){
             }
         }
     }
+    ROS_INFO("resize");
     //特徴点リサイズ
     featurePointsTemp.resize(fpSize);
-    //追跡数リサイズ, 0で初期化
-    tranckNumCur.resize(fpSize,0);
+    // //追跡数リサイズ, 0で初期化
+    // tranckNumCur.resize(fpSize,0);
+    //追跡回数を初期化0で挿入
+    std::vector<int> zeroInser(featurePointsTemp.size(), 0);
+    tranckNumCur.reserve(featurePointsTemp.size());
+    std::copy(zeroInser.begin(), zeroInser.end(), std::back_inserter(tranckNumCur));
 }
 bool imageMatchingClass::dicideAddPoints(){
     if(featurePointsTemp.size() > featurePointsPre.size()){
@@ -167,8 +174,8 @@ void imageMatchingClass::addPreFeaturePoints(){
     //特徴点抽出器
     auto detector = cv::FastFeatureDetector::create(maxDetectPoint,false);
     //画像を分割して均等に特徴点を抽出
-    int clipPixH=(int)grayImgCur.rows / nh;
-    int clipPixW=(int)grayImgCur.cols / nw;
+    int clipPixH=(int)grayImgPre.rows / nh;
+    int clipPixW=(int)grayImgPre.cols / nw;
     //特徴点リサイズ
     std::vector<cv::Point2f> featureTemp;
     featureTemp.resize(maxPoint*nh*nw);
@@ -176,7 +183,7 @@ void imageMatchingClass::addPreFeaturePoints(){
     for(int h=0;h<nh;h++){
         for(int w=0;w<nw;w++){
             //画像分割
-            clipImg=grayImgCur(cv::Rect(w*clipPixW,h*clipPixH,clipPixW,clipPixH));
+            clipImg=grayImgPre(cv::Rect(w*clipPixW,h*clipPixH,clipPixW,clipPixH));
             //キーポイントを抽出
             detector->detect(clipImg, keypoints);
             //レスポンスが強い順（降順）にソート
@@ -191,7 +198,7 @@ void imageMatchingClass::addPreFeaturePoints(){
                     cv::Point2i pt;
                     pt.x=w*clipPixW+(int)itk->pt.x;
                     pt.y=h*clipPixH+(int)itk->pt.y;
-                    if(midCur.index[pt.y*midCur.width.data + pt.x].data >= 0){
+                    if(midPre.index[pt.y*midPre.width.data + pt.x].data >= 0){
                         featureTemp[fpSize++] = pt;
                         count++;
                     }
@@ -205,7 +212,10 @@ void imageMatchingClass::addPreFeaturePoints(){
     featurePointsPre.reserve(featurePointsPre.size() + featureTemp.size());
     std::copy(featureTemp.begin(), featureTemp.end(), std::back_inserter(featurePointsPre));
     //追跡回数を初期化0で挿入
-    tranckNumPre.resize(featurePointsPre.size(),0);
+    std::vector<int> zeroInser(featurePointsPre.size(), 0);
+    tranckNumPre.reserve(tranckNumPre.size() + featureTemp.size());
+    std::copy(zeroInser.begin(), zeroInser.end(), std::back_inserter(tranckNumPre));
+    // tranckNumPre.resize(featurePointsPre.size(),0);
 }
 void imageMatchingClass::featureMatching(){
     ROS_INFO("featurePointsPre.size, featurePointsTemp.size=%d,%d", (int)featurePointsPre.size(), (int)featurePointsTemp.size());
@@ -220,16 +230,20 @@ void imageMatchingClass::checkMatchingError(){
     //エラーチェックして再格納
     int count=0;//格納数カウント
     featurePointsCur.resize(featurePointsTemp.size());
+    tranckNumCur.resize(featurePointsTemp.size());
     // ROS_INFO("midCur.index.size() :%d",(int)midCur.index.size());
     // ROS_INFO("midCur.width.data*midCur.height.datamidCur.height.data :%d",midCur.height.data*midCur.width.data);
-    // ROS_INFO("featurePointsPre.size() :%d",(int)featurePointsPre.size());
-    // ROS_INFO("featurePointsCur.size() :%d",(int)featurePointsCur.size());
+    ROS_INFO("featurePointsPre.size() :%d",(int)featurePointsPre.size());
+    ROS_INFO("featurePointsCur.size() :%d",(int)featurePointsCur.size());
+    ROS_INFO("tranckNumPre.size() :%d",(int)tranckNumPre.size());
+    ROS_INFO("tranckNumCur.size() :%d",(int)tranckNumCur.size());
     int countSts=0;
     for(int k=0;k<featurePointsTemp.size();k++){
         // ROS_INFO("(int)featurePointsTemp[k].y*midCur.width.data + (int)featurePointsTemp[k].x:%d",(int)featurePointsTemp[k].y*midCur.width.data + (int)featurePointsTemp[k].x);
         if(sts[k]){
             countSts++;
-            // ROS_INFO("sts is ok: [%d]",k);
+            ROS_INFO("tranckNumCur.size() :%d",(int)tranckNumCur.size());
+            ROS_INFO("sts is ok: [%d]",k);
             if(midCur.index[(int)featurePointsTemp[k].y*midCur.width.data + (int)featurePointsTemp[k].x].data>=0 ){
                 // ROS_INFO("in map: [%d]",k);
                 featurePointsPre[count] = featurePointsPre[k];
@@ -281,6 +295,7 @@ void imageMatchingClass::creatMatchingData(){
         // ROS_INFO("pH,pW:,%d,%d", pH, pW);
         int pIndex = midPre.index[pH*midPre.width.data + pW].data;
         geometry_msgs::Point pPt =  midPre.pt[pIndex];
+        ROS_INFO("cPt.x,cPt.y,pPt.x,pPt.y:%f,%f,%f,%f",cPt.x,cPt.y,pPt.x,pPt.y);
         if(pPt.x < 0 || pPt.y < 0){
             ROS_INFO("Continue");
             continue;
@@ -294,7 +309,7 @@ void imageMatchingClass::creatMatchingData(){
             //インデックスデータ
             matchData.index[zi*matchData.widthInt.data+xi].data = dataSize; //■わからないので、smdからmatchDataに変更した
             //マップ上の移動量
-            ROS_INFO("cPt.x,cPt.y,pPt.x,pPt.y:%f,%f,%f,%f",cPt.x,cPt.y,pPt.x,pPt.y);
+            // ROS_INFO("cPt.x,cPt.y,pPt.x,pPt.y:%f,%f,%f,%f",cPt.x,cPt.y,pPt.x,pPt.y);
             matchData.data[dataSize].x.data = (int)(difX/midCur.mapRes.data);
             matchData.data[dataSize].y.data = -(int)(difY/midCur.mapRes.data);
             //実測の移動角度

@@ -23,19 +23,26 @@ int main(int argc,char **argv){
 		}
 		//データが２つ以上ある時にマッチング処理をする
 		if(imc.isBridgeImagePre() && imc.isMaskImagePre() && imc.isFpointPre()){
-			//特徴点マッチング
+			//特徴点を追加すべきか
+			ROS_INFO("if(imc.dicideAddPoints");
+			if(imc.dicideAddPoints()){
+				//追加
+				ROS_INFO("addPreFeaturePoints");
+				imc.addPreFeaturePoints();
+			}
+		// 	// //特徴点マッチング
 			ROS_INFO("featureMatching");
 			imc.featureMatching();
 			ROS_INFO("checkMatchingError");
 			//マッチングミスをデータから除去
 			imc.checkMatchingError();
 			ROS_INFO("creatMatchingData");
-			//publishデータ生成
+		// 	//publishデータ生成
 			imc.creatMatchingData();
 			ROS_INFO("publishMatchingData");
-			//publish
+		// 	// //publish
 			imc.publishMatchingData();
-			// imc.showMatchingMap();
+		// 	imc.showMatchingMap();
 			imc.showMatchingImage();
 		}
 		ROS_INFO("resetData");
