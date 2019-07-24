@@ -30,20 +30,21 @@ int main(int argc,char **argv){
 				ROS_INFO("addPreFeaturePoints");
 				imc.addPreFeaturePoints();
 			}
-		// 	// //特徴点マッチング
-			ROS_INFO("featureMatching");
-			imc.featureMatching();
-			ROS_INFO("checkMatchingError");
-			//マッチングミスをデータから除去
-			imc.checkMatchingError();
-			ROS_INFO("creatMatchingData");
-		// 	//publishデータ生成
-			imc.creatMatchingData();
-			ROS_INFO("publishMatchingData");
-		// 	// //publish
-			imc.publishMatchingData();
-		// 	imc.showMatchingMap();
-			imc.showMatchingImage();
+			if(imc.checkPointSize()){
+				//特徴点マッチング
+				ROS_INFO("featureMatching");
+				imc.featureMatching();
+				ROS_INFO("checkMatchingError");
+				//マッチングミスをデータから除去
+				imc.checkMatchingError();
+				ROS_INFO("creatMatchingData");
+				// publishデータ生成
+				imc.creatMatchingData();
+				ROS_INFO("publishMatchingData");
+				//publish
+				imc.publishMatchingData();
+				imc.debug();
+			}
 		}
 		ROS_INFO("resetData");
 		//データ更新

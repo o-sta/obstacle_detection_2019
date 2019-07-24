@@ -78,6 +78,7 @@ class classificationClass{
         void configCallback(obstacle_detection_2019::classificationConfig &config, uint32_t level);
         //--クラスタリング
         void classificationDBSCAN();//DBSCAN
+        void newClassificationDBSCAN();//
         //追加  
         int selectWindow(int& angle);//窓選択
 

@@ -1,7 +1,7 @@
 #include<obstacle_detection_2019/imageMatching.h>
 
 imageMatchingClass::imageMatchingClass()
-	:imgCurOnce(false),imgPreOnce(false)
+	:imgCurOnce(false),imgPreOnce(false),debugType(1)
 {
 
 	//subscriber
@@ -32,7 +32,7 @@ imageMatchingClass::imageMatchingClass()
 	maxPoint=10;
 	//window size
 	ws=13;
-	
+	setLaunchParam();
 }
 imageMatchingClass::~imageMatchingClass(){
 	

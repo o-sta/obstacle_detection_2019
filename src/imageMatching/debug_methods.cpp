@@ -1,6 +1,13 @@
 #include<obstacle_detection_2019/imageMatching.h>
 
 //デバッグ用メソッド
+void imageMatchingClass::debug(){
+    switch(debugType){
+        case 1: showMatchingMap();break;
+        case 2: showMatchingImage();break;
+        default: ;
+    }
+}
 //オプティカルフロー結果(マッチング結果)を２次元マップ上に示す
 void imageMatchingClass::showMatchingMap(){
     // matchDataを使用(ImageMatchingData.msg)

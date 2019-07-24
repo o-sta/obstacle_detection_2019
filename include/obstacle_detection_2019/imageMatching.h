@@ -55,6 +55,7 @@ class imageMatchingClass{
         //デバッグ用
 		ros::NodeHandle nhDeb;
         ros::Publisher pubDeb;
+        int debugType;
     public:
         //in constracter.cpp
         //コンストラクタ：クラス定義に呼び出されるメソッド
@@ -65,7 +66,7 @@ class imageMatchingClass{
         //メソッド：関数のようなもの:後でlaunchファイルからの読み込みメソッドを追加
         //in property.cpp
         //セット：内部パラメータの書き込み
-        void setParam(int& temp);//(未使用)
+        void setLaunchParam();
         //ゲット：内部パラメータの読み込み
         int& getParam();//(未使用)
         //
@@ -83,6 +84,7 @@ class imageMatchingClass{
         bool isBridgeImagePre();//
         bool isMaskImagePre();//
         bool isFpointPre();
+        bool checkPointSize();
         //データ更新
         void resetData();
         //特徴点抽出
@@ -98,6 +100,7 @@ class imageMatchingClass{
         //センサデータ送信
         void publishMatchingData();//データ送信
         //デバッグ用メソッド
+        void debug();
         void showMatchingMap();
         void showMatchingImage();
         void cvArrow(cv::Mat* img, cv::Point2i pt1, cv::Point2i pt2, cv::Scalar color = cv::Scalar(0,200,200), int thickness=4, int lineType=8, int shift=0);

@@ -1,0 +1,5 @@
+<launch>
+  <node pkg="obstacle_detection_2019" type="obstacle_detection_2019_im" name="obstacle_detection_2019_im" respawn="true">
+    <param name="imageMatching/debugType" value="1"/>
+  </node>
+</launch>

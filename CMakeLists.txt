@@ -177,6 +177,7 @@ add_executable(${PROJECT_NAME}_im # image matching
    src/imageMatching/methods.cpp
    src/imageMatching/debug_main.cpp
    src/imageMatching/debug_methods.cpp
+   src/imageMatching/property.cpp
  )
  add_executable(${PROJECT_NAME}_mv # measure Velocity
  src/measureVelocity/constructor.cpp
