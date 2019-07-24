@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   cv_bridge
   pcl_ros
+  darknet_ros_msgs
 )
 find_package(OpenCV REQUIRED)
 #find_package(pcl_ros REQUIRED)
@@ -86,6 +87,7 @@ generate_messages(
   DEPENDENCIES
   sensor_msgs
   geometry_msgs
+  darknet_ros_msgs
 )
 
 ################################################
@@ -120,7 +122,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES jet_gpdr
-   CATKIN_DEPENDS roscpp sensor_msgs message_runtime
+   CATKIN_DEPENDS roscpp sensor_msgs message_runtime darknet_ros_msgs
 #  DEPENDS system_lib
 )
 
@@ -200,6 +202,11 @@ add_executable(${PROJECT_NAME}_person # detectPersonHOG
   src/detectPersonHOG/main.cpp
   src/detectPersonHOG/methods.cpp
 )
+add_executable(${PROJECT_NAME}_darknet # darknet_ros
+  src/darknetImg/main.cpp
+  src/darknetImg/methods.cpp
+)
+
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -221,6 +228,7 @@ add_dependencies(${PROJECT_NAME}_pcl ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_syncro ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_manage ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_person ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(${PROJECT_NAME}_darknet ${PROJECT_NAME}_generate_messages_cpp)
 
 
 ## Specify libraries to link a library or executable target against
@@ -233,6 +241,7 @@ target_link_libraries(${PROJECT_NAME}_pcl ${catkin_LIBRARIES} ${OpenCV_LIBRARIES
 target_link_libraries(${PROJECT_NAME}_syncro ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # synchro image
 target_link_libraries(${PROJECT_NAME}_manage ${catkin_LIBRARIES} ) # manege 
 target_link_libraries(${PROJECT_NAME}_person ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # manege 
+target_link_libraries(${PROJECT_NAME}_darknet ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # manege 
 
 
 
