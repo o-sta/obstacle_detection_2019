@@ -5,7 +5,7 @@ darknetImg::darknetImg(/* args */)
 {
     //sub = nhSub.subscribe("/zed/zed_node/left/image_rect_color",1,&darknetImg::sensor_callback,this);
     pub = nhPub.advertise<sensor_msgs::Image>("/dphog/boximage", 1);
-    sync.registerCallback(boost::bind(&sensor_callback, this, _1, _2));
+    sync.registerCallback(boost::bind(&darknetImg::sensor_callback, this, _1, _2));
     //hog = cv::HOGDescriptor();
 }
 
@@ -25,7 +25,7 @@ void darknetImg::detect()
     }
 }
 
-void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb, const sensor_msgs::ImageConstPtr& image)
+void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb, const sensor_msgs::Image::ConstPtr& image)
 {
     // image -> cvbridgeImage に変換する
     try{
@@ -48,4 +48,3 @@ void darknetImg::publishData()
 {
     pub.publish(bridgeImage->toImageMsg());
 }
-

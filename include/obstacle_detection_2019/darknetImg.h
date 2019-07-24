@@ -18,8 +18,8 @@
 #include <message_filters/subscriber.h>
 #include <message_filters/time_synchronizer.h>
 //shared ptr
-#include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
+//#include <boost/shared_ptr.hpp>
+//#include <boost/make_shared.hpp>
 
 class darknetImg {
     private:
@@ -35,9 +35,9 @@ class darknetImg {
         std::vector<cv::Rect> found;
         cv::Mat gray_image;
         cv::Mat image;
-        message_filters::Subscriber<darknet_ros_msgs::BoundingBoxes::ConstPtr> bb_sub;
-        message_filters::Subscriber<sensor_msgs::ImageConstPtr> image_sub;
-        message_filters::TimeSynchronizer<darknet_ros_msgs::BoundingBoxes::ConstPtr, sensor_msgs::ImageConstPtr> sync;
+        message_filters::Subscriber<darknet_ros_msgs::BoundingBoxes> bb_sub;
+        message_filters::Subscriber<sensor_msgs::Image> image_sub;
+        message_filters::TimeSynchronizer<darknet_ros_msgs::BoundingBoxes, sensor_msgs::Image> sync;
 
     /* data */
     public:
