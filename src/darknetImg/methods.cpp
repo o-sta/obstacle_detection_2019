@@ -48,3 +48,5 @@ void darknetImg::publishData()
 {
     pub.publish(bridgeImage->toImageMsg());
 }
+
+//次は深度情報をクラスタリングするプログラムを作成する
