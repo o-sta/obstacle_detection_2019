@@ -1,7 +1,7 @@
 #include <obstacle_detection_2019/darknetImg.h>
 
 darknetImg::darknetImg(/* args */)
-: bb_sub(nhSub, "/bb_sub", 1), image_sub(nhSub, "/image_sub", 1), sync(bb_sub, image_sub, 10)
+: bb_sub(nhSub, "/darknet_ros/bounding_boxes", 1), image_sub(nhSub, "/robot2/zed_node/left/image_rect_color", 1), sync(MySyncPolicy(10),bb_sub, image_sub)
 {
     //sub = nhSub.subscribe("/zed/zed_node/left/image_rect_color",1,&darknetImg::sensor_callback,this);
     pub = nhPub.advertise<sensor_msgs::Image>("/dphog/boximage", 1);
@@ -28,6 +28,9 @@ void darknetImg::detect()
 void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb, const sensor_msgs::Image::ConstPtr& image)
 {
     // image -> cvbridgeImage に変換する
+    ROS_INFO_STREAM("callback : " << "[bb : " << bb->header.stamp.toSec() << " ]," 
+                                  << "[img : " << image->header.stamp.toSec() << " ],"
+                                  << "[diff : " << (bb->header.stamp - image->header.stamp).toSec() << "]");
     try{
         bridgeImage=cv_bridge::toCvCopy(image, sensor_msgs::image_encodings::RGB8);
     }

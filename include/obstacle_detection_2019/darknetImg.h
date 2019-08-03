@@ -17,6 +17,7 @@
 //メッセージフィルタ
 #include <message_filters/subscriber.h>
 #include <message_filters/time_synchronizer.h>
+#include <message_filters/sync_policies/approximate_time.h>
 //shared ptr
 //#include <boost/shared_ptr.hpp>
 //#include <boost/make_shared.hpp>
@@ -37,7 +38,9 @@ class darknetImg {
         cv::Mat image;
         message_filters::Subscriber<darknet_ros_msgs::BoundingBoxes> bb_sub;
         message_filters::Subscriber<sensor_msgs::Image> image_sub;
-        message_filters::TimeSynchronizer<darknet_ros_msgs::BoundingBoxes, sensor_msgs::Image> sync;
+        //message_filters::TimeSynchronizer<darknet_ros_msgs::BoundingBoxes, sensor_msgs::Image> sync;
+        typedef message_filters::sync_policies::ApproximateTime<darknet_ros_msgs::BoundingBoxes, sensor_msgs::Image> MySyncPolicy;
+        message_filters::Synchronizer<MySyncPolicy> sync;
 
     /* data */
     public:
