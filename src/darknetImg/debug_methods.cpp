@@ -1,26 +1,3 @@
-#include <obstacle_detection_2019/darknetImg.h>
-
-// sensor_callback用コンストラクタ
-// darknetImg::darknetImg(/* args */)
-// : bb_sub(nhSub, "/darknet_ros/bounding_boxes", 1), image_sub(nhSub, "/robot2/zed_node/left/image_rect_color", 1), sync(MySyncPolicy(10),bb_sub, image_sub)
-// {
-//     pub = nhPub.advertise<sensor_msgs::Image>("/dphog/boximage", 1);
-//     sync.registerCallback(boost::bind(&darknetImg::sensor_callback, this, _1, _2));
-// }
-
-// sensor_callback2用コンストラクタ
-darknetImg::darknetImg(/* args */)
-: bb_sub(nhSub, "/darknet_ros/bounding_boxes", 1), image_sub(nhSub, "/robot2/zed_node/left/image_rect_color", 1), sync(MySyncPolicy(10),bb_sub, image_sub)
-{
-    pub = nhPub.advertise<sensor_msgs::Image>("/dphog/boximage", 1);
-    sync.registerCallback(boost::bind(&darknetImg::sensor_callback, this, _1, _2));
-}
-
-darknetImg::~darknetImg()
-{
-    
-}
-
 void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb, const sensor_msgs::Image::ConstPtr& image)
 {
     // debug移行予定
@@ -43,4 +20,3 @@ void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr
     // パブリッシュ(debgu移行予定)
     pub.publish(bridgeImage->toImageMsg());
 }
-

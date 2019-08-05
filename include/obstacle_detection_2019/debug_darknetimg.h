@@ -4,6 +4,8 @@
 //include haeders
 #include <ros/ros.h>
 #include <ros/callback_queue.h>
+//include base class
+#include <obstacle_detection_2019/darknetImg.h>
 //for image processing on ros
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
@@ -18,34 +20,27 @@
 #include <message_filters/subscriber.h>
 #include <message_filters/time_synchronizer.h>
 #include <message_filters/sync_policies/approximate_time.h>
-//shared ptr
-//#include <boost/shared_ptr.hpp>
-//#include <boost/make_shared.hpp>
 
-class darknetImg {
+class d_darknetImg : public darknetImg {
     private:
-        //ノードハンドルとサブスクライパ、パブリッシャ
-		ros::NodeHandle nhSub;
-		ros::Subscriber sub;
-		ros::NodeHandle nhPub;
-        ros::Publisher pub;
         //センサーデータ
         cv_bridge::CvImagePtr bridgeImage;
         //メッセージフィルタ
         message_filters::Subscriber<darknet_ros_msgs::BoundingBoxes> bb_sub;
         message_filters::Subscriber<sensor_msgs::Image> image_sub;
+        //sensor_callback用メッセージフィルタ
         typedef message_filters::sync_policies::ApproximateTime<darknet_ros_msgs::BoundingBoxes, sensor_msgs::Image> MySyncPolicy;
         message_filters::Synchronizer<MySyncPolicy> sync;
 
     /* data */
     public:
-        darknetImg(/* args */);
-        ~darknetImg();
-        void detect(); //人間を検出
+        d_darknetImg(/* args */);
+        ~d_darknetImg();
         bool subscribeSensorData();//データ受信
-        void sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb,const sensor_msgs::ImageConstPtr& image); //データ受信
-        void publishData(); //データ送信
-        void estimatePosition();
+        void sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb,const sensor_msgs::ImageConstPtr& image);
+        // debug 画像と枠線を合成する
+        void sensor_callback2(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb,const sensor_msgs::ImageConstPtr& image);
+        // 歩行差と背景と床面を分割する
 };
 
 #endif
