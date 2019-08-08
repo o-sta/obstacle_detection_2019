@@ -1,4 +1,6 @@
 <launch>
+<arg name="robot_name"        default="robot2"/>
+<group ns="$(arg robot_name)">
  <!-- syncro and manage node -->
  <node pkg="obstacle_detection_2019" name="obstacle_detection_2019_syncro" type="obstacle_detection_2019_syncro"/>
  <node pkg="obstacle_detection_2019" name="obstacle_detection_2019_manage" type="obstacle_detection_2019_manage">
@@ -53,4 +55,6 @@
    <param name="window/height" value="$(arg window/height)"/>
    <param name="window/width" value="$(arg window/width)"/>
  </node>
+</group>
+
 </launch>

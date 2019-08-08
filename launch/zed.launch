@@ -35,7 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <arg name="gpu_id"                default="-1" />
 
     <!-- SLAM FLAG -->
-    <arg name="mapping_enabled"                default="true" />
+    <arg name="mapping_enabled"                default="false" />
 
     <!-- PACKAGE PATH-->
     <arg name="package_path"       default="/home/nvidia/catkin_ws/src/obstacle_detection_2019" />

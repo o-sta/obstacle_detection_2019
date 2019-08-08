@@ -21,7 +21,7 @@ convCamDataClass::convCamDataClass()
 	// p2=0
 
 	//subscriber
-	sub=nhSub.subscribe("/converted_depthImage",1,&convCamDataClass::sensor_callback,this);
+	sub=nhSub.subscribe("converted_depthImage",1,&convCamDataClass::sensor_callback,this);
 	// sub=nhSub.subscribe("/zed/depth/depth_registered",1,&convCamDataClass::sensor_callback,this);
 	//publisher
     pubConv= nhPub1.advertise<obstacle_detection_2019::SensorMapData>("cameraMapData", 1);

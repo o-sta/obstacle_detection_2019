@@ -5,9 +5,9 @@ measurementVelocity::measurementVelocity()
 
 	//subscriber
 	nhSub1.setCallbackQueue(&queue1);
-	subCluster=nhSub1.subscribe("/classificationData",1,&measurementVelocity::cluster_callback,this);
+	subCluster=nhSub1.subscribe("classificationData",1,&measurementVelocity::cluster_callback,this);
 	nhSub2.setCallbackQueue(&queue2);
-	subMatch=nhSub2.subscribe("/imageMatchingData",1,&measurementVelocity::matching_callback,this);
+	subMatch=nhSub2.subscribe("imageMatchingData",1,&measurementVelocity::matching_callback,this);
 	//publisher
     pub= nhPub.advertise<obstacle_detection_2019::ClassificationVelocityData>("measurementVelocityCluster", 1);
 

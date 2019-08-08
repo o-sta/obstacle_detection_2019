@@ -4,7 +4,7 @@ estimationClass::estimationClass()
 {
 	//subscriber
 	// nhSub1.setCallbackQueue(&queue1);
-	sub=nhSub1.subscribe("/measurementVelocityCluster",1,&estimationClass::cluster_callback,this);
+	sub=nhSub1.subscribe("measurementVelocityCluster",1,&estimationClass::cluster_callback,this);
 	//publisher
     pub= nhPub.advertise<obstacle_detection_2019::ClassificationVelocityData>("classificationData", 1);
 
