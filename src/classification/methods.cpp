@@ -7,16 +7,17 @@ void classificationClass::subscribeSensorDataCamera(){//Cameraデータ受信
 void classificationClass::cameraMap_callback(const obstacle_detection_2019::SensorMapData::ConstPtr& msg)
 {
     //データをコピー
-    smdCamera.header = msg->header;
-    smdCamera.width = msg->width;
-    smdCamera.height = msg->height;
-    smdCamera.res = msg->res;
-    smdCamera.widthInt = msg->widthInt;
-    smdCamera.heightInt = msg->heightInt;
-    smdCamera.cp = msg->cp;
-    smdCamera.index = msg->index;
-    smdCamera.size = msg->size;
-    smdCamera.pt = msg->pt;
+    smdCamera = *msg;
+    // smdCamera.header = msg->header;
+    // smdCamera.width = msg->width;
+    // smdCamera.height = msg->height;
+    // smdCamera.res = msg->res;
+    // smdCamera.widthInt = msg->widthInt;
+    // smdCamera.heightInt = msg->heightInt;
+    // smdCamera.cp = msg->cp;
+    // smdCamera.index = msg->index;
+    // smdCamera.size = msg->size;
+    // smdCamera.pt = msg->pt;
 	//move manage method
 	manage();
 }
@@ -120,6 +121,7 @@ void classificationClass::manage(){
 	}
 	publishClassificationData();
 	showCluster();
+	plotObstaclePoints();
 	clearMessages();
 }
 void classificationClass::classificationDBSCAN(){//カメラ
@@ -294,7 +296,7 @@ void classificationClass::newClassificationDBSCAN(){//カメラ
 		mapIndex[k] = smdCamera.index[k].data;
 	}
 	// DBSCAN開始
-	ROS_INFO("DBSCAN開始");
+	ROS_INFO("DBSCAN start");
 	for(int k = 0; k < mapIndex.size(); k++){//k : 0 -> widthInt * heightInt -1 
 		//マップセルにデータがない場合：スキップ
 		if(mapIndex[k] < 0){
@@ -326,52 +328,92 @@ void classificationClass::newClassificationDBSCAN(){//カメラ
 		//タスク追加データを重複探査防止 
 		searchedIndex[k] = -1;
 
-		ROS_INFO("for(int n=0; n < taskSize; n++");
+		// ROS_INFO("for(int n=0; n < taskSize; n++");
 		for(int n=0; n < taskSize; n++){
 			int count = 0;//密度（点の数）
-			float tempX = (taskIndex[n] % smdCamera.widthInt.data) * smdCamera.res.data;
-			float tempY = (taskIndex[n] / smdCamera.widthInt.data) * smdCamera.res.data;
-			ROS_INFO("x,y:%f,%f",tempX,tempY);\
+			int robotX = (taskIndex[n] % smdCamera.widthInt.data) - smdCamera.widthInt.data/2;
+			int robotY = -( (taskIndex[n] / smdCamera.widthInt.data) - smdCamera.heightInt.data/2 );
+			float tempX = robotX * smdCamera.res.data;
+			float tempY = robotY * smdCamera.res.data;
+			// ROS_INFO("x,y:%f,%f",tempX,tempY);
 			int angle;
 			if(tempX==0){
-				angle = 90;
+				angle = 0;
 			}
 			else
 			{
 				angle = -((int)( atan2(tempY,tempX)/M_PI *180) )+90 ;
 			}
+			if(angle<minCamDeg || angle > maxCamDeg){
+				ROS_INFO("angle Error: %d",angle);
+				continue;
+			}
+			//使用窓番号選択
 			int winNum = selectWindow(angle);
-
+			// ROS_INFO("winNum:%d",winNum);
+			if( (int)winIndex2.size() <= winNum){
+				ROS_INFO("over winIndex2.size()");
+				continue ;
+			}
+			// ROS_INFO("angle: %d, winIndex2[%d].size():%d",angle, winNum,(int)winIndex2[winNum].size());
 			std::vector<int> tempIndex;//Window探索中のみ使用するIndex
 			tempIndex.resize(winIndex2[winNum].size());
 			int tempSize = 0;
 			//窓内を探索
-			ROS_INFO("winIndex2[%d].size():%d",winNum,(int)winIndex2[winNum].size());
+			// std::cout<<"task("<<taskIndex[n] % smdCamera.widthInt.data<<","<<taskIndex[n] / smdCamera.widthInt.data<<")-->searching-->\n";
 			for(int m=0; m < winIndex2[winNum].size(); m++){
 				int pos = taskIndex[n] + winIndex2[winNum][m];
 				int posW = taskIndex[n] % smdCamera.widthInt.data;
 				int moveW = winIndex2[winNum][m] % smdCamera.widthInt.data;
+				//デバッグ用
+				// ROS_INFO("%d.size(%d) pos, posW, moveW: (%d, %d, %d)",
+				// winNum, (int)(winIndex2[winNum].size()),pos, posW, moveW);
+				int taskX= taskIndex[n] % smdCamera.widthInt.data;
+				int taskY= taskIndex[n] / smdCamera.widthInt.data;
+				int moveX= winIndex2[winNum][m] % smdCamera.widthInt.data;
+				int moveY= winIndex2[winNum][m] / smdCamera.widthInt.data;
+				if(smdCamera.widthInt.data - moveX < moveX){
+					moveX = moveX - smdCamera.widthInt.data;
+					moveY = moveY + 1;
+				}
+				else if(smdCamera.widthInt.data + moveX < -moveX){
+					moveX = moveX + smdCamera.widthInt.data;
+					moveY = moveY - 1;
+				}
+				// ROS_INFO("task(%d,%d), move(%d, %d)", taskX, taskY, moveX, moveY);
+				int difX = taskX + moveX;
+				int difY = taskY + moveY;
 				//ここの処理, 後で確認
 				int difW = posW + moveW;
-				if(pos < 0 || pos >= (int)mapIndex.size()
-					|| difW < 0 || difW > smdCamera.widthInt.data ){
+				// if(pos < 0 || pos >= (int)mapIndex.size()
+				// 	|| difW < 0 || difW > smdCamera.widthInt.data ){
+				if(difX < 0 || difX >= smdCamera.widthInt.data
+					|| difY < 0 || difY >= smdCamera.heightInt.data ){
 						//マップ範囲外検索
+						// ROS_INFO("outrange map");
 						continue;
 				}
 				//セルにデータがない場合：スキップ
 				if(mapIndex[pos] < 0){
+					// ROS_INFO("no data cell");
 					continue;
 				}
+				// std::cout<<"get-->pos("<<pos % smdCamera.widthInt.data<<","<<pos / smdCamera.widthInt.data<<")\n";
 				//点の数（密度）を追加
+				// std::cout<<"-->Index[pos]:"<<mapIndex[pos]<<std::endl;
+				// std::cout<<"-->dens:"<<smdCamera.size[ mapIndex[pos] ]<<std::endl;
+				// std::cout<<"-->pos:"<<smdCamera.pt[ mapIndex[pos] ]<<std::endl;
 				count += smdCamera.size[ mapIndex[pos] ].data;
 
 				//探査済みの場合：スキップ
 				if(searchedIndex[pos]< 0){
+					// ROS_INFO("already searched");
 					continue;
 				}
 				//次のタスク候補点（コア点候補）として追加
 				tempIndex[tempSize++] = pos;
 			}
+			// std::cout<<"--> end search \n";
 			//リサイズ
 			tempIndex.resize(tempSize);
 
@@ -383,6 +425,7 @@ void classificationClass::newClassificationDBSCAN(){//カメラ
 			// int minPts=(int)( -35*y*y+1200 );
 			// int minPts=10;
 			//評価式よりカウントが小さい時: スキップ
+			// ROS_INFO("%d < %d",count,minPts);
 			if(count < minPts){
 				continue;
 			}
@@ -398,6 +441,7 @@ void classificationClass::newClassificationDBSCAN(){//カメラ
 			cd.data[clusterNum].pt[cd.data[clusterNum].size.data - 1] = smdCamera.pt[ mapIndex[taskIndex[n]] ];
 			//重複探査防止
 			// tempIndex（タスク候補点をタスクに追加）
+			// ROS_INFO("tempIndex.size(): %d",(int)tempIndex.size());
 			for(int m=0; m < tempIndex.size(); m++){
 				//追加
 				taskIndex[taskSize++] = tempIndex[m];

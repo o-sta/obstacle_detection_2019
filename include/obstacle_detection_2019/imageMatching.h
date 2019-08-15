@@ -52,6 +52,7 @@ class imageMatchingClass{
 		std::vector<float> ers;
 		int ws;//window size
         std::vector<int> tranckNumCur, tranckNumPre;
+        int trackThreshold;
         //デバッグ用
 		ros::NodeHandle nhDeb;
         ros::Publisher pubDeb;

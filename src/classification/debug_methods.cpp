@@ -168,7 +168,7 @@ void classificationClass::showCluster(){
         }
         
     }
-	
+	viewCloud->points.resize(count);
 	std::cout<<"viewCloud->points.size():"<<viewCloud->points.size()<<"\n";
     //データがないとき
 	if(viewCloud->width <= 0)
@@ -180,4 +180,50 @@ void classificationClass::showCluster(){
 	pcl::toROSMsg (*viewCloud, viewMsgs);
 	viewMsgs.header.frame_id="/zed_camera_center";
 	pubDebPcl.publish(viewMsgs);
+}
+
+void classificationClass::plotObstaclePoints(){
+    //障害物カラーレパートリー
+	float colors[12][3] ={{255,0,0},{0,255,0},{0,0,255},{255,255,0},{0,255,255},{255,0,255},{127,255,0},{0,127,255},{127,0,255},{255,127,0},{0,255,127},{255,0,127}};//色リスト
+    //表示用ポイントクラウド
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr viewCloud(new  pcl::PointCloud<pcl::PointXYZRGB>);
+    //初期化
+    //データ数の計算
+    std::cout<<"cd.data.size():"<<cd.data.size()<<std::endl;
+    //データ数再計算
+	viewCloud->points.clear();
+	viewCloud->points.resize(cd.data.size());
+    
+    //要素追加用の仮変数
+	pcl::PointXYZRGB cloudTemp;
+    //追加済み要素数カウント
+    int count = 0;
+    //pointCloudデータ作成
+    viewCloud->width = count;
+    viewCloud->height = 1;
+    //各クラスタごとの処理
+    for(int i = 0; i < cd.data.size(); i++){
+        //カラー設定
+        cloudTemp.r=colors[i%12][0];
+        cloudTemp.g=colors[i%12][1];
+        cloudTemp.b=colors[i%12][2];
+        cloudTemp.x=cd.data[i].gc.y;//y軸              
+        cloudTemp.y=cd.data[i].gc.x;//逆向きのx軸
+        cloudTemp.z=cd.data[i].gc.z;//z軸       
+        //ポイントクラウドに追加
+        viewCloud->points[count++] = cloudTemp;
+        viewCloud->width = count;
+    }
+	viewCloud->points.resize(count);
+	std::cout<<"viewGravityPointCloud->points.size():"<<viewCloud->points.size()<<"\n";
+    //データがないとき
+	if(viewCloud->width <= 0)
+	{
+        ROS_INFO("No point cloud data!");
+		return ;
+	}
+	sensor_msgs::PointCloud2 viewMsgs;
+	pcl::toROSMsg (*viewCloud, viewMsgs);
+	viewMsgs.header.frame_id="/zed_camera_center";
+	pubDebGp.publish(viewMsgs);
 }

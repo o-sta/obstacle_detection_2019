@@ -45,8 +45,8 @@ class classificationClass{
         float mapWidth,mapHeight,mapRes;
         int mapWidthInt,mapHeightInt;
         //----デバッグ用
-		ros::NodeHandle nhDeb,nhDebPcl;
-        ros::Publisher pubDeb,pubDebPcl;
+		ros::NodeHandle nhDeb,nhDebPcl,nhDebGp;
+        ros::Publisher pubDeb,pubDebPcl,pubDebGp;
         //--rqt_reconfigure
         dynamic_reconfigure::Server<obstacle_detection_2019::classificationConfig> server;
         dynamic_reconfigure::Server<obstacle_detection_2019::classificationConfig>::CallbackType f;
@@ -90,5 +90,6 @@ class classificationClass{
         void showSearchWindows();
         void showSearchWindows(float x, float y);
         void showCluster();
+        void plotObstaclePoints();
 };
 #endif

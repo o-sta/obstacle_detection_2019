@@ -19,6 +19,7 @@ classificationClass::classificationClass()
 	//publisher
     pubDeb= nhDeb.advertise<sensor_msgs::Image>("windowImage", 1);
     pubDebPcl= nhDebPcl.advertise<sensor_msgs::PointCloud2>("visualizedCluster", 1);
+    pubDebGp= nhDebGp.advertise<sensor_msgs::PointCloud2>("visualizedGravityPoints", 1);
 
 	//rqt_reconfigure
 	f = boost::bind(&classificationClass::configCallback, this, _1, _2);

@@ -170,11 +170,11 @@ void convCamDataClass::createPubDataRANSAC(){
     //インデックス初期化
     for(int h=0;h<smd.heightInt.data;h++){
         for(int w=0;w<smd.widthInt.data;w++){
-            smd.index[h*smd.heightInt.data+w].data=-1;
-            smd.size[h*smd.heightInt.data+w].data=0;
-            smd.pt[h*smd.heightInt.data+w].x = 0;
-            smd.pt[h*smd.heightInt.data+w].y = 0;
-            smd.pt[h*smd.heightInt.data+w].z = 0;
+            smd.index[h*smd.widthInt.data+w].data=-1;
+            smd.size[h*smd.widthInt.data+w].data=0;
+            smd.pt[h*smd.widthInt.data+w].x = 0;
+            smd.pt[h*smd.widthInt.data+w].y = 0;
+            smd.pt[h*smd.widthInt.data+w].z = 0;
         }
     }
     //
@@ -208,7 +208,7 @@ void convCamDataClass::createPubDataRANSAC(){
                             index = countSmd++;//データ数をインクリメント, indexをsmd.index配列の末尾に設定 
                         }
                         //データサイズのインクリメント
-                        smd.size[zi*smd.widthInt.data+xi].data++;
+                        smd.size[index].data+=1;
                         //マップデータ格納
                         smd.pt[index].x += x_temp;//横方向
                         smd.pt[index].y += z_temp;//奥行
@@ -237,16 +237,15 @@ void convCamDataClass::createPubDataRANSAC(){
     //サイズ調整
     // smd.index.resize(k);
     smd.pt.resize(countSmd);
+    smd.size.resize(countSmd);
     mid.pt.resize(countMid);
     //smdデータptの平均値を算出
     for(int k = 0; k < smd.size.size(); k++){
         if(smd.size[k].data > 0){
-            //インデックス( マップセル->データ番号) を取得
-            int index = smd.index[k].data;
             //データサイズで割る
-            smd.pt[index].x /= smd.size[k].data;//横方向
-            smd.pt[index].y /= smd.size[k].data;//奥行
-            smd.pt[index].z /= smd.size[k].data;//高さ
+            smd.pt[k].x /= smd.size[k].data;//横方向
+            smd.pt[k].y /= smd.size[k].data;//奥行
+            smd.pt[k].z /= smd.size[k].data;//高さ
         }
     }
 }
@@ -275,7 +274,9 @@ void convCamDataClass::publishMaskImage(){//データ送信
     pubMask.publish(mid);
 }
 void convCamDataClass::clearMessages(){
+    smd.index.clear();
     smd.pt.clear();
+    smd.size.clear();
     mid.index.clear();
     mid.pt.clear();
 }

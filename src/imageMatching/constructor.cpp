@@ -1,7 +1,7 @@
 #include<obstacle_detection_2019/imageMatching.h>
 
 imageMatchingClass::imageMatchingClass()
-	:imgCurOnce(false),imgPreOnce(false),debugType(1)
+	:imgCurOnce(false),imgPreOnce(false),debugType(1),mapW(8),mapH(8),mapR(0.05),trackThreshold(2)
 {
 
 	//subscriber
@@ -13,13 +13,6 @@ imageMatchingClass::imageMatchingClass()
     pubMatch= nhPub.advertise<obstacle_detection_2019::ImageMatchingData>("imageMatchingData", 1);
 	pubDeb= nhDeb.advertise<sensor_msgs::Image>("debugImageData", 1);
 
-    //localMapParameter
-    //後でlaunchから読み込みように変更
-	mapW=8;//width[m]
-	mapH=8;//height[m]
-	mapR=0.05;//resolution[m]
-	mapWi=(int)(mapW/mapR);//[pixel]
-	mapHi=(int)(mapH/mapR);//[pixel]
 	
 	//特徴点抽出
 	//画像分割数
