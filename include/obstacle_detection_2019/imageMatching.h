@@ -16,6 +16,9 @@
 //self msg
 #include <obstacle_detection_2019/MaskImageData.h>
 #include <obstacle_detection_2019/ImageMatchingData.h>
+// rqt_reconfige
+#include <dynamic_reconfigure/server.h>
+#include <obstacle_detection_2019/imageMatchingConfig.h>
 
 //クラスの定義
 class imageMatchingClass{
@@ -57,6 +60,10 @@ class imageMatchingClass{
 		ros::NodeHandle nhDeb;
         ros::Publisher pubDeb;
         int debugType;
+        //--rqt_reconfigure
+        dynamic_reconfigure::Server<obstacle_detection_2019::imageMatchingConfig> server;
+        dynamic_reconfigure::Server<obstacle_detection_2019::imageMatchingConfig>::CallbackType f;
+
     public:
         //in constracter.cpp
         //コンストラクタ：クラス定義に呼び出されるメソッド
@@ -68,16 +75,18 @@ class imageMatchingClass{
         //in property.cpp
         //セット：内部パラメータの書き込み
         void setLaunchParam();
+        void configCallback(obstacle_detection_2019::imageMatchingConfig &config, uint32_t level);
         //ゲット：内部パラメータの読み込み
         int& getParam();//(未使用)
         //
         //in methods.cpp
         //その他メソッド
+        void manage();//処理の流れを管理
         //--センサーデータ受信
-        void subscribeImageData();//データ受信(RGB画像)
-        void subscribeMaskImageData();//データ受信(mask画像)
-        void image_callback(const sensor_msgs::ImageConstPtr& msg);
-        void maskImage_callback(const obstacle_detection_2019::MaskImageData::ConstPtr& msg);
+        // void subscribeImageData();//データ受信(RGB画像)
+        // void subscribeMaskImageData();//データ受信(mask画像)
+        void image_callback(const sensor_msgs::ImageConstPtr& msg);//データ受信(RGB画像)
+        void maskImage_callback(const obstacle_detection_2019::MaskImageData::ConstPtr& msg);//データ受信(mask画像)
         //--グレースケール化
         void cvtGray();
         //--データ確認

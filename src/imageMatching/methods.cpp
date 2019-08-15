@@ -1,12 +1,12 @@
 ﻿#include<obstacle_detection_2019/imageMatching.h>
 
 //subscribe
-void imageMatchingClass::subscribeImageData(){//データ受信
-	queue1.callOne(ros::WallDuration(1));
-}
-void imageMatchingClass::subscribeMaskImageData(){//データ受信
-	queue2.callOne(ros::WallDuration(1));
-}
+// void imageMatchingClass::subscribeImageData(){//データ受信
+// 	queue1.callOne(ros::WallDuration(1));
+// }
+// void imageMatchingClass::subscribeMaskImageData(){//データ受信
+// 	queue2.callOne(ros::WallDuration(1));
+// }
 void imageMatchingClass::image_callback(const sensor_msgs::ImageConstPtr& msg)
 {
     try{
@@ -20,6 +20,8 @@ void imageMatchingClass::image_callback(const sensor_msgs::ImageConstPtr& msg)
         msg->encoding.c_str());
         return ;
     } 
+    //manageに移動
+    manage();
 }
 void imageMatchingClass::maskImage_callback(const obstacle_detection_2019::MaskImageData::ConstPtr& msg)
 {
@@ -35,7 +37,48 @@ void imageMatchingClass::maskImage_callback(const obstacle_detection_2019::MaskI
     midCur.mapHeightInt.data = msg->mapHeightInt.data;
     midCur.index = msg->index;
     midCur.pt = msg->pt;
+    //manageに移動
+    manage();
+}
+void imageMatchingClass::manage(){
     
+    if(isBridgeImageCur()){
+        ROS_INFO("cvtGray");
+        cvtGray();
+        //特徴点抽出
+        ROS_INFO("getFeaturePoints");
+        getFeaturePoints();
+    }
+    //データが２つ以上ある時にマッチング処理をする
+    if(isBridgeImagePre() && isMaskImagePre() && isFpointPre()){
+        //特徴点を追加すべきか
+        ROS_INFO("if(dicideAddPoints");
+        if(dicideAddPoints()){
+            //追加
+            ROS_INFO("addPreFeaturePoints");
+            addPreFeaturePoints();
+        }
+        if(checkPointSize()){
+            //特徴点マッチング
+            ROS_INFO("featureMatching");
+            featureMatching();
+            ROS_INFO("checkMatchingError");
+            //マッチングミスをデータから除去
+            checkMatchingError();
+            ROS_INFO("creatMatchingData");
+            // publishデータ生成
+            creatMatchingData();
+            ROS_INFO("publishMatchingData");
+            //publish
+            publishMatchingData();
+            //デバッグ処理
+            debug();
+        }
+    }
+    ROS_INFO("resetData");
+    //データ更新
+    resetData();
+
 }
 void imageMatchingClass::cvtGray(){
     cv::cvtColor(bridgeImageCur->image,grayImgCur,CV_BGR2GRAY);

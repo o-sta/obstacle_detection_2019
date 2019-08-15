@@ -108,6 +108,7 @@ generate_messages(
 generate_dynamic_reconfigure_options(
   cfg/classification.cfg
   cfg/convCamData.cfg
+  cfg/imageMatching.cfg
   cfg/estimation.cfg
   # cfg/DynReconf2.cfg
 )
@@ -232,6 +233,7 @@ add_dependencies(${PROJECT_NAME}_estimate ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_cc ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_gr ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_estimate ${PROJECT_NAME}_gencfg)
+add_dependencies(${PROJECT_NAME}_im ${PROJECT_NAME}_gencfg)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_cc ${catkin_LIBRARIES}) # classification
