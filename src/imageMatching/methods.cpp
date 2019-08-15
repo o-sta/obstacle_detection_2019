@@ -42,7 +42,7 @@ void imageMatchingClass::maskImage_callback(const obstacle_detection_2019::MaskI
 }
 void imageMatchingClass::manage(){
     
-    if(isBridgeImageCur()){
+    if(isBridgeImageCur() && isMaskImageCur()){
         ROS_INFO("cvtGray");
         cvtGray();
         //特徴点抽出
@@ -78,7 +78,6 @@ void imageMatchingClass::manage(){
     ROS_INFO("resetData");
     //データ更新
     resetData();
-
 }
 void imageMatchingClass::cvtGray(){
     cv::cvtColor(bridgeImageCur->image,grayImgCur,CV_BGR2GRAY);
@@ -93,6 +92,14 @@ bool imageMatchingClass::isBridgeImageCur(){
 }
 bool imageMatchingClass::isBridgeImagePre(){
     if(!imgPreOnce){//
+        return false;
+    }
+    else{
+        return true;
+    }
+}
+bool imageMatchingClass::isMaskImageCur(){
+    if(midCur.pt.empty()){//データの有無を確認
         return false;
     }
     else{

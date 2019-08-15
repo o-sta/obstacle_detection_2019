@@ -92,6 +92,7 @@ class imageMatchingClass{
         //--データ確認
         bool isBridgeImageCur();//
         bool isBridgeImagePre();//
+        bool isMaskImageCur();
         bool isMaskImagePre();//
         bool isFpointPre();
         bool checkPointSize();
