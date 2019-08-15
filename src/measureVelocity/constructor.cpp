@@ -18,8 +18,8 @@ measurementVelocity::measurementVelocity()
 	prvClstr.header.seq = 0;
 
 	//デバッグ用
-	pubDeb= nhDeb.advertise<sensor_msgs::PointCloud2>("debugMeasuredVelocity", 1);
-
+	pubDebPcl= nhDeb.advertise<sensor_msgs::PointCloud2>("debugMeasuredVelocity", 1);
+	pubDebMarker= nhDeb.advertise<visualization_msgs::MarkerArray>("measuredVelocityMarker", 1);
 	//launchファイルの読み込み
 	setLaunchParam();
 	

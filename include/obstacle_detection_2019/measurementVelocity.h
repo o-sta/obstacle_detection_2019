@@ -11,6 +11,8 @@
 #include <obstacle_detection_2019/ImageMatchingData.h>
 //デバッグ用
 #include <pcl_ros/point_cloud.h>
+#include <tf/transform_broadcaster.h>
+#include<visualization_msgs/MarkerArray.h>
 // rqt_reconfige
 #include <dynamic_reconfigure/server.h>
 #include <obstacle_detection_2019/measurementVelocityConfig.h>
@@ -36,7 +38,7 @@ class measurementVelocity{
         int trackThreshold;//追跡回数閾値
         //デバッグ用
 		ros::NodeHandle nhDeb;
-        ros::Publisher pubDeb;
+        ros::Publisher pubDebPcl,pubDebMarker;
         std::vector<int> trackNum;
         int debugType;
         float timeRange, timeInteval;//表示時間範囲(~秒後まで表示),表示時間間隔(~秒ごとに表示)

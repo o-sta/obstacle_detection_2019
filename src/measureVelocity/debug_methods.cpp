@@ -75,9 +75,9 @@ void measurementVelocity::showPointcloud(){
             for(int k = 0; k < cvd.data[i].pt.size(); k++){  
     			cloudTemp.x=cvd.data[i].pt[k].y;//y軸              
                 cloudTemp.y=cvd.data[i].pt[k].x;//逆向きのx軸
-                //時間経過分, 移動
+                //時間経過分, 移動 
                 cloudTemp.x += cvd.twist[i].linear.y * t;//y軸 
-                cloudTemp.y += cvd.twist[i].linear.x * t;//逆向きのx軸      
+                cloudTemp.y += cvd.twist[i].linear.x * t;//逆向きのx軸     
                 //表示幅分点を追加
                 for(int n=0; n<= (int)((zUpper - zUnder)/zDelta); n++){
                     cloudTemp.z=cvd.data[i].pt[k].z + zUnder + n*zDelta;//z軸 + 表示範囲              
@@ -99,10 +99,56 @@ void measurementVelocity::showPointcloud(){
 	sensor_msgs::PointCloud2 viewMsgs;
 	pcl::toROSMsg (*viewCloud, viewMsgs);
 	viewMsgs.header.frame_id="/zed_camera_center";
-	pubDeb.publish(viewMsgs);
+	pubDebPcl.publish(viewMsgs);
 
 }
 
 void measurementVelocity::showMarker(){
+    //--sample
+    visualization_msgs::MarkerArray markerArray;
+    visualization_msgs::Marker marker;
+    marker.header.frame_id = "base_link";
+    marker.header.stamp = curClstr.header.stamp;
+    marker.ns = "my_namespace";
+    marker.type = visualization_msgs::Marker::ARROW;
+    marker.action = visualization_msgs::Marker::ADD;
+    markerArray.markers.resize((int)curClstr.data.size() * 2);
+    int count = 0;
+    float colors[12][3] ={{1.0,0,0},{0,1.0,0},{0,0,1.0},{1.0,1.0,0},{0,1.0,1.0},{1.0,0,1.0},{0.5,1.0,0},{0,0.5,1.0},{0.5,0,1.0},{1.0,0.5,0},{0,1.0,0.5},{1.0,0,0.5}};//色リスト
+    for(int k=0; k<cvd.data.size(); k++){
+        marker.scale.x = 1;
+        marker.scale.y = 0.1;
+        marker.scale.z = 0.1;
+        marker.text = "("+std::to_string(cvd.twist[k].linear.x) +","+ std::to_string(cvd.twist[k].linear.y)+")";
+        //position
+        marker.pose.position.x = cvd.data[k].gc.y;
+        marker.pose.position.y = cvd.data[k].gc.x;
+        marker.pose.position.z = cvd.data[k].gc.z;
+        //angle
+        double yaw = std::atan2(-cvd.twist[k].linear.y,- cvd.twist[k].linear.x);
+        //culc Quaternion
+        marker.pose.orientation = tf::createQuaternionMsgFromYaw(yaw);
+        marker.color.a = 1.0;
+        // marker.color.r = (k % (int)curClstr.data.size())/(double)curClstr.data.size() *1.0;
+        // marker.color.g = ((k+1) % (int)curClstr.data.size())/(double)curClstr.data.size() *1.0;
+        // marker.color.b = ((k+2) % (int)curClstr.data.size())/(double)curClstr.data.size() *1.0;
+        marker.color.r = colors[k][0];
+        marker.color.g = colors[k][1];
+        marker.color.b = colors[k][2];
+        //add Array
+        //--arrorw
+        marker.type = visualization_msgs::Marker::ARROW;
+        marker.id = count;
+        markerArray.markers[count++] = marker;
+        //--text
+        marker.scale.x = 1;
+        marker.scale.y = 0.5;
+        marker.scale.z = 0.5;
+        marker.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
+        marker.id = count;
+        markerArray.markers[count++] = marker;
+    }
+    markerArray.markers.resize(count);
+    pubDebMarker.publish( markerArray );
 
 }
