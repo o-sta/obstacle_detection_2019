@@ -110,6 +110,7 @@ generate_dynamic_reconfigure_options(
   cfg/convCamData.cfg
   cfg/imageMatching.cfg
   cfg/estimation.cfg
+  cfg/measurementVelocity.cfg
   # cfg/DynReconf2.cfg
 )
 ###################################
@@ -185,6 +186,7 @@ add_executable(${PROJECT_NAME}_im # image matching
  src/measureVelocity/methods.cpp
  src/measureVelocity/debug_main.cpp
  src/measureVelocity/debug_methods.cpp
+ src/measureVelocity/property.cpp
 )
 add_executable(${PROJECT_NAME}_pcl # point cloud
   src/convPCLData/constructor.cpp
@@ -234,6 +236,7 @@ add_dependencies(${PROJECT_NAME}_cc ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_gr ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_estimate ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_im ${PROJECT_NAME}_gencfg)
+add_dependencies(${PROJECT_NAME}_mv ${PROJECT_NAME}_gencfg)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_cc ${catkin_LIBRARIES}) # classification

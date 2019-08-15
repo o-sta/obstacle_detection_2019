@@ -11,6 +11,9 @@
 #include <obstacle_detection_2019/ImageMatchingData.h>
 //デバッグ用
 #include <pcl_ros/point_cloud.h>
+// rqt_reconfige
+#include <dynamic_reconfigure/server.h>
+#include <obstacle_detection_2019/measurementVelocityConfig.h>
 
 //クラスの定義
 class measurementVelocity{
@@ -29,10 +32,18 @@ class measurementVelocity{
     	std::vector<int> prvClstrMap, curClstrMap;
     	//マッチング評価
 	    std::vector<int> matchResult;
+        float weightImage, weightSize, weightGravity;//マッチング重み
+        int trackThreshold;//追跡回数閾値
         //デバッグ用
 		ros::NodeHandle nhDeb;
         ros::Publisher pubDeb;
         std::vector<int> trackNum;
+        int debugType;
+        float timeRange, timeInteval;//表示時間範囲(~秒後まで表示),表示時間間隔(~秒ごとに表示)
+        //--rqt_reconfigure
+        dynamic_reconfigure::Server<obstacle_detection_2019::measurementVelocityConfig> server;
+        dynamic_reconfigure::Server<obstacle_detection_2019::measurementVelocityConfig>::CallbackType f;
+        //
     public:
         //in constracter.cpp
         //コンストラクタ：クラス定義に呼び出されるメソッド
@@ -42,16 +53,19 @@ class measurementVelocity{
         //
         //メソッド:後でlaunchファイルからの読み込みメソッドを追加
         //in property.cpp
+        void setLaunchParam();
+        void configCallback(obstacle_detection_2019::measurementVelocityConfig &config, uint32_t level);
         //セット：内部パラメータの書き込み
         void setParam(int& temp);//(未使用)
         //ゲット：内部パラメータの読み込み
         //
         //in methods.cpp
+        void manage();//処理の流れを管理
         //その他メソッド
         //--センサーデータ受信
-        void subscribeClusterData();//データ受信
+        // void subscribeClusterData();//データ受信
         void cluster_callback(const obstacle_detection_2019::ClassificationData::ConstPtr& msg);
-        void subscribeImageMatchingData();//データ受信
+        // void subscribeImageMatchingData();//データ受信
         void matching_callback(const obstacle_detection_2019::ImageMatchingData::ConstPtr& msg);
         //--マッチング
         bool isPrvClstr();//連続データがあるか確認
@@ -65,6 +79,8 @@ class measurementVelocity{
         //データ更新
         void renewClstrData();
         //デバッグ用のメソッド
-        void visualizedVelocities();
+        void debug();
+        void showPointcloud();
+        void showMarker();
 };
 #endif

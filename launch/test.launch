@@ -23,7 +23,12 @@
       <arg name="localMap/resolution" value="$(arg localMap/resolution)"/>
     </include>
     <!-- measurement velocity -->
-    <node pkg="obstacle_detection_2019" name="obstacle_detection_2019_mv" type="obstacle_detection_2019_mv" output="screen" />
+    <include file="$(find obstacle_detection_2019)/launch/measurementVelocity.launch">
+      <arg name="measurementVelocity/debugType" value="1"/>
+      <!--debug parameter-->
+      <arg name="measurementVelocity/timeRange" value="10"/>
+      <arg name="measurementVelocity/timeInteval" value="1"/>
+    </include>
   </group>
 
 </launch>
