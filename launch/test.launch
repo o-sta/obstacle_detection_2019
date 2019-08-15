@@ -22,6 +22,8 @@
       <arg name="localMap/height/float" value="$(arg localMap/height/float)"/>
       <arg name="localMap/resolution" value="$(arg localMap/resolution)"/>
     </include>
+    <!-- measurement velocity -->
+    <node pkg="obstacle_detection_2019" name="obstacle_detection_2019_mv" type="obstacle_detection_2019_mv" output="screen" />
   </group>
 
 </launch>

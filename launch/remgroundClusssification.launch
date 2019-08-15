@@ -35,7 +35,7 @@
    <param name="groundEstimate/heightThreshold" value="1.0"/>
  </node>
  <!--classification-->
- <node pkg="obstacle_detection_2019" name="obstacle_detection_2019_cc" type="obstacle_detection_2019_cc" output="screen" >
+ <node pkg="obstacle_detection_2019" name="obstacle_detection_2019_cc" type="obstacle_detection_2019_cc" >
    <!--camera parameter-->
    <param name="camera/minDeg" value="$(arg camera/minDeg)"/>
    <param name="camera/maxDeg" value="$(arg camera/maxDeg)"/>
