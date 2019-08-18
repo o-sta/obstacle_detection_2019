@@ -210,6 +210,7 @@ add_executable(${PROJECT_NAME}_estimate # manage
   src/estimationVelocity/methods.cpp
   src/estimationVelocity/debug_main.cpp
   src/estimationVelocity/property.cpp
+  src/estimationVelocity/debug_methods.cpp
 )
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the

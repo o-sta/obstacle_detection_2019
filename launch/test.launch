@@ -29,6 +29,13 @@
       <arg name="measurementVelocity/timeRange" value="10"/>
       <arg name="measurementVelocity/timeInteval" value="1"/>
     </include>
+    <!-- measurement velocity -->
+    <include file="$(find obstacle_detection_2019)/launch/velocityEstimation.launch">
+      <arg name="estimationVelocity/debugType" value="1"/>
+      <!--debug parameter-->
+      <arg name="estimationVelocity/timeRange" value="10"/>
+      <arg name="estimationVelocity/timeInteval" value="1"/>
+    </include>
   </group>
 
 </launch>

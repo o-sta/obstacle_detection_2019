@@ -1,6 +1,6 @@
 #include<obstacle_detection_2019/velocityEstimation.h>
 
-void estimationClass::setLaunchParam(){
+void velocityEstimation::setLaunchParam(){
     
     ros::NodeHandle n("~");
     //カルマンフィルタパラメータ
@@ -31,4 +31,52 @@ void estimationClass::setLaunchParam(){
     n.getParam("estimationSigma/3/1",sig_x0(2,0));
     n.getParam("estimationSigma/2/4",sig_x0(1,3));
     n.getParam("estimationSigma/4/2",sig_x0(3,1));
+    //追跡閾値
+    n.getParam("measurementVelocity/trackThreshold", trackThreshold);
+    //デバッグ
+    n.getParam("measurementVelocity/debugType",debugType);
+    n.getParam("measurementVelocity/timeRange",timeRange);
+    n.getParam("measurementVelocity/timeInteval",timeInteval);
+}
+void velocityEstimation::configCallback(obstacle_detection_2019::estimationConfig &config, uint32_t level) {
+	// ROS_INFO("Reconfigure Request: %d %f %f %d", 
+	// 	config.windowDivisionDegree, config.windowHeight,
+	// 	config.windowWidth,config.windowMinPts
+	// 	// config.str_param.c_str(), 
+	// 	// config.bool_param?"True":"False", 
+	// 	// config.size
+	// 	);
+	//観測誤差共分散
+	del_t(0,0) = config.observationDelta11;
+	del_t(1,1) = config.observationDelta22;
+	del_t(2,2) = config.observationDelta33;
+	del_t(3,3) = config.observationDelta44;
+	del_t(0,2) = config.observationDelta13;
+	del_t(1,3) = config.observationDelta31;
+	del_t(2,0) = config.observationDelta24;
+	del_t(3,1) = config.observationDelta42;
+	//モデル誤差共分散
+	sig_wk(0,0) = config.predictionSigma11;
+	sig_wk(1,1) = config.predictionSigma22;
+	sig_wk(2,2) = config.predictionSigma33;
+	sig_wk(3,3) = config.predictionSigma44;
+	sig_wk(0,2) = config.predictionSigma13;
+	sig_wk(1,3) = config.predictionSigma31;
+	sig_wk(2,0) = config.predictionSigma24;
+	sig_wk(3,1) = config.predictionSigma42;
+	//推定共分散の初期値
+	sig_x0(0,0) = config.estimationSigma11;
+	sig_x0(1,1) = config.estimationSigma22;
+	sig_x0(2,2) = config.estimationSigma33;
+	sig_x0(3,3) = config.estimationSigma44;
+	sig_x0(0,2) = config.estimationSigma13;
+	sig_x0(1,3) = config.estimationSigma31;
+	sig_x0(2,0) = config.estimationSigma24;
+	sig_x0(3,1) = config.estimationSigma42;
+	//デバッグ
+    trackThreshold = config.trackThreshold;
+    debugType = config.debugType;
+    timeRange = config.timeRange;
+    timeInteval = config.timeInteval;
+
 }

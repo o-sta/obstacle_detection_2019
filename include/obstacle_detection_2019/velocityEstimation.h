@@ -6,17 +6,20 @@
 #include <ros/callback_queue.h>
 //self msg
 #include <obstacle_detection_2019/ClassificationVelocityData.h>
+#include <obstacle_detection_2019/ClassificationData.h>
 //追加（デバッグ用）
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <pcl_ros/point_cloud.h>
+#include <tf/transform_broadcaster.h>
+#include<visualization_msgs/MarkerArray.h>
 // rqt_reconfige
 #include <dynamic_reconfigure/server.h>
 #include <obstacle_detection_2019/estimationConfig.h>
 //クラスの定義
-class estimationClass{
+class velocityEstimation{
     private:
         //受信データ
 		ros::NodeHandle nhSub1;
@@ -38,15 +41,21 @@ class estimationClass{
 		Eigen::MatrixXd sig_x0;
 		Eigen::MatrixXd sig_wk;
 		Eigen::MatrixXd I;
+        //デバッグ用
+		ros::NodeHandle nhDeb;
+        ros::Publisher pubDebPcl,pubDebMarker;
+        int trackThreshold;
+        int debugType;
+        float timeRange, timeInteval;//表示時間範囲(~秒後まで表示),表示時間間隔(~秒ごとに表示)
         //--rqt_reconfigure
         dynamic_reconfigure::Server<obstacle_detection_2019::estimationConfig> server;
         dynamic_reconfigure::Server<obstacle_detection_2019::estimationConfig>::CallbackType f;
     public:
         //in constracter.cpp
         //コンストラクタ：クラス定義に呼び出されるメソッド
-        estimationClass();
+        velocityEstimation();
         //デストラクタ：クラスが消滅するときに呼びだされるメソッド
-        ~estimationClass();
+        ~velocityEstimation();
         //
         //メソッド:後でlaunchファイルからの読み込みメソッドを追加
         //in property.cpp
@@ -69,5 +78,9 @@ class estimationClass{
         void publishData();//データ送信
         // データ更新
         void renewMessages();
+        //デバッグ用のメソッド
+        void debug();
+        void showPointcloud();
+        void showMarker();
 };
 #endif

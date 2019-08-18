@@ -1,32 +1,30 @@
 ﻿#include<obstacle_detection_2019/velocityEstimation.h>
 
-estimationClass::estimationClass()
+velocityEstimation::velocityEstimation()
 {
+	//ROS_INFO("subscriber define");
 	//subscriber
 	// nhSub1.setCallbackQueue(&queue1);
-	sub=nhSub1.subscribe("measurementVelocityCluster",1,&estimationClass::cluster_callback,this);
+	sub=nhSub1.subscribe("measurementVelocityCluster",1,&velocityEstimation::cluster_callback,this);
 	//publisher
-    pub= nhPub.advertise<obstacle_detection_2019::ClassificationVelocityData>("classificationData", 1);
+	//ROS_INFO("publisher define");
+    pub= nhPub.advertise<obstacle_detection_2019::ClassificationVelocityData>("classificationDataEstimateVelocity", 1);
 
-	//launchファイルからパラメータの読み込み
-	setLaunchParam();
 	//デバッグ用
-	//publisher
-    // pubDeb= nhDeb.advertise<sensor_msgs::Image>("windowImage", 1);
-    // pubDebPcl= nhDebPcl.advertise<sensor_msgs::PointCloud2>("visualizedCluster", 1);
+	pubDebPcl= nhDeb.advertise<sensor_msgs::PointCloud2>("debugEstimatedVelocity", 1);
+	pubDebMarker= nhDeb.advertise<visualization_msgs::MarkerArray>("estimatedVelocityMarker", 1);
 
-	//rqt_reconfigure
-	f = boost::bind(&estimationClass::configCallback, this, _1, _2);
-	server.setCallback(f);
 
 	//--calman filter parameter dynamicReconfigureに追加予定
 	//resize
+	//ROS_INFO("resize");
 	sig_ut = Eigen::MatrixXd::Zero(2,2);
 	del_t = Eigen::MatrixXd::Zero(4,4);
 	sig_x0 = Eigen::MatrixXd::Zero(4,4);
 	sig_wk = Eigen::MatrixXd::Zero(4,4);
 	I = Eigen::MatrixXd::Identity(4,4);
 	//initialize
+	//ROS_INFO("init");
 	//delta Q
 	//--
 	del_t(0,0)=0.05*0.05;//0.01;//x
@@ -61,7 +59,14 @@ estimationClass::estimationClass()
 	sig_wk(2,0)=0;//sig_wk(0,2);//sig_wk(0,0)/(dt*dt);
 	sig_wk(3,1)=0;//sig_wk(1,3);//sig_wk(1,1)/(dt*dt);
 
-
+	//launchファイルからパラメータの読み込み
+	//ROS_INFO("setLaunchParam");
+	setLaunchParam();
+	//
+	//rqt_reconfigure
+	f = boost::bind(&velocityEstimation::configCallback, this, _1, _2);
+	server.setCallback(f);
+	ROS_INFO("ready");
 }
-estimationClass::~estimationClass(){
+velocityEstimation::~velocityEstimation(){
 }
