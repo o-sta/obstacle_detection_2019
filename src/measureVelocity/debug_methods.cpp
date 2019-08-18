@@ -73,7 +73,7 @@ void measurementVelocity::showPointcloud(){
 			cloudTemp.b=colors[i%12][2];
             //各データごとの処理
             for(int k = 0; k < cvd.data[i].pt.size(); k++){  
-    			cloudTemp.x=cvd.data[i].pt[k].y;//y軸              
+    			cloudTemp.x=cvd.data[i].pt[k].y;//y軸      
                 cloudTemp.y=cvd.data[i].pt[k].x;//逆向きのx軸
                 //時間経過分, 移動 
                 cloudTemp.x += cvd.twist[i].linear.y * t;//y軸 
@@ -125,7 +125,7 @@ void measurementVelocity::showMarker(){
         marker.pose.position.y = cvd.data[k].gc.x;
         marker.pose.position.z = cvd.data[k].gc.z;
         //angle
-        double yaw = std::atan2(-cvd.twist[k].linear.y,- cvd.twist[k].linear.x);
+        double yaw = std::atan2(cvd.twist[k].linear.y,cvd.twist[k].linear.x)+M_PI/2.0;
         //culc Quaternion
         marker.pose.orientation = tf::createQuaternionMsgFromYaw(yaw);
         marker.color.a = 1.0;

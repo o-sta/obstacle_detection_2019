@@ -51,6 +51,8 @@ void measurementVelocity::manage(){
 		matchingClstr();
 		// ROS_INFO("measurementProcess");
 		measurementProcess();
+		//
+		publishClassificationData();
 		// ROS_INFO("visualizedVelocities");
 		debug();
 	}
