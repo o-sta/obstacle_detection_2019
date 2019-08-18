@@ -11,7 +11,7 @@
   <arg name="measurementVelocity/timeInteval" default="1"/>
   <!-- <arg name="robot_name"        default="robot2"/> -->
   <!-- <group ns="$(arg robot_name)"> -->
-  <node pkg="obstacle_detection_2019" name="obstacle_detection_2019_mv" type="obstacle_detection_2019_mv" output="screen" respawn="true">
+  <node pkg="obstacle_detection_2019" name="obstacle_detection_2019_mv" type="obstacle_detection_2019_mv" respawn="true">
     <param name="measurementVelocity/debugType" value="$(arg measurementVelocity/debugType)"/>
     <!--weight parameter-->
     <param name="measurementVelocity/weight/image" value="$(arg measurementVelocity/weight/image)"/>
