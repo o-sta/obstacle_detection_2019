@@ -81,4 +81,5 @@ class d_convCamDataClass : public convCamDataClass{
         void d_publish_img(){
             d_pubImg.publish(d_cvb->toImageMsg());
         }
+        
 };

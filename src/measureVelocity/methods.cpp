@@ -1,40 +1,78 @@
 ﻿#include<obstacle_detection_2019/measurementVelocity.h>
 
 //subscribe
-void measurementVelocity::subscribeClusterData(){//クラスタデータ受信
-	queue1.callOne(ros::WallDuration(1));
-}
+// void measurementVelocity::subscribeClusterData(){//クラスタデータ受信
+// 	queue1.callOne(ros::WallDuration(1));
+// }
 void measurementVelocity::cluster_callback(const obstacle_detection_2019::ClassificationData::ConstPtr& msg)
 {
     //データをコピー
-    curClstr.header = msg->header;
-    curClstr.width = msg->width;
-    curClstr.height = msg->height;
-    curClstr.res = msg->res;
-    curClstr.widthInt = msg->widthInt;
-    curClstr.heightInt = msg->heightInt;
-    curClstr.cp = msg->cp;
-    curClstr.size = msg->size;
-    curClstr.data = msg->data;
+    // curClstr.header = msg->header;
+    // curClstr.width = msg->width;
+    // curClstr.height = msg->height;
+    // curClstr.res = msg->res;
+    // curClstr.widthInt = msg->widthInt;
+    // curClstr.heightInt = msg->heightInt;
+    // curClstr.cp = msg->cp;
+    // curClstr.size = msg->size;
+    // curClstr.data = msg->data;
+	curClstr = *msg;
+    //manageに移動
+    manage();
 }
-void measurementVelocity::subscribeImageMatchingData(){//画像マッチングデータ受信
-	queue2.callOne(ros::WallDuration(1));
-}
+// void measurementVelocity::subscribeImageMatchingData(){//画像マッチングデータ受信
+// 	queue2.callOne(ros::WallDuration(1));
+// }
 void measurementVelocity::matching_callback(const obstacle_detection_2019::ImageMatchingData::ConstPtr& msg)
 {
     //データをコピー
-    matchData.header = msg->header;
-    matchData.width = msg->width;
-    matchData.height = msg->height;
-    matchData.res = msg->res;
-    matchData.widthInt = msg->widthInt;
-    matchData.heightInt = msg->heightInt;
-    matchData.cp = msg->cp;
-    matchData.index = msg->index;
-    matchData.data = msg->data;
+    // matchData.header = msg->header;
+    // matchData.width = msg->width;
+    // matchData.height = msg->height;
+    // matchData.res = msg->res;
+    // matchData.widthInt = msg->widthInt;
+    // matchData.heightInt = msg->heightInt;
+    // matchData.cp = msg->cp;
+    // matchData.index = msg->index;
+    // matchData.data = msg->data;
+	matchData = *msg;
+    //manageに移動
+    manage();
+}
+void measurementVelocity::manage(){
+	// ROS_INFO("isCurClstr");
+	if(isCurClstr() ){
+		// ROS_INFO("creatClstrMap");
+		creatClstrMap();
+	}
+	// ROS_INFO("isPrvClstr() && isMatchData()");
+	if(isCurClstr() && isPrvClstr() && isMatchData()){
+		// ROS_INFO("matchingClstr");
+		matchingClstr();
+		// ROS_INFO("measurementProcess");
+		measurementProcess();
+		//
+		publishClassificationData();
+		// ROS_INFO("visualizedVelocities");
+		debug();
+	}
+	// ROS_INFO("renewClstrData");
+	renewClstrData();
+}
+bool measurementVelocity::isCurClstr(){//curClstrのデータの有無
+	if(curClstr.header.seq > 0 && (int)curClstr.data.size() > 0){
+		return true;
+	}
+	return false;
 }
 bool measurementVelocity::isPrvClstr(){//prvClstrのデータの有無
-	if(prvClstr.header.seq > 0 ){
+	if(prvClstr.header.seq > 0 && (int)prvClstr.data.size() > 0){
+		return true;
+	}
+	return false;
+}
+bool measurementVelocity::isMatchData(){//matchDataのデータの有無
+	if(matchData.header.seq > 0 && (int)matchData.data.size()>0){
 		return true;
 	}
 	return false;
@@ -52,6 +90,9 @@ void measurementVelocity::creatClstrMap(){//クラスタ番号を記述したマ
 	}
 }
 void measurementVelocity::renewClstrData(){
+	if(!isCurClstr()){
+		return;
+	}
 	//データクリア（必要かどうかは不明）
 	prvClstr.data.clear();
 	prvClstrMap.clear();
@@ -61,42 +102,61 @@ void measurementVelocity::renewClstrData(){
 	//
 	//データクリア（必要かどうかは不明）
 	curClstr.data.clear();
+	// curClstr.header.seq = 0;
 	curClstrMap.clear();
+    // matchData.index.clear();
+    // matchData.data.clear();
 }
 void measurementVelocity::matchingClstr(){//（途中）
 	//現在のクラスタ -> 1つ前の処理でのクラスタ に対するマッチングを取る
 	//画像マッチングスコア
 	//行：curClstrのクラスタ数, 列：prvClstrのクラスタ数, 値0で初期化
 	std::vector<std::vector<int>> imageMathingScore(curClstr.size.data, std::vector<int>(prvClstr.size.data, 0));
+
+	// ROS_INFO("matchData sousa");
 	//matchData（画像マッチングデータ）を走査
 	for(int k = 0; k < matchData.index.size(); k++){//widthInt.data * heightInt.data
-		int prvPos = matchData.index[k].data;
+		int prvPos = matchData.index[k].data;	
+		if(prvPos < 0){
+			continue;
+		}
 		int curPos = prvPos + matchData.data[prvPos].x.data
 			+ matchData.data[prvPos].y.data * matchData.widthInt.data;
+		if(curPos < 0){
+			continue;
+		}
+		if(curClstrMap[curPos] < 0 || prvClstrMap[prvPos] < 0){
+			continue;
+		}
+		ROS_INFO("imageMathingScore[%d][%d]",curClstrMap[curPos], prvClstrMap[prvPos]);
 		imageMathingScore[ curClstrMap[curPos] ][ prvClstrMap[prvPos] ] ++;//カウントアップ
 	}
+	// ROS_INFO("position");
 	//位置マッチングスコア
 	//重心位置の差
 	std::vector<std::vector<float>> posMathingScore(curClstr.size.data, std::vector<float>(prvClstr.size.data, 0));
 	for(int k=0; k < curClstr.size.data; k++){
 		for(int i=0; i< prvClstr.size.data; i++){
-			float disX = curClstr.data[k].gc.x - prvClstr.data[k].gc.x;
-			float disY = curClstr.data[k].gc.y - prvClstr.data[k].gc.y;
-			float disZ = curClstr.data[k].gc.z - prvClstr.data[k].gc.z;
+			float disX = curClstr.data[k].gc.x - prvClstr.data[i].gc.x;
+			float disY = curClstr.data[k].gc.y - prvClstr.data[i].gc.y;
+			float disZ = curClstr.data[k].gc.z - prvClstr.data[i].gc.z;
 			float dis = std::sqrt( disX*disX +disY*disY + disZ*disZ );
 			posMathingScore[k][i] = dis;
 		}
 	}
+	// ROS_INFO("size");
 	//サイズマッチングスコア
 	//サイズ（クラスタ内の点数）の差
 	std::vector<std::vector<int>> sizeMathingScore(curClstr.size.data, std::vector<int>(prvClstr.size.data, 0));
 	for(int k=0; k < curClstr.size.data; k++){
 		for(int i=0; i< prvClstr.size.data; i++){
 			int curSize = curClstr.data[k].dens.data;
-			int prvSize = prvClstr.data[k].dens.data;
+			int prvSize = prvClstr.data[i].dens.data;
 			sizeMathingScore[k][i] = std::abs(curSize - prvSize);
 		}
 	}
+	// ROS_INFO("matching");
+	// ROS_INFO_STREAM(curClstr.size.data <<","<<prvClstr.size.data);
 	//マッチング評価
 	// std::vector<int> matchResult(curClstr.size.data, -1);
 	matchResult.assign(curClstr.size.data , -1);
@@ -117,14 +177,14 @@ void measurementVelocity::matchingClstr(){//（途中）
 			}
 			//重心位置の差が1m以上
 			//--移動距離
-			if(posMathingScore[i][k] >= 1.0){
+			if(posMathingScore[k][i] >= 1.0){
 				continue;
 			}
 			double ev;//評価値
 			//評価式 : 要検討
-			ev = imageMathingScore[k][i] //画像マッチングスコア
-				+ (1 / (1 + posMathingScore[i][k]) ) //重心位置マッチングスコア
-				+ (1 / (2 * (1 + sizeMathingScore[i][k])) );//サイズマッチングスコア
+			ev = weightImage * imageMathingScore[k][i] //画像マッチングスコア
+				+ weightGravity * (1 / (1 + posMathingScore[k][i]) ) //重心位置マッチングスコア
+				+ weightSize * (1 / (2 * (1 + sizeMathingScore[k][i])) );//サイズマッチングスコア
 			//評価値が最大評価値よりも大きいとき
 			if(evMax < ev){
 				//ベストマッチング値を更新
@@ -149,12 +209,32 @@ void measurementVelocity::measurementProcess(){//
     cvd.cp = curClstr.cp;
     cvd.size = curClstr.size;
     cvd.data = curClstr.data;
+    cvd.twist.resize(curClstr.size.data);
+    cvd.match.resize(curClstr.size.data);
+    cvd.trackingNum.resize(curClstr.size.data);
 	//経過時間の計算（速度算出用）
 	double dt;
 	ros::Duration rosDt = curClstr.header.stamp - prvClstr.header.stamp;
 	dt = rosDt.toSec();
+	cvd.dt = dt;
+	//ROS_INFO(" curClstr.size.data, matchResult: %d, %d", curClstr.size.data, (int)matchResult.size());
+	//ROS_INFO("cvd.twist: %d", (int)cvd.twist.size());
+	std::vector<int> trackNumTemp;
+	if(trackNum.size()){
+		trackNumTemp.resize(trackNum.size());
+		for(int k=0; k<trackNum.size();k++){
+			trackNumTemp[k] = trackNum[k];
+		}
+	}
+	trackNum = std::vector<int>(curClstr.size.data, 0);
+
+	std::cout<<"match result\n";
 	for(int k=0; k < curClstr.size.data; k++){
+		// std::cout<<k<<" -> "<< matchResult[k] <<": gp("<<curClstr.data[k].gc.x<<","<< curClstr.data[k].gc.y<<") <-- ";
+		std::cout<<k<<" -> "<< matchResult[k] <<": gp("<<curClstr.data[k].gc.x<<","<< curClstr.data[k].gc.y<<") ";
+		cvd.match[k] = matchResult[k];
 		if( matchResult[k] < 0){
+			std::cout<<"(NONE)\n";
 			cvd.twist[k].linear.x = 0;
 			cvd.twist[k].linear.y = 0;
 			cvd.twist[k].linear.z = 0;
@@ -169,12 +249,26 @@ void measurementVelocity::measurementProcess(){//
 			float dy = curClstr.data[k].gc.y - prvClstr.data[ matchResult[k] ].gc.y;
 			float dz = curClstr.data[k].gc.z - prvClstr.data[ matchResult[k] ].gc.z;
 			//--速度計算
+			// std::cout<<" "<<dx<<"/"<< dt << " ";
 			cvd.twist[k].linear.x = dx/dt;
 			cvd.twist[k].linear.y = dy/dt;
 			cvd.twist[k].linear.z = dz/dt;
 			cvd.twist[k].angular.x = 0;
 			cvd.twist[k].angular.y = 0;
 			cvd.twist[k].angular.z = 0;
+			//追跡回数インクリメント
+			if(trackNumTemp.size()){
+				trackNum[k] = trackNumTemp[matchResult[k]] + 1;
+			}
+			else{
+				trackNum[k]++;
+			}
+			cvd.trackingNum[k] = trackNum[k];
+			//コメント
+			// std::cout<<"("<<prvClstr.data[matchResult[k]].gc.x<<","<< prvClstr.data[matchResult[k]].gc.y<<")\n";
+			std::cout<<"Vel("<<cvd.twist[k].linear.x<<","<< cvd.twist[k].linear.y<<")\n";
+			ROS_INFO("trackNum[k]: %d", trackNum[k]);
+
 		}
 	}
 }

@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   cv_bridge
   pcl_ros
+  dynamic_reconfigure
 )
 find_package(OpenCV REQUIRED)
 #find_package(pcl_ros REQUIRED)
@@ -103,11 +104,15 @@ generate_messages(
 ##     and list every .cfg file to be processed
 
 ## Generate dynamic reconfigure parameters in the 'cfg' folder
-# generate_dynamic_reconfigure_options(
-#   cfg/DynReconf1.cfg
-#   cfg/DynReconf2.cfg
-# )
-
+# configファイルを追加
+generate_dynamic_reconfigure_options(
+  cfg/classification.cfg
+  cfg/convCamData.cfg
+  cfg/imageMatching.cfg
+  cfg/estimation.cfg
+  cfg/measurementVelocity.cfg
+  # cfg/DynReconf2.cfg
+)
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -162,6 +167,7 @@ add_executable(${PROJECT_NAME}_gr # ground plane remove
   src/convCamData/methods.cpp
   src/convCamData/debug_main.cpp
   src/convCamData/debug_method.cpp
+  src/convCamData/property.cpp
 )
 add_executable(${PROJECT_NAME}_lrf # laser range finder
   src/convLRFData/constructor.cpp
@@ -173,11 +179,14 @@ add_executable(${PROJECT_NAME}_im # image matching
    src/imageMatching/methods.cpp
    src/imageMatching/debug_main.cpp
    src/imageMatching/debug_methods.cpp
+   src/imageMatching/property.cpp
  )
  add_executable(${PROJECT_NAME}_mv # measure Velocity
  src/measureVelocity/constructor.cpp
  src/measureVelocity/methods.cpp
  src/measureVelocity/debug_main.cpp
+ src/measureVelocity/debug_methods.cpp
+ src/measureVelocity/property.cpp
 )
 add_executable(${PROJECT_NAME}_pcl # point cloud
   src/convPCLData/constructor.cpp
@@ -195,6 +204,13 @@ add_executable(${PROJECT_NAME}_manage # manage
   src/management/debug_main.cpp
   src/management/debug_methods.cpp
   src/management/property.cpp
+)
+add_executable(${PROJECT_NAME}_estimate # manage
+  src/estimationVelocity/constructor.cpp
+  src/estimationVelocity/methods.cpp
+  src/estimationVelocity/debug_main.cpp
+  src/estimationVelocity/property.cpp
+  src/estimationVelocity/debug_methods.cpp
 )
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -215,7 +231,13 @@ add_dependencies(${PROJECT_NAME}_mv ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_pcl ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_syncro ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_manage ${PROJECT_NAME}_generate_messages_cpp)
-
+add_dependencies(${PROJECT_NAME}_estimate ${PROJECT_NAME}_generate_messages_cpp)
+# c++ ROSノードのDynamic Reconfigureの依存の追加
+add_dependencies(${PROJECT_NAME}_cc ${PROJECT_NAME}_gencfg)
+add_dependencies(${PROJECT_NAME}_gr ${PROJECT_NAME}_gencfg)
+add_dependencies(${PROJECT_NAME}_estimate ${PROJECT_NAME}_gencfg)
+add_dependencies(${PROJECT_NAME}_im ${PROJECT_NAME}_gencfg)
+add_dependencies(${PROJECT_NAME}_mv ${PROJECT_NAME}_gencfg)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_cc ${catkin_LIBRARIES}) # classification
@@ -226,6 +248,7 @@ target_link_libraries(${PROJECT_NAME}_mv ${catkin_LIBRARIES} ) # measurement vel
 target_link_libraries(${PROJECT_NAME}_pcl ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # point cloud
 target_link_libraries(${PROJECT_NAME}_syncro ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # synchro image
 target_link_libraries(${PROJECT_NAME}_manage ${catkin_LIBRARIES} ) # manege 
+target_link_libraries(${PROJECT_NAME}_estimate ${catkin_LIBRARIES} ) # estimate 
 
 
 
