@@ -66,6 +66,7 @@ add_message_files(
   MaskImageData.msg
   SensorMapData.msg
   synchronizedImage.msg
+  recordData.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -109,8 +110,9 @@ generate_dynamic_reconfigure_options(
   cfg/classification.cfg
   cfg/convCamData.cfg
   cfg/imageMatching.cfg
-  cfg/estimation.cfg
+  cfg/velocityEstimation.cfg
   cfg/measurementVelocity.cfg
+  cfg/recordExData.cfg
   # cfg/DynReconf2.cfg
 )
 ###################################
@@ -212,6 +214,13 @@ add_executable(${PROJECT_NAME}_estimate # manage
   src/estimationVelocity/property.cpp
   src/estimationVelocity/debug_methods.cpp
 )
+add_executable(${PROJECT_NAME}_red # record experiment data
+  src/recordExData/constructor.cpp
+  src/recordExData/methods.cpp
+  src/recordExData/debug_main.cpp
+  src/recordExData/property.cpp
+  src/recordExData/debug_methods.cpp
+)
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -232,12 +241,14 @@ add_dependencies(${PROJECT_NAME}_pcl ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_syncro ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_manage ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_estimate ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(${PROJECT_NAME}_red ${PROJECT_NAME}_generate_messages_cpp)
 # c++ ROSノードのDynamic Reconfigureの依存の追加
 add_dependencies(${PROJECT_NAME}_cc ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_gr ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_estimate ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_im ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_mv ${PROJECT_NAME}_gencfg)
+add_dependencies(${PROJECT_NAME}_red ${PROJECT_NAME}_gencfg)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_cc ${catkin_LIBRARIES}) # classification
@@ -249,6 +260,7 @@ target_link_libraries(${PROJECT_NAME}_pcl ${catkin_LIBRARIES} ${OpenCV_LIBRARIES
 target_link_libraries(${PROJECT_NAME}_syncro ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # synchro image
 target_link_libraries(${PROJECT_NAME}_manage ${catkin_LIBRARIES} ) # manege 
 target_link_libraries(${PROJECT_NAME}_estimate ${catkin_LIBRARIES} ) # estimate 
+target_link_libraries(${PROJECT_NAME}_red ${catkin_LIBRARIES} ) # record experiment data
 
 
 
