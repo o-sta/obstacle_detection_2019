@@ -61,6 +61,7 @@ class imageMatchingClass{
         ros::Publisher pubDeb;
         int debugType;
         //--rqt_reconfigure
+        bool rqt_reconfigure;//rqt_reconfigureを使用するか
         dynamic_reconfigure::Server<obstacle_detection_2019::imageMatchingConfig> server;
         dynamic_reconfigure::Server<obstacle_detection_2019::imageMatchingConfig>::CallbackType f;
 

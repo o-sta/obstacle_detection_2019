@@ -48,8 +48,10 @@ convCamDataClass::convCamDataClass()
 	sensorData_subscribed_flag = false; //sta
 	
 	//rqt_reconfigure
-	fc = boost::bind(&convCamDataClass::configCallback, this, _1, _2);
-	server.setCallback(fc);
+    if(rqt_reconfigure){
+		fc = boost::bind(&convCamDataClass::configCallback, this, _1, _2);
+		server.setCallback(fc);
+	}
 }
 convCamDataClass::~convCamDataClass(){
 

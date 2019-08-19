@@ -48,6 +48,7 @@ class classificationClass{
 		ros::NodeHandle nhDeb,nhDebPcl,nhDebGp;
         ros::Publisher pubDeb,pubDebPcl,pubDebGp;
         //--rqt_reconfigure
+        bool rqt_reconfigure;//rqt_reconfigureを使用するか
         dynamic_reconfigure::Server<obstacle_detection_2019::classificationConfig> server;
         dynamic_reconfigure::Server<obstacle_detection_2019::classificationConfig>::CallbackType f;
     public:

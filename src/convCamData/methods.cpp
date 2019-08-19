@@ -25,23 +25,6 @@ void convCamDataClass::sensor_callback(const sensor_msgs::ImageConstPtr& msg)
     manage();
 }
 
-void convCamDataClass::configCallback(obstacle_detection_2019::convCamDataConfig &config, uint32_t level) {
-	ROS_INFO("Reconfigure Request: %d %f %f %f %f %f %f", 
-		config.ransacNum, config.ransacDistanceThreshold,
-		config.ransacEpsAngle, config.estimateCandidateY,
-		config.estimateCameraHeight, config.estimateGroundThreshold,
-		config.estimateHeightThreshold
-		);
-    //ransacパラメータ
-    ransacNum = config.ransacNum;
-    distanceThreshold = config.ransacDistanceThreshold;
-    epsAngle = config.ransacEpsAngle;
-    //ground パラメータ
-    groundCandidateY = config.estimateCandidateY;
-    camHeight = config.estimateCameraHeight;
-    ground_th = config.estimateGroundThreshold;
-    height_th = config.estimateHeightThreshold;
-}
 //manage method
 void convCamDataClass::manage(){
     groundEstimationRANSAC();

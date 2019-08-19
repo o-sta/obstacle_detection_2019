@@ -3,7 +3,7 @@
 classificationClass::classificationClass()
 	:minCamDeg(-45),maxCamDeg(45),winDivDeg(10),winDivNum(9)
 	,mapWidth(8.0),mapHeight(8.0),mapRes(0.05),mapWidthInt(160),mapHeightInt(160)
-	,widthWin(0.4),heightWin(0.1),minPts(10)
+	,widthWin(0.4),heightWin(0.1),minPts(10),rqt_reconfigure(true)
 {
 	//subscriber
 	// nhSub1.setCallbackQueue(&queue1);
@@ -20,10 +20,12 @@ classificationClass::classificationClass()
     pubDeb= nhDeb.advertise<sensor_msgs::Image>("windowImage", 1);
     pubDebPcl= nhDebPcl.advertise<sensor_msgs::PointCloud2>("visualizedCluster", 1);
     pubDebGp= nhDebGp.advertise<sensor_msgs::PointCloud2>("visualizedGravityPoints", 1);
-
+	
 	//rqt_reconfigure
-	f = boost::bind(&classificationClass::configCallback, this, _1, _2);
-	server.setCallback(f);
+    if(rqt_reconfigure){
+		f = boost::bind(&classificationClass::configCallback, this, _1, _2);
+		server.setCallback(f);
+	}
 }
 classificationClass::~classificationClass(){
 	winIndex.clear();

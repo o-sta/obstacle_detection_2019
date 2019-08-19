@@ -43,6 +43,7 @@ class measurementVelocity{
         int debugType;
         float timeRange, timeInteval;//表示時間範囲(~秒後まで表示),表示時間間隔(~秒ごとに表示)
         //--rqt_reconfigure
+        bool rqt_reconfigure;//rqt_reconfigureを使用するか
         dynamic_reconfigure::Server<obstacle_detection_2019::measurementVelocityConfig> server;
         dynamic_reconfigure::Server<obstacle_detection_2019::measurementVelocityConfig>::CallbackType f;
         //

@@ -5,6 +5,8 @@
   <arg name="localMap/resolution" default="0.05"/>
   <arg name="imageMatching/debugType" default="1"/>
   <arg name="imageMatching/trackThreshold" default="5"/>
+ <!-- rqt_reconfigure -->
+ <arg name="imageMatching/rqt_reconfigure" default="false"/>
   <!-- <arg name="robot_name"        default="robot2"/> -->
   <!-- <group ns="$(arg robot_name)"> -->
   <!-- <node pkg="obstacle_detection_2019" type="obstacle_detection_2019_im" name="obstacle_detection_2019_im" respawn="true" output="screen"> -->
@@ -16,6 +18,8 @@
     <param name="localMap/resolution" value="$(arg localMap/resolution)"/>
     <!-- track threshold -->
     <param name="imageMatching/trackThreshold" value="$(arg imageMatching/trackThreshold)"/>
+    <!-- rqt_reconfigure -->
+    <param name="imageMatching/rqt_reconfigure" value="$(arg imageMatching/rqt_reconfigure)"/>
   </node>
   <!-- </group> -->
 </launch>

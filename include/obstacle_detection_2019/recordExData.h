@@ -32,7 +32,6 @@ class recordExData{
         //送信データ（データ解析用のトピックを配信）
 		ros::NodeHandle nhPub;
         ros::Publisher pub;
-        bool rqt_reconfigure;//rqt_reconfigureを使用するか
         obstacle_detection_2019::recordData recordData; 
         bool outputCSV;//csv出力するか  
         std::string userpath,filepath,filename;
@@ -50,6 +49,7 @@ class recordExData{
         ros::Publisher pubDebMarker;
         int debugType;
         //--rqt_reconfigure
+        bool rqt_reconfigure;//rqt_reconfigureを使用するか
         dynamic_reconfigure::Server<obstacle_detection_2019::recordExDataConfig> server;
         dynamic_reconfigure::Server<obstacle_detection_2019::recordExDataConfig>::CallbackType f;
     public:

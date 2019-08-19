@@ -1,4 +1,6 @@
 <launch>
+  <!-- rqt_reconfigure -->
+  <arg name="estimationVelocity/rqt_reconfigure" default="true"/>
   <!--kalmanfilter-->
   <!-- 観測誤差 -->
   <arg name="observationDelta/1/1" default="0.0025"/>
@@ -69,6 +71,8 @@
     <param name="estimationVelocity/debugType" value="$(arg estimationVelocity/debugType)"/>
     <param name="estimationVelocity/timeRange" value="$(arg estimationVelocity/timeRange)"/>
     <param name="estimationVelocity/timeInteval" value="$(arg estimationVelocity/timeInteval)"/>
+    <!-- rqt_reconfigure -->
+    <param name="estimationVelocity/rqt_reconfigure" value="$(arg estimationVelocity/rqt_reconfigure)"/>
   </node>
   <!-- </group> -->
 </launch>

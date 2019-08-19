@@ -61,6 +61,7 @@ class convCamDataClass{
         // センサデータをサブスクライブしたか否かのフラグ (trueで取得した)add_by sta
         bool sensorData_subscribed_flag;
         //--rqt_reconfigure
+        bool rqt_reconfigure;//rqt_reconfigureを使用するか
         dynamic_reconfigure::Server<obstacle_detection_2019::convCamDataConfig> server;
         dynamic_reconfigure::Server<obstacle_detection_2019::convCamDataConfig>::CallbackType fc;
     protected:

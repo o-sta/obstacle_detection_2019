@@ -1,4 +1,6 @@
 <launch>
+  <!-- rqt_reconfigure -->
+  <arg name="measurementVelocity/rqt_reconfigure" default="true"/>
   <!--weight-->
   <arg name="measurementVelocity/weight/image" default="1.0"/>
   <arg name="measurementVelocity/weight/size" default="1.0"/>
@@ -23,6 +25,8 @@
     <param name="measurementVelocity/debugType" value="$(arg measurementVelocity/debugType)"/>
     <param name="measurementVelocity/timeRange" value="$(arg measurementVelocity/timeRange)"/>
     <param name="measurementVelocity/timeInteval" value="$(arg measurementVelocity/timeInteval)"/>
+    <!-- rqt_reconfigure -->
+    <param name="measurementVelocity/rqt_reconfigure" value="$(arg measurementVelocity/rqt_reconfigure)"/>
   </node>
   <!-- </group> -->
 </launch>
