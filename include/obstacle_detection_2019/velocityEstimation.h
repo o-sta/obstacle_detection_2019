@@ -17,7 +17,7 @@
 #include<visualization_msgs/MarkerArray.h>
 // rqt_reconfige
 #include <dynamic_reconfigure/server.h>
-#include <obstacle_detection_2019/estimationConfig.h>
+#include <obstacle_detection_2019/velocityEstimationConfig.h>
 //クラスの定義
 class velocityEstimation{
     private:
@@ -48,8 +48,8 @@ class velocityEstimation{
         int debugType;
         float timeRange, timeInteval;//表示時間範囲(~秒後まで表示),表示時間間隔(~秒ごとに表示)
         //--rqt_reconfigure
-        dynamic_reconfigure::Server<obstacle_detection_2019::estimationConfig> server;
-        dynamic_reconfigure::Server<obstacle_detection_2019::estimationConfig>::CallbackType f;
+        dynamic_reconfigure::Server<obstacle_detection_2019::velocityEstimationConfig> server;
+        dynamic_reconfigure::Server<obstacle_detection_2019::velocityEstimationConfig>::CallbackType f;
     public:
         //in constracter.cpp
         //コンストラクタ：クラス定義に呼び出されるメソッド
@@ -71,7 +71,7 @@ class velocityEstimation{
         //--センサーデータ受信
         void cluster_callback(const obstacle_detection_2019::ClassificationVelocityData::ConstPtr& msg);
         //--rqt_reconfigureからの読み込み
-        void configCallback(obstacle_detection_2019::estimationConfig &config, uint32_t level);
+        void configCallback(obstacle_detection_2019::velocityEstimationConfig &config, uint32_t level);
         //処理
 		void kalmanFilter(void);
         // データ送信
