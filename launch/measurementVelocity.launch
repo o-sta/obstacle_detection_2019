@@ -1,0 +1,28 @@
+<launch>
+  <!--weight-->
+  <arg name="measurementVelocity/weight/image" default="1.0"/>
+  <arg name="measurementVelocity/weight/size" default="1.0"/>
+  <arg name="measurementVelocity/weight/gravity" default="1.0"/>
+  <!-- threshold -->
+  <arg name="measurementVelocity/trackThreshold" default="5"/>
+  <!-- debug -->
+  <arg name="measurementVelocity/debugType" default="1"/>
+  <arg name="measurementVelocity/timeRange" default="5"/>
+  <arg name="measurementVelocity/timeInteval" default="1"/>
+  <!-- <arg name="robot_name"        default="robot2"/> -->
+  <!-- <group ns="$(arg robot_name)"> -->
+  <node pkg="obstacle_detection_2019" name="obstacle_detection_2019_mv" type="obstacle_detection_2019_mv" respawn="true">
+    <param name="measurementVelocity/debugType" value="$(arg measurementVelocity/debugType)"/>
+    <!--weight parameter-->
+    <param name="measurementVelocity/weight/image" value="$(arg measurementVelocity/weight/image)"/>
+    <param name="measurementVelocity/weight/size" value="$(arg measurementVelocity/weight/size)"/>
+    <param name="measurementVelocity/weight/gravity" value="$(arg measurementVelocity/weight/gravity)"/>
+    <!-- track threshold -->
+    <param name="measurementVelocity/trackThreshold" value="$(arg measurementVelocity/trackThreshold)"/>
+    <!-- debug -->
+    <param name="measurementVelocity/debugType" value="$(arg measurementVelocity/debugType)"/>
+    <param name="measurementVelocity/timeRange" value="$(arg measurementVelocity/timeRange)"/>
+    <param name="measurementVelocity/timeInteval" value="$(arg measurementVelocity/timeInteval)"/>
+  </node>
+  <!-- </group> -->
+</launch>

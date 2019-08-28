@@ -1,0 +1,13 @@
+<launch>
+  <arg name="robot_name"        default="robot2"/>
+
+  <group ns="$(arg robot_name)">
+    <include file="$(find obstacle_detection_2019)/launch/zed.launch">
+    </include>
+    <include file="$(find obstacle_detection_2019)/launch/slamTest.launch">
+    </include>
+    
+  </group>
+  <!--<node pkg="tf" type="static_transform_publisher" name="GrobalToRobot1" args="0 0 0 0 0 0 1 global map 100" />-->
+  <!--<node pkg="tf" type="static_transform_publisher" name="GrobalToRobot2" args="3.0 -2.0 0 0 0 0 1 global robot1/odom 100" />-->
+</launch>

@@ -5,7 +5,7 @@ convLRFDataClass::convLRFDataClass()
 
 	//subscriber
 	nhSub.setCallbackQueue(&queue);
-	sub=nhSub.subscribe("/scan",1,&convLRFDataClass::sensor_callback,this);
+	sub=nhSub.subscribe("scan",1,&convLRFDataClass::sensor_callback,this);
 	//publisher
     pub= nhPub.advertise<obstacle_detection_2019::SensorMapData>("laserMapData", 1);
 

@@ -16,3 +16,7 @@ geometry_msgs/Point cp
 std_msgs/Int32 size #クラスタ数
 obstacle_detection_2019/ClassificationElement[] data
 geometry_msgs/Twist[] twist #測定速度データ
+int32[] trackingNum #追跡回数
+int32[] match #currentCluster->previousClusterの参照
+#dt
+float32 dt
