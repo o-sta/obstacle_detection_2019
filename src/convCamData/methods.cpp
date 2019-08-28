@@ -20,7 +20,6 @@ void convCamDataClass::sensor_callback(const sensor_msgs::ImageConstPtr& msg)
         msg->encoding.c_str());
         return ;
     }
-    sensorData_subscribed_flag = true; //sta
     //追加
     manage();
 }
@@ -48,6 +47,7 @@ void convCamDataClass::manage(){
     createPubDataRANSAC();
     publishConvCamData();
     publishMaskImage();
+
 }
 
 //床面推定
@@ -124,7 +124,7 @@ void convCamDataClass::createPubDataRANSAC(){
 	else{
 		d-=ground_th;
 	}
-	std::cout<<a<<" x + "<<b<<" y + "<<c<<" z + "<<d<<" = 0\n";
+	ROS_INFO_STREAM(a<<" x + "<<b<<" y + "<<c<<" z + "<<d<<" = 0\n");
     //仮変数
     float x_temp;
     float y_temp;
@@ -279,8 +279,4 @@ void convCamDataClass::clearMessages(){
     smd.size.clear();
     mid.index.clear();
     mid.pt.clear();
-}
-
-bool convCamDataClass::is_SensorData_subscribed(){
-    return sensorData_subscribed_flag;
 }

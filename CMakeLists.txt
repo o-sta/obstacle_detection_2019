@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   pcl_ros
   dynamic_reconfigure
+  darknet_ros_msgs
 )
 find_package(OpenCV REQUIRED)
 #find_package(pcl_ros REQUIRED)
@@ -87,6 +88,7 @@ generate_messages(
   DEPENDENCIES
   sensor_msgs
   geometry_msgs
+  darknet_ros_msgs
 )
 
 ################################################
@@ -125,7 +127,7 @@ generate_dynamic_reconfigure_options(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES jet_gpdr
-   CATKIN_DEPENDS roscpp sensor_msgs message_runtime
+   CATKIN_DEPENDS roscpp sensor_msgs message_runtime darknet_ros_msgs
 #  DEPENDS system_lib
 )
 
@@ -205,12 +207,20 @@ add_executable(${PROJECT_NAME}_manage # manage
   src/management/debug_methods.cpp
   src/management/property.cpp
 )
+
 add_executable(${PROJECT_NAME}_estimate # manage
   src/estimationVelocity/constructor.cpp
   src/estimationVelocity/methods.cpp
   src/estimationVelocity/debug_main.cpp
   src/estimationVelocity/property.cpp
   src/estimationVelocity/debug_methods.cpp
+add_executable(${PROJECT_NAME}_person # detectPersonHOG
+  src/detectPersonHOG/main.cpp
+  src/detectPersonHOG/methods.cpp
+)
+add_executable(${PROJECT_NAME}_darknet # darknet_ros
+  src/darknetImg/main.cpp
+  src/darknetImg/methods.cpp
 )
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -232,12 +242,15 @@ add_dependencies(${PROJECT_NAME}_pcl ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_syncro ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_manage ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_estimate ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(${PROJECT_NAME}_person ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(${PROJECT_NAME}_darknet ${PROJECT_NAME}_generate_messages_cpp)
 # c++ ROSノードのDynamic Reconfigureの依存の追加
 add_dependencies(${PROJECT_NAME}_cc ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_gr ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_estimate ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_im ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_mv ${PROJECT_NAME}_gencfg)
+
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_cc ${catkin_LIBRARIES}) # classification
@@ -249,6 +262,9 @@ target_link_libraries(${PROJECT_NAME}_pcl ${catkin_LIBRARIES} ${OpenCV_LIBRARIES
 target_link_libraries(${PROJECT_NAME}_syncro ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # synchro image
 target_link_libraries(${PROJECT_NAME}_manage ${catkin_LIBRARIES} ) # manege 
 target_link_libraries(${PROJECT_NAME}_estimate ${catkin_LIBRARIES} ) # estimate 
+target_link_libraries(${PROJECT_NAME}_person ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # manege 
+target_link_libraries(${PROJECT_NAME}_darknet ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # manege 
+
 
 
 
