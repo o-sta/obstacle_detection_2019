@@ -214,6 +214,7 @@ add_executable(${PROJECT_NAME}_estimate # manage
   src/estimationVelocity/debug_main.cpp
   src/estimationVelocity/property.cpp
   src/estimationVelocity/debug_methods.cpp
+)
 add_executable(${PROJECT_NAME}_person # detectPersonHOG
   src/detectPersonHOG/main.cpp
   src/detectPersonHOG/methods.cpp
