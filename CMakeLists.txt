@@ -66,6 +66,7 @@ add_message_files(
   ImageMatchingData.msg
   MaskImageData.msg
   SensorMapData.msg
+  SensorMapDataMultiLayer.msg
   synchronizedImage.msg
 )
 
