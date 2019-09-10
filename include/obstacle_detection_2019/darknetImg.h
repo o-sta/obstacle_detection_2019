@@ -22,6 +22,7 @@
 #include <darknet_ros_msgs/BoundingBoxes.h>
 //obstacle_detection_2019_msgs
 #include <obstacle_detection_2019/SensorMapDataMultiLayer.h>
+#include <obstacle_detection_2019/ClassificationData.h>
 //geometry_msgs
 #include <geometry_msgs/Point.h>
 //メッセージフィルタ
@@ -66,12 +67,14 @@ class darknetImg {
         pcl::SACSegmentation<pcl::PointXYZ> seg;
         pcl::PointCloud<pcl::PointXYZ>::Ptr ground_points;
         obstacle_detection_2019::SensorMapDataMultiLayer smdml;
+        obstacle_detection_2019::ClassificationData cd;
         //深度画像のマスク（有効で1、無効で0）
         //std::vector<std::vector<char>> mask;
         cv::Mat mask;
         bool is_size_initialized; //画像サイズが初期化されたか
     protected:
         bool convertToGrid(const float& x,const float& y,int& xg,int& yg);
+        //窓内に含まれているセルを出力する関数
     /* data */
     public:
         darknetImg(/* args */);
