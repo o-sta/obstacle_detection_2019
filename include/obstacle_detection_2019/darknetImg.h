@@ -57,9 +57,12 @@ class darknetImg {
         float ground_th;
         float a,b,c,d;
         float height_th;
+        int minPts;
         //マップのパラメータ
         float mapWidth, mapHeight, mapResolution;
         int mapRows, mapCols, numberOfCells;
+        //窓
+        std::vector<int> cellsInWindow;
         //関数用
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
         pcl::PointIndices::Ptr inliers;
@@ -67,6 +70,7 @@ class darknetImg {
         pcl::SACSegmentation<pcl::PointXYZ> seg;
         pcl::PointCloud<pcl::PointXYZ>::Ptr ground_points;
         obstacle_detection_2019::SensorMapDataMultiLayer smdml;
+        obstacle_detection_2019::SensorMapDataMultiLayer smdmlLowDimension;
         obstacle_detection_2019::ClassificationData cd;
         //深度画像のマスク（有効で1、無効で0）
         //std::vector<std::vector<char>> mask;
@@ -90,6 +94,7 @@ class darknetImg {
         //歩行者位置推定関数
         void trimPoints(); //枠線を元に点をトリミング（枠外の点を除去）
         void generateGridmap(); //深度画像からグリッドマップ作成
+        void dimensionalityReductionGridmap(); // グリッドマップのを行のみ（奥行きのみ）のマップに変換
         void classifyPoints(); //DBSCANによるクラスタリング
         void estimatePersonPosition(); //歩行者位置推定
         void predictPersonPosition(); //歩行者位置予測（カルマンフィルタ）※未実装
