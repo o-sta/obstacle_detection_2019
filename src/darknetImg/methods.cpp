@@ -1,4 +1,5 @@
 #include <obstacle_detection_2019/darknetImg.h>
+#include <boost/range/algorithm.hpp>
 
 // sensor_callback用コンストラクタ
 // darknetImg::darknetImg(/* args */)
@@ -159,6 +160,7 @@ void darknetImg::generateGridmap(){
     int ch = bridgeImage->image.channels();
     int rows = bridgeImage->image.rows; //深度画像の行幅
     int cols = bridgeImage->image.cols; //深度画像の列幅
+    std_msgs::Int32 initial_value;
     geometry_msgs::Point pt;
     pt.x = 0; pt.y = 0; pt.z = 0;
     int mapRow, mapCol; // マップの行と列
@@ -174,8 +176,10 @@ void darknetImg::generateGridmap(){
         layer.index.resize(numberOfCells);
         layer.size.resize(numberOfCells);
         layer.pt.resize(numberOfCells);
-        std::fill(layer.index.begin(), layer.index.end(), -1); //std::vectorの全要素を-1で埋める
-        std::fill(layer.size.begin(), layer.size.end(), 0);
+        initial_value.data = -1;
+        std::fill(layer.index.begin(), layer.index.end(), initial_value); //std::vectorの全要素を-1で埋める
+        initial_value.data = 0;
+        std::fill(layer.size.begin(), layer.size.end(), initial_value);
         std::fill(layer.pt.begin(), layer.pt.end(), pt);
     }
     //処理
@@ -205,6 +209,7 @@ void darknetImg::generateGridmap(){
 }
 
 void darknetImg::dimensionalityReductionGridmap(){
+    std_msgs::Int32 initial_value;
     geometry_msgs::Point pt;
     pt.x = 0; pt.y = 0; pt.z = 0;
     int *index, index_smdml;
@@ -213,7 +218,7 @@ void darknetImg::dimensionalityReductionGridmap(){
     int count = 0;
     smdmlLowDimension.header = smdml.header;
     smdmlLowDimension.layer.resize(smdml.layer.size());
-    for(auto& layer : smdmlLowDimension.layer){
+    for(auto& layer : smdmlLowDimension.layer){ //全てのSensorMapDataで走査
         count = 0;
         layer.header = smdml.header;
         layer.width.data = mapWidth;
@@ -224,11 +229,13 @@ void darknetImg::dimensionalityReductionGridmap(){
         layer.index.resize(mapRows);
         layer.size.resize(mapRows);
         layer.pt.resize(mapRows);
-        std::fill(layer.index.begin(), layer.index.end(), -1); //std::vectorの全要素を-1で埋める
-        std::fill(layer.size.begin(), layer.size.end(), 0);
+        initial_value.data = -1;
+        std::fill(layer.index.begin(), layer.index.end(), initial_value); //std::vectorの全要素を-1で埋める
+        initial_value.data = 0;
+        std::fill(layer.size.begin(), layer.size.end(), initial_value);
         std::fill(layer.pt.begin(), layer.pt.end(), pt);
         int mapIndexSize = smdml.layer[layer_i].index.size();
-        for(int cell=0; cell<mapIndexSize; cell++){
+        for(int cell=0; cell<mapIndexSize; cell++){ //
             if(smdml.layer[layer_i].index[cell].data < 0){ //smdmlのセルが空の場合はスキップ
                 continue;
             }
@@ -395,7 +402,10 @@ void darknetImg::classifyPoints(){
 }
 
 void darknetImg::estimatePersonPosition(){
-    
+    int i;
+    for(auto& ce : cd.data){
+        ROS_INFO_STREAM("person[" << i++ <<"] : [" << ce.gc.x << ce.gc.y << ce.gc.z << "]");
+    }
 }
 
 void darknetImg::predictPersonPosition(){

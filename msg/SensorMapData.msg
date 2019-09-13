@@ -15,4 +15,4 @@ geometry_msgs/Point cp
 #センサデータ
 std_msgs/Int32[] index#map to pt data / セルのsizeとptにアクセスするための目次配列
 std_msgs/Int32[] size#size of point in map cell / セル内の点の数
-geometry_msgs/Point[] pt // セル内の点群の重心
+geometry_msgs/Point[] pt #セル内の点群の重心

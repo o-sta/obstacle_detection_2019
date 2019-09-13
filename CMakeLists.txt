@@ -60,6 +60,7 @@ add_message_files(
   FILES
   ClassificationData.msg
   ClassificationElement.msg
+  ClassificationState.msg
   ClassificationVelocityData.msg
   CompressedSensorData.msg
   ImageFlow2D.msg
