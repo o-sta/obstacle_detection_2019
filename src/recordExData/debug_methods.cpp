@@ -19,7 +19,7 @@ void recordExData::showMarker(){
     marker.action = visualization_msgs::Marker::ADD;
     markerArray.markers.resize((int)velClstr.data.size() * 2 + 2);
     int count = 0;
-    float colors[12][3] ={{1.0,0,0},{0,1.0,0},{0,0,1.0},{1.0,1.0,0},{0,1.0,1.0},{1.0,0,1.0},{0.5,1.0,0},{0,0.5,1.0},{0.5,0,1.0},{1.0,0.5,0},{0,1.0,0.5},{1.0,0,0.5}};//色リスト
+    // float colors[12][3] ={{1.0,0,0},{0,1.0,0},{0,0,1.0},{1.0,1.0,0},{0,1.0,1.0},{1.0,0,1.0},{0.5,1.0,0},{0,0.5,1.0},{0.5,0,1.0},{1.0,0.5,0},{0,1.0,0.5},{1.0,0,0.5}};//色リスト
     //プリントデバッグ
     ROS_INFO("targetNum:%d", targetNum);
     if(targetNum >=0){

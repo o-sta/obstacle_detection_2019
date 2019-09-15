@@ -8,6 +8,9 @@ void syncroImageClass::callback(const sensor_msgs::Image::ConstPtr& rgbMsg,const
     // std::cout<<ros::Duration(depthImage.header.stamp-rgbImage.header.stamp).toSec()<<"\n";
     conbineImage();
     publishRgbCamData();
+    //debug
+    // std::cout<<"showSynchroPCL "<<std::endl;
+    debug();
 }
 void syncroImageClass::conbineImage(){
     syncImg.rgb = rgbImage;

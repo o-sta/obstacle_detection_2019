@@ -37,7 +37,8 @@
   <arg name="estimationVelocity/timeInteval" default="1"/>
   <!-- <arg name="robot_name"        default="robot2"/> -->
   <!-- <group ns="$(arg robot_name)"> -->
-  <node pkg="obstacle_detection_2019" name="obstacle_detection_2019_estimate" type="obstacle_detection_2019_estimate" output="screen" respawn="true">
+  <!-- <node pkg="obstacle_detection_2019" name="obstacle_detection_2019_estimate" type="obstacle_detection_2019_estimate" output="screen" respawn="true"> -->
+  <node pkg="obstacle_detection_2019" name="obstacle_detection_2019_estimate" type="obstacle_detection_2019_estimate" respawn="true">
     <!-- 観測誤差 -->
     <param name="observationDelta/1/1" value="$(arg observationDelta/1/1)"/>
     <param name="observationDelta/2/2" value="$(arg observationDelta/2/2)"/>

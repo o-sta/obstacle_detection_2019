@@ -5,6 +5,7 @@ void imageMatchingClass::debug(){
     switch(debugType){
         case 1: showMatchingMap();break;
         case 2: showMatchingImage();break;
+        case 3: showGroundDeletePCL();break;
         default: ;
     }
 }
@@ -52,8 +53,6 @@ void imageMatchingClass::showMatchingMap(){
 }
 void imageMatchingClass::showMatchingImage(){
     // matchDataを使用(ImageMatchingData.msg)
-    int width = matchData.widthInt.data;//画像横幅
-    int height = matchData.heightInt.data;//画像縦幅    
     //
     //出力表示用Matデータ、0で初期化、RGB　8bit
     cv::Mat viewData = bridgeImageCur->image.clone();
@@ -111,4 +110,54 @@ void imageMatchingClass::cvArrow(cv::Mat* img, cv::Point2i pt1, cv::Point2i pt2,
       cv::line(*img,pt2,ptl,color,thickness,lineType,shift);
       cv::line(*img,pt2,ptr,color,thickness,lineType,shift);
   }
+}
+
+//ポイントクラウド配信メソッド
+void imageMatchingClass::showGroundDeletePCL(){
+
+    //表示用ポイントクラウド
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr viewCloud(new  pcl::PointCloud<pcl::PointXYZRGB>);
+    
+    int width = bridgeImageCur->image.cols;//画像横幅
+    int height = bridgeImageCur->image.rows;//画像縦幅    
+
+    //要素追加用の仮変数
+	pcl::PointXYZRGB cloudTemp;
+    //iter
+    cv::Vec3b *it_w;
+    int count = 0;
+    viewCloud->points.resize(height*width);
+    viewCloud->height = 1;
+    viewCloud->width = count;
+    std::cout<<width<<","<<height<<std::endl;
+    for (int h=0; h<height; h++){
+        it_w = bridgeImageCur->image.ptr<cv::Vec3b>(h);
+        for(int w=0; w<width; w++){
+            if(midCur.index[h*width+w].data != -1){
+                cloudTemp.b = it_w[w][0];
+                cloudTemp.g = it_w[w][1];
+                cloudTemp.r = it_w[w][2];
+                cloudTemp.x=midCur.pt[midCur.index[h*width+w].data].y;//y軸              
+                cloudTemp.y=midCur.pt[midCur.index[h*width+w].data].x;//逆向きのx軸
+                cloudTemp.z=midCur.pt[midCur.index[h*width+w].data].z;//z軸
+                //ポイントクラウドに追加
+                viewCloud->points[count++] = cloudTemp;
+                viewCloud->width = count;
+            }
+        }
+    }
+	viewCloud->points.resize(count);
+	std::cout<<"viewCloud->points.size():"<<viewCloud->points.size()<<"\n";
+    //データがないとき
+	if(viewCloud->width <= 0)
+	{
+        ROS_INFO("No point cloud data!");
+		return ;
+	}
+	sensor_msgs::PointCloud2 viewMsgs;
+	pcl::toROSMsg (*viewCloud, viewMsgs);
+	viewMsgs.header.frame_id="/zed_camera_center";
+    //Publish
+	pubDebPcl.publish(viewMsgs);
+
 }

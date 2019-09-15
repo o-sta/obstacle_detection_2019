@@ -47,6 +47,8 @@ class classificationClass{
         //----デバッグ用
 		ros::NodeHandle nhDeb,nhDebPcl,nhDebGp;
         ros::Publisher pubDeb,pubDebPcl,pubDebGp;
+        // float colors[12][3] ={{255,0,0},{0,255,0},{0,0,255},{255,255,0},{0,255,255},{255,0,255},{127,255,0},{0,127,255},{127,0,255},{255,127,0},{0,255,127},{255,0,127}};//色リスト
+        float colors[12][3] ={{255,0,255},{255,255,0},{0,255,255},{255,0,0},{0,255,0},{0,0,255},{127,255,0},{0,127,255},{127,0,255},{255,127,0},{0,255,127},{255,0,127}};//色リスト
         //--rqt_reconfigure
         bool rqt_reconfigure;//rqt_reconfigureを使用するか
         dynamic_reconfigure::Server<obstacle_detection_2019::classificationConfig> server;

@@ -19,6 +19,8 @@
 // rqt_reconfige
 #include <dynamic_reconfigure/server.h>
 #include <obstacle_detection_2019/imageMatchingConfig.h>
+//debug
+#include <pcl_ros/point_cloud.h>
 
 //クラスの定義
 class imageMatchingClass{
@@ -58,7 +60,7 @@ class imageMatchingClass{
         int trackThreshold;
         //デバッグ用
 		ros::NodeHandle nhDeb;
-        ros::Publisher pubDeb;
+        ros::Publisher pubDeb,pubDebPcl;
         int debugType;
         //--rqt_reconfigure
         bool rqt_reconfigure;//rqt_reconfigureを使用するか
@@ -116,6 +118,6 @@ class imageMatchingClass{
         void showMatchingMap();
         void showMatchingImage();
         void cvArrow(cv::Mat* img, cv::Point2i pt1, cv::Point2i pt2, cv::Scalar color = cv::Scalar(0,200,200), int thickness=4, int lineType=8, int shift=0);
-
+        void showGroundDeletePCL();
 };
 #endif

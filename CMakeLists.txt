@@ -199,6 +199,8 @@ add_executable(${PROJECT_NAME}_syncro # point cloud
   src/synchroImage/constructor.cpp
   src/synchroImage/methods.cpp
   src/synchroImage/debug_main.cpp
+  src/synchroImage/debug_methods.cpp
+  src/synchroImage/property.cpp
 )
 add_executable(${PROJECT_NAME}_manage # manage
   src/management/constructor.cpp

@@ -5,9 +5,9 @@
   <arg name="localMap/height/float" value="12.0"/>
   <arg name="localMap/resolution" value="0.05"/>
  <!-- rqt_reconfigure -->
- <arg name="groundEstimate/rqt_reconfigure" value="false"/>
- <arg name="classification/rqt_reconfigure" value="false"/>
- <arg name="imageMatching/rqt_reconfigure" value="false"/>
+ <arg name="groundEstimate/rqt_reconfigure" value="true"/>
+ <arg name="classification/rqt_reconfigure" value="true"/>
+ <arg name="imageMatching/rqt_reconfigure" value="true"/>
  <arg name="measurementVelocity/rqt_reconfigure" value="false"/>
  <arg name="estimationVelocity/rqt_reconfigure" value="false"/>
   <group ns="$(arg robot_name)">

@@ -9,8 +9,8 @@
  <arg name="imageMatching/rqt_reconfigure" default="false"/>
   <!-- <arg name="robot_name"        default="robot2"/> -->
   <!-- <group ns="$(arg robot_name)"> -->
-  <!-- <node pkg="obstacle_detection_2019" type="obstacle_detection_2019_im" name="obstacle_detection_2019_im" respawn="true" output="screen"> -->
-  <node pkg="obstacle_detection_2019" type="obstacle_detection_2019_im" name="obstacle_detection_2019_im" respawn="true">
+  <node pkg="obstacle_detection_2019" type="obstacle_detection_2019_im" name="obstacle_detection_2019_im" respawn="true" output="screen">
+  <!-- <node pkg="obstacle_detection_2019" type="obstacle_detection_2019_im" name="obstacle_detection_2019_im" respawn="true"> -->
     <param name="imageMatching/debugType" value="$(arg imageMatching/debugType)"/>
     <!--map parameter-->
     <param name="localMap/width/float" value="$(arg localMap/width/float)"/>

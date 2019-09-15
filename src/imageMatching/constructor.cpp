@@ -13,6 +13,8 @@ imageMatchingClass::imageMatchingClass()
 	//publisher
     pubMatch= nhPub.advertise<obstacle_detection_2019::ImageMatchingData>("imageMatchingData", 1);
 	pubDeb= nhDeb.advertise<sensor_msgs::Image>("debugImageData", 1);
+	pubDebPcl = nhDeb.advertise<sensor_msgs::PointCloud2>("groundDeletePoints", 1);
+	
 	//launchファイルから読み込み
 	setLaunchParam();
 	
