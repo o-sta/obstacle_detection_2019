@@ -33,11 +33,26 @@ ground_points(new pcl::PointCloud<pcl::PointXYZ>)
             cellsInWindow[count++] = row;
     }
     cellsInWindow.resize(count);
+    //RANSACパラメータ設定
+    seg.setOptimizeCoefficients (true);
+	//seg.setModelType (pcl::SACMODEL_PLANE);//全平面抽出
+	seg.setModelType (pcl::SACMODEL_PERPENDICULAR_PLANE);//ある軸に垂直な平面を抽出
+	seg.setMethodType (pcl::SAC_RANSAC);
+	seg.setMaxIterations (ransacNum);//RANSACの繰り返し回数
+	seg.setDistanceThreshold (distanceThreshold);//モデルとどのくらい離れていてもいいか(モデルの評価に使用)
+	seg.setAxis(Eigen::Vector3f (0.0,0.0,1.0));//法線ベクトル
+	seg.setEpsAngle(epsAngle * (M_PI/180.0f));//許容出来る平面
 }
 
-darknetImg::~darknetImg()
-{
-    
+darknetImg::~darknetImg(){}
+
+void darknetImg::createWindow(){
+    cellsInWindow.resize(mapRows*mapCols);
+    int count = 0;
+    for(int row=-1; row<2; row++){
+            cellsInWindow[count++] = row;
+    }
+    cellsInWindow.resize(count);
 }
 
 void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb, const sensor_msgs::Image::ConstPtr& image)
