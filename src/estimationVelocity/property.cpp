@@ -38,7 +38,7 @@ void velocityEstimation::setLaunchParam(){
     n.getParam("measurementVelocity/timeRange",timeRange);
     n.getParam("measurementVelocity/timeInteval",timeInteval);
 }
-void velocityEstimation::configCallback(obstacle_detection_2019::estimationConfig &config, uint32_t level) {
+void velocityEstimation::configCallback(obstacle_detection_2019::velocityEstimationConfig &config, uint32_t level) {
 	// ROS_INFO("Reconfigure Request: %d %f %f %d", 
 	// 	config.windowDivisionDegree, config.windowHeight,
 	// 	config.windowWidth,config.windowMinPts

@@ -1,0 +1,41 @@
+<launch>
+  <!-- rqt_reconfigure -->
+  <arg name="recordExData/rqt_reconfigure" default="false"/>
+  <!-- robotNum -->
+  <arg name="recordExData/robotNum" default="2"/>
+  <!-- init -->
+  <arg name="recordExData/robot2/x" default="0.0"/>
+  <arg name="recordExData/robot2/y" default="0.0"/>
+  <arg name="recordExData/robot2/yaw" default="0.0"/>
+  <arg name="recordExData/robot1/x" default="7.0"/>
+  <arg name="recordExData/robot1/y" default="0.0"/>
+  <arg name="recordExData/robot1/yaw" default="3.141592654"/>
+  <arg name="recordExData/robot2/v" default="0.0"/>
+  <arg name="recordExData/robot2/w" default="0.0"/>
+  <arg name="recordExData/robot1/v" default="0.4"/>
+  <arg name="recordExData/robot1/w" default="0"/>
+  <arg name="recordExData/distanceThreshold" default="1.0"/>
+  <!-- debug -->
+  <arg name="recordExData/debugType" default="1"/>
+  <arg name="robot_name"        default="robot2"/>
+  <group ns="$(arg robot_name)">
+  <node pkg="obstacle_detection_2019" name="obstacle_detection_2019_red" type="obstacle_detection_2019_red" output="screen" respawn="true">
+    <!-- rqt_reconfigure -->
+    <param name="recordExData/rqt_reconfigure" value="$(arg recordExData/rqt_reconfigure)"/>
+    <!-- init -->
+    <param name="recordExData/robot2/x" value="$(arg recordExData/robot2/x)"/>
+    <param name="recordExData/robot2/y" value="$(arg recordExData/robot2/y)"/>
+    <param name="recordExData/robot2/yaw" value="$(arg recordExData/robot2/yaw)"/>
+    <param name="recordExData/robot1/x" value="$(arg recordExData/robot1/x)"/>
+    <param name="recordExData/robot1/y" value="$(arg recordExData/robot1/y)"/>
+    <param name="recordExData/robot1/yaw" value="$(arg recordExData/robot1/yaw)"/>
+    <param name="recordExData/robot2/v" value="$(arg recordExData/robot2/v)"/>
+    <param name="recordExData/robot2/w" value="$(arg recordExData/robot2/w)"/>
+    <param name="recordExData/robot1/v" value="$(arg recordExData/robot1/v)"/>
+    <param name="recordExData/robot1/w" value="$(arg recordExData/robot1/w)"/>
+    <param name="recordExData/distanceThreshold" value="$(arg recordExData/distanceThreshold)"/>
+    <!-- debug -->
+    <param name="recordExData/debugType" value="$(arg recordExData/debugType)"/>
+  </node>
+  </group>
+</launch>

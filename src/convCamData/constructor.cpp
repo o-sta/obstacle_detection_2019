@@ -1,4 +1,4 @@
-﻿#include<obstacle_detection_2019/convCamData.h>
+#include<obstacle_detection_2019/convCamData.h>
 
 convCamDataClass::convCamDataClass()
 	:cloud(new pcl::PointCloud<pcl::PointXYZ>),
@@ -45,10 +45,11 @@ convCamDataClass::convCamDataClass()
 	// camHeight=0.4125;
 	// height_th=1.0;
 	//
-	
 	//rqt_reconfigure
-	fc = boost::bind(&convCamDataClass::configCallback, this, _1, _2);
-	server.setCallback(fc);
+    if(rqt_reconfigure){
+		fc = boost::bind(&convCamDataClass::configCallback, this, _1, _2);
+		server.setCallback(fc);
+	}
 }
 convCamDataClass::~convCamDataClass(){
 

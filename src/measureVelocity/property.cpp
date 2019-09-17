@@ -3,6 +3,7 @@
 void measurementVelocity::setLaunchParam(){
     
     ros::NodeHandle n("~");
+    n.getParam("measurementVelocity/rqt_reconfigure",rqt_reconfigure);
     //マッチングパラメータ
     n.getParam("measurementVelocity/weight/image", weightImage);
     n.getParam("measurementVelocity/weight/size", weightSize);

@@ -3,7 +3,7 @@
 measurementVelocity::measurementVelocity()
 	 :debugType(1), timeRange(10), timeInteval(1), 
 	 weightImage(1), weightSize(1), weightGravity(1),
-	 trackThreshold(1)
+	 trackThreshold(1),rqt_reconfigure(true)
 {
 
 	//subscriber
@@ -24,8 +24,10 @@ measurementVelocity::measurementVelocity()
 	setLaunchParam();
 	
 	//rqt_reconfigure
-	f = boost::bind(&measurementVelocity::configCallback, this, _1, _2);
-	server.setCallback(f);
+    if(rqt_reconfigure){
+		f = boost::bind(&measurementVelocity::configCallback, this, _1, _2);
+		server.setCallback(f);
+	}
 }
 measurementVelocity::~measurementVelocity(){
 
