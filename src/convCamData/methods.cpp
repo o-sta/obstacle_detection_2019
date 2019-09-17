@@ -1,4 +1,4 @@
-﻿#include<obstacle_detection_2019/convCamData.h>
+#include<obstacle_detection_2019/convCamData.h>
 
 //subscribe
 bool convCamDataClass::subscribeSensorData(){//データ受信
@@ -262,8 +262,4 @@ void convCamDataClass::clearMessages(){
     smd.size.clear();
     mid.index.clear();
     mid.pt.clear();
-}
-
-bool convCamDataClass::is_SensorData_subscribed(){
-    return sensorData_subscribed_flag;
 }
