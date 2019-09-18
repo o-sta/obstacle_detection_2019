@@ -20,7 +20,6 @@ void convCamDataClass::sensor_callback(const sensor_msgs::ImageConstPtr& msg)
         msg->encoding.c_str());
         return ;
     }
-    sensorData_subscribed_flag = true; //sta
     //追加
     manage();
 }

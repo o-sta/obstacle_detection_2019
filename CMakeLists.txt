@@ -229,7 +229,7 @@ add_executable(${PROJECT_NAME}_red # record experiment data
   src/recordExData/debug_main.cpp
   src/recordExData/property.cpp
   src/recordExData/debug_methods.cpp
-
+)
 add_executable(${PROJECT_NAME}_person # detectPersonHOG
   src/detectPersonHOG/main.cpp
   src/detectPersonHOG/methods.cpp
