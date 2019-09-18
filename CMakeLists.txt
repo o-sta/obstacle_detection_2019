@@ -60,12 +60,14 @@ add_message_files(
   FILES
   ClassificationData.msg
   ClassificationElement.msg
+  ClassificationState.msg
   ClassificationVelocityData.msg
   CompressedSensorData.msg
   ImageFlow2D.msg
   ImageMatchingData.msg
   MaskImageData.msg
   SensorMapData.msg
+  SensorMapDataMultiLayer.msg
   synchronizedImage.msg
   recordData.msg
 )
@@ -114,6 +116,7 @@ generate_dynamic_reconfigure_options(
   cfg/imageMatching.cfg
   cfg/velocityEstimation.cfg
   cfg/measurementVelocity.cfg
+  cfg/darknetImg.cfg
   cfg/recordExData.cfg
   # cfg/DynReconf2.cfg
 )
@@ -226,7 +229,7 @@ add_executable(${PROJECT_NAME}_red # record experiment data
   src/recordExData/debug_main.cpp
   src/recordExData/property.cpp
   src/recordExData/debug_methods.cpp
-
+)
 add_executable(${PROJECT_NAME}_person # detectPersonHOG
   src/detectPersonHOG/main.cpp
   src/detectPersonHOG/methods.cpp
@@ -268,6 +271,7 @@ add_dependencies(${PROJECT_NAME}_gr ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_estimate ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_im ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_mv ${PROJECT_NAME}_gencfg)
+add_dependencies(${PROJECT_NAME}_darknet ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_red ${PROJECT_NAME}_gencfg)
 
 
