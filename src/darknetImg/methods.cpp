@@ -42,6 +42,10 @@ ground_points(new pcl::PointCloud<pcl::PointXYZ>)
 	seg.setDistanceThreshold (distanceThreshold);//モデルとどのくらい離れていてもいいか(モデルの評価に使用)
 	seg.setAxis(Eigen::Vector3f (0.0,0.0,1.0));//法線ベクトル
 	seg.setEpsAngle(epsAngle * (M_PI/180.0f));//許容出来る平面
+    // rqt_reconfigure
+    fc = boost::bind(&darknetImg::configCallback, this, _1, _2);
+	server.setCallback(fc);
+    ROS_INFO_STREAM("Started darknetImg");
 }
 
 darknetImg::~darknetImg(){}
@@ -81,14 +85,14 @@ void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr
 
 void darknetImg::configCallback(obstacle_detection_2019::darknetImgConfig &config, uint32_t level){
     ROS_INFO_STREAM("Reconfigure Request:"
-                    << config.cameraHeight
-                    << config.groundThreshold
-                    << config.windowMinPts
-                    << config.windowRangeCell
-                    << config.ransacNum
-                    << config.ransacDistanceThreshold
-                    << config.ransacEpsAngle
-                    << config.estimateCandidateY
+                    << " " << config.cameraHeight
+                    << " " << config.groundThreshold
+                    << " " << config.windowMinPts
+                    << " " << config.windowRangeCell
+                    << " " << config.ransacNum
+                    << " " << config.ransacDistanceThreshold
+                    << " " << config.ransacEpsAngle
+                    << " " << config.estimateCandidateY
                     );
     //ransac パラメータ
     ransacNum = config.ransacNum;
@@ -96,8 +100,8 @@ void darknetImg::configCallback(obstacle_detection_2019::darknetImgConfig &confi
     epsAngle = config.ransacEpsAngle;
     //ground パラメータ
     groundCandidateY = config.estimateCandidateY;
-    camHeight = config.CameraHeight;
-    ground_th = config.GroundThreshold;
+    camHeight = config.cameraHeight;
+    ground_th = config.groundThreshold;
     //window パラメータ
     minPts = config.windowMinPts;
     windowRangeCell = config.windowRangeCell;   

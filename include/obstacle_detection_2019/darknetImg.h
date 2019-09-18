@@ -79,6 +79,9 @@ class darknetImg {
         obstacle_detection_2019::SensorMapDataMultiLayer smdml;             //複数マップ
         obstacle_detection_2019::SensorMapDataMultiLayer smdmlLowDimension; //複数マップ(cols=1)
         obstacle_detection_2019::ClassificationData cd;                     //クラスタデータ
+        //--rqt_reconfigure
+        dynamic_reconfigure::Server<obstacle_detection_2019::darknetImgConfig> server;
+        dynamic_reconfigure::Server<obstacle_detection_2019::darknetImgConfig>::CallbackType fc;
         //深度画像のマスク（有効で1、無効で0）
         //std::vector<std::vector<char>> mask;
         cv::Mat mask;
@@ -91,9 +94,10 @@ class darknetImg {
         darknetImg();
         ~darknetImg();
         void detect();              //人間を検出
-        bool subscribeSensorData(); //データ受信
         void sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb,const sensor_msgs::ImageConstPtr& image); //データ受信
         void configCallback(obstacle_detection_2019::darknetImgConfig &config, uint32_t level); //パラメータ受信
+        void setLaunchParam();
+        bool subscribeSensorData(); //データ受信
         void publishData();         //データ送信
         //パラメータ設定関数
         void createWindow();        //窓作成
