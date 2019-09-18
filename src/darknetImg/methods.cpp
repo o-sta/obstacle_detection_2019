@@ -55,6 +55,7 @@ void darknetImg::createWindow(){
     cellsInWindow.resize(count);
 }
 
+
 void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb, const sensor_msgs::Image::ConstPtr& image)
 {
     // debug移行予定
@@ -77,6 +78,31 @@ void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr
     // パブリッシュ(debgu移行予定)
     pub.publish(bridgeImage->toImageMsg());
 }
+
+void darknetImg::configCallback(obstacle_detection_2019::darknetImgConfig &config, uint32_t level){
+    ROS_INFO_STREAM("Reconfigure Request:"
+                    << config.cameraHeight
+                    << config.groundThreshold
+                    << config.windowMinPts
+                    << config.windowRangeCell
+                    << config.ransacNum
+                    << config.ransacDistanceThreshold
+                    << config.ransacEpsAngle
+                    << config.estimateCandidateY
+                    );
+    //ransac パラメータ
+    ransacNum = config.ransacNum;
+    distanceThreshold = config.ransacDistanceThreshold;
+    epsAngle = config.ransacEpsAngle;
+    //ground パラメータ
+    groundCandidateY = config.estimateCandidateY;
+    camHeight = config.CameraHeight;
+    ground_th = config.GroundThreshold;
+    //window パラメータ
+    minPts = config.windowMinPts;
+    windowRangeCell = config.windowRangeCell;   
+}
+
 
 void darknetImg::pickUpGroundPointCandidates(){
     float xt, yt, zt; //点の座標（テンプレート）

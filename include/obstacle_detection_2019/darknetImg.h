@@ -64,6 +64,7 @@ class darknetImg {
         int ransacNum;                  //RANSACを行う回数
         float distanceThreshold;        //床面モデルとどのくらい離れてもいいか
         float epsAngle;                 //許容できる平面
+        int windowRangeCell;
         //ローカルマップのパラメータ
         float mapWidth, mapHeight, mapResolution;   //ローカルマップの横幅[m]、縦幅[m]、解像度[m/pixel]
         int mapRows, mapCols, numberOfCells;        //ローカルマップの横幅[pixel]、縦幅[pixel]、マップのセル数[pixel]
@@ -92,6 +93,7 @@ class darknetImg {
         void detect();              //人間を検出
         bool subscribeSensorData(); //データ受信
         void sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb,const sensor_msgs::ImageConstPtr& image); //データ受信
+        void configCallback(obstacle_detection_2019::darknetImgConfig &config, uint32_t level); //パラメータ受信
         void publishData();         //データ送信
         //パラメータ設定関数
         void createWindow();        //窓作成
