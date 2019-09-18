@@ -3,6 +3,7 @@
 void imageMatchingClass::setLaunchParam(){
     
     ros::NodeHandle n("~");
+    n.getParam("imageMatching/rqt_reconfigure",rqt_reconfigure);
     //デバッグタイプ
     n.getParam("imageMatching/debugType",debugType);
     //マップパラメータ

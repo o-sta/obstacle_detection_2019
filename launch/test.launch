@@ -4,15 +4,24 @@
   <arg name="localMap/width/float" value="12.0"/>
   <arg name="localMap/height/float" value="12.0"/>
   <arg name="localMap/resolution" value="0.05"/>
+ <!-- rqt_reconfigure -->
+ <arg name="groundEstimate/rqt_reconfigure" value="true"/>
+ <arg name="classification/rqt_reconfigure" value="true"/>
+ <arg name="imageMatching/rqt_reconfigure" value="true"/>
+ <arg name="measurementVelocity/rqt_reconfigure" value="false"/>
+ <arg name="estimationVelocity/rqt_reconfigure" value="false"/>
   <group ns="$(arg robot_name)">
     <!-- synchro and magage node -->
     <include file="$(find obstacle_detection_2019)/launch/synchroManage.launch"/>
     <!-- ground removement and clussification node -->
-    <include file="$(find obstacle_detection_2019)/launch/remgroundClusssification.launch">
+    <include file="$(find obstacle_detection_2019)/launch/remgroundClassification.launch">
       <!--map parameter-->
       <arg name="localMap/width/float" value="$(arg localMap/width/float)"/>
       <arg name="localMap/height/float" value="$(arg localMap/height/float)"/>
       <arg name="localMap/resolution" value="$(arg localMap/resolution)"/>
+      <!-- rqt_reconfigure -->
+      <arg name="groundEstimate/rqt_reconfigure" value="$(arg groundEstimate/rqt_reconfigure)"/>
+      <arg name="classification/rqt_reconfigure" value="$(arg classification/rqt_reconfigure)"/>
     </include>
     <!-- image matching node -->
     <include file="$(find obstacle_detection_2019)/launch/imageMatching.launch">
@@ -21,6 +30,8 @@
       <arg name="localMap/width/float" value="$(arg localMap/width/float)"/>
       <arg name="localMap/height/float" value="$(arg localMap/height/float)"/>
       <arg name="localMap/resolution" value="$(arg localMap/resolution)"/>
+      <!-- rqt_reconfigure -->
+      <arg name="imageMatching/rqt_reconfigure" value="$(arg imageMatching/rqt_reconfigure)"/>
     </include>
     <!-- measurement velocity -->
     <include file="$(find obstacle_detection_2019)/launch/measurementVelocity.launch">
@@ -28,13 +39,17 @@
       <!--debug parameter-->
       <arg name="measurementVelocity/timeRange" value="10"/>
       <arg name="measurementVelocity/timeInteval" value="1"/>
+      <!-- rqt_reconfigure -->
+      <arg name="measurementVelocity/rqt_reconfigure" value="$(arg measurementVelocity/rqt_reconfigure)"/>
     </include>
-    <!-- measurement velocity -->
+    <!-- estimation velocity -->
     <include file="$(find obstacle_detection_2019)/launch/velocityEstimation.launch">
       <arg name="estimationVelocity/debugType" value="1"/>
       <!--debug parameter-->
       <arg name="estimationVelocity/timeRange" value="10"/>
       <arg name="estimationVelocity/timeInteval" value="1"/>
+      <!-- rqt_reconfigure -->
+      <arg name="estimationVelocity/rqt_reconfigure" value="$(arg estimationVelocity/rqt_reconfigure)"/>
     </include>
   </group>
 

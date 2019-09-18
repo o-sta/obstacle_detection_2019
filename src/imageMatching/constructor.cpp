@@ -2,7 +2,7 @@
 
 imageMatchingClass::imageMatchingClass()
 	:imgCurOnce(false),imgPreOnce(false),debugType(1),mapW(8),mapH(8),mapR(0.05),
-	trackThreshold(2),nh(8),nw(16),maxDetectPoint(20),maxPoint(10),ws(13)
+	trackThreshold(2),nh(8),nw(16),maxDetectPoint(20),maxPoint(10),ws(13),rqt_reconfigure(true)
 {
 
 	//subscriber
@@ -13,12 +13,16 @@ imageMatchingClass::imageMatchingClass()
 	//publisher
     pubMatch= nhPub.advertise<obstacle_detection_2019::ImageMatchingData>("imageMatchingData", 1);
 	pubDeb= nhDeb.advertise<sensor_msgs::Image>("debugImageData", 1);
+	pubDebPcl = nhDeb.advertise<sensor_msgs::PointCloud2>("groundDeletePoints", 1);
+	
 	//launchファイルから読み込み
 	setLaunchParam();
 	
 	//rqt_reconfigure
-	f = boost::bind(&imageMatchingClass::configCallback, this, _1, _2);
-	server.setCallback(f);
+    if(rqt_reconfigure){
+		f = boost::bind(&imageMatchingClass::configCallback, this, _1, _2);
+		server.setCallback(f);
+	}
 }
 imageMatchingClass::~imageMatchingClass(){
 	

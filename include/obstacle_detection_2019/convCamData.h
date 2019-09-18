@@ -59,6 +59,7 @@ class convCamDataClass{
         //--DEM　(未完成)
         cv::Mat dem;//ステレオカメラセンサによるローカルマップ
         //--rqt_reconfigure
+        bool rqt_reconfigure;//rqt_reconfigureを使用するか
         dynamic_reconfigure::Server<obstacle_detection_2019::convCamDataConfig> server;
         dynamic_reconfigure::Server<obstacle_detection_2019::convCamDataConfig>::CallbackType fc;
     protected:

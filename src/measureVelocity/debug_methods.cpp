@@ -15,7 +15,7 @@ void measurementVelocity::debug(){
 // 現在は未実装
 void measurementVelocity::showPointcloud(){
     //障害物カラーレパートリー
-	float colors[12][3] ={{255,0,0},{0,255,0},{0,0,255},{255,255,0},{0,255,255},{255,0,255},{127,255,0},{0,127,255},{127,0,255},{255,127,0},{0,255,127},{255,0,127}};//色リスト
+	// float colors[12][3] ={{255,0,0},{0,255,0},{0,0,255},{255,255,0},{0,255,255},{255,0,255},{127,255,0},{0,127,255},{127,0,255},{255,127,0},{0,255,127},{255,0,127}};//色リスト
     //表示用ポイントクラウド
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr viewCloud(new  pcl::PointCloud<pcl::PointXYZRGB>);
     //初期化
@@ -114,7 +114,7 @@ void measurementVelocity::showMarker(){
     marker.action = visualization_msgs::Marker::ADD;
     markerArray.markers.resize((int)curClstr.data.size() * 2);
     int count = 0;
-    float colors[12][3] ={{1.0,0,0},{0,1.0,0},{0,0,1.0},{1.0,1.0,0},{0,1.0,1.0},{1.0,0,1.0},{0.5,1.0,0},{0,0.5,1.0},{0.5,0,1.0},{1.0,0.5,0},{0,1.0,0.5},{1.0,0,0.5}};//色リスト
+    // float colors[12][3] ={{1.0,0,0},{0,1.0,0},{0,0,1.0},{1.0,1.0,0},{0,1.0,1.0},{1.0,0,1.0},{0.5,1.0,0},{0,0.5,1.0},{0.5,0,1.0},{1.0,0.5,0},{0,1.0,0.5},{1.0,0,0.5}};//色リスト
     for(int k=0; k<cvd.data.size(); k++){
         marker.scale.x = 1;
         marker.scale.y = 0.1;

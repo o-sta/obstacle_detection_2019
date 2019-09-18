@@ -1,4 +1,4 @@
-﻿#include<obstacle_detection_2019/convCamData.h>
+#include<obstacle_detection_2019/convCamData.h>
 
 //subscribe
 bool convCamDataClass::subscribeSensorData(){//データ受信
@@ -20,34 +20,17 @@ void convCamDataClass::sensor_callback(const sensor_msgs::ImageConstPtr& msg)
         msg->encoding.c_str());
         return ;
     }
+    sensorData_subscribed_flag = true; //sta
     //追加
     manage();
 }
 
-void convCamDataClass::configCallback(obstacle_detection_2019::convCamDataConfig &config, uint32_t level) {
-	ROS_INFO("Reconfigure Request: %d %f %f %f %f %f %f", 
-		config.ransacNum, config.ransacDistanceThreshold,
-		config.ransacEpsAngle, config.estimateCandidateY,
-		config.estimateCameraHeight, config.estimateGroundThreshold,
-		config.estimateHeightThreshold
-		);
-    //ransacパラメータ
-    ransacNum = config.ransacNum;
-    distanceThreshold = config.ransacDistanceThreshold;
-    epsAngle = config.ransacEpsAngle;
-    //ground パラメータ
-    groundCandidateY = config.estimateCandidateY;
-    camHeight = config.estimateCameraHeight;
-    ground_th = config.estimateGroundThreshold;
-    height_th = config.estimateHeightThreshold;
-}
 //manage method
 void convCamDataClass::manage(){
     groundEstimationRANSAC();
     createPubDataRANSAC();
     publishConvCamData();
     publishMaskImage();
-
 }
 
 //床面推定
@@ -124,7 +107,7 @@ void convCamDataClass::createPubDataRANSAC(){
 	else{
 		d-=ground_th;
 	}
-	ROS_INFO_STREAM(a<<" x + "<<b<<" y + "<<c<<" z + "<<d<<" = 0\n");
+	std::cout<<a<<" x + "<<b<<" y + "<<c<<" z + "<<d<<" = 0\n";
     //仮変数
     float x_temp;
     float y_temp;

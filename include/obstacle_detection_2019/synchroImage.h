@@ -10,6 +10,10 @@
 #include <sensor_msgs/Image.h>
 //
 #include<obstacle_detection_2019/synchronizedImage.h>
+//debug
+#include <pcl_ros/point_cloud.h>
+#include <cv_bridge/cv_bridge.h>
+#include <sensor_msgs/image_encodings.h>
 
 
 //クラスの定義
@@ -29,7 +33,11 @@ class syncroImageClass{
         //
         typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sensor_msgs::Image> MySyncPolicy;
         message_filters::Synchronizer<MySyncPolicy> sync;
-        
+        //debug
+		ros::NodeHandle nhDeb;
+        ros::Publisher pubDebPcl;
+        float f = 701.010;
+        int debugType;
     public:
         //in constracter.cpp
         //コンストラクタ：クラス定義に呼び出されるメソッド
@@ -40,7 +48,7 @@ class syncroImageClass{
         //メソッド：関数のようなもの:後でlaunchファイルからの読み込みメソッドを追加
         //in property.cpp
         //セット：内部パラメータの書き込み
-        void setParam(int& temp);//(未使用)
+        void setLaunchParam();
         //ゲット：内部パラメータの読み込み
         int& getParam();//(未使用)
         //
@@ -51,5 +59,8 @@ class syncroImageClass{
         void callback(const sensor_msgs::Image::ConstPtr& rgbMsg,const sensor_msgs::Image::ConstPtr& depthMsg);
         //データ送信
         void publishRgbCamData();
+        //
+        void debug();
+        void showSynchroPCL();
 };
 #endif
