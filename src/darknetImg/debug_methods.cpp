@@ -1,5 +1,25 @@
 #include <obstacle_detection_2019/darknetImgDebug.h>
 
+darknetImgDebug::darknetImgDebug(){
+
+}
+
+darknetImgDebug::~darknetImgDebug(){
+
+}
+
+void darknetImgDebug::drawClusterCells(obstacle_detection_2019::ClassificationElement& cluster){
+    
+}
+
+void darknetImgDebug::cluster2Image(){
+    int count = 0;
+    for (auto cluster : cd.data){
+        drawClusterCells(cluster);
+        ++count;
+    }
+}
+
 
 
 // void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb, const sensor_msgs::Image::ConstPtr& image)

@@ -1,6 +1,6 @@
 //多重インクルード防止
-#ifndef INCLUDE_DETECT_PERSON_HOG
-#define INCLUDE_DETECT_PERSON_HOG
+#ifndef INCLUDE_DARKNET
+#define INCLUDE_DARKNET
 //include haeders
 #include <ros/ros.h>
 #include <ros/callback_queue.h>
@@ -78,7 +78,6 @@ class darknetImg {
         pcl::PointCloud<pcl::PointXYZ>::Ptr ground_points;                  //床面候補点
         obstacle_detection_2019::SensorMapDataMultiLayer smdml;             //複数マップ
         obstacle_detection_2019::SensorMapDataMultiLayer smdmlLowDimension; //複数マップ(cols=1)
-        obstacle_detection_2019::ClassificationData cd;                     //クラスタデータ
         //--rqt_reconfigure
         dynamic_reconfigure::Server<obstacle_detection_2019::darknetImgConfig> server;
         dynamic_reconfigure::Server<obstacle_detection_2019::darknetImgConfig>::CallbackType fc;
@@ -87,6 +86,7 @@ class darknetImg {
         cv::Mat mask;
         bool is_size_initialized; //画像サイズが初期化されたか
     protected:
+        obstacle_detection_2019::ClassificationData cd;                     //クラスタデータ
         bool convertToGrid(const float& x,const float& y,int& xg,int& yg);
         //窓内に含まれているセルを出力する関数
     /* data */

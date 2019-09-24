@@ -105,6 +105,7 @@ void darknetImg::configCallback(obstacle_detection_2019::darknetImgConfig &confi
     //window パラメータ
     minPts = config.windowMinPts;
     windowRangeCell = config.windowRangeCell;   
+    createWindow();
 }
 
 
@@ -389,13 +390,13 @@ void darknetImg::classifyPoints(){
 
                 //窓内に含まれているセルを列挙して、点の数を数える
                 //また、コア点として探査されていない点を候補に追加
-                for(int i=0; i < cellsInWindow.size(); i++){ //窓内セルに対して走査
-                    int pos = taskIndex[n] + cellsInWindow[i]; //窓内セルの座標とコア点座標を重畳
-                    if (pos < 0 || pos >= layer.heightInt.data){ continue; } //探査対象がマップ範囲外のときはスキップ
-                    if(mapIndex[pos] < 0){ continue; }//インデックスが存在しない場合はスキップ
-                    count_points += layer.size[ mapIndex[pos] ].data; //クラスタかどうか判定するため、点の数をカウント
-                    if(searchedIndex[pos] < 0){ continue; } //探査済みの場合はスキップ
-                    tempIndex[tempSize++] = pos; //次の探査点（コア点）候補に追加（クラスタ判定されたらtaskIndexに追加する）
+                for(int i=0; i < cellsInWindow.size(); i++){                    //窓内セルに対して走査
+                    int pos = taskIndex[n] + cellsInWindow[i];                  //窓内セルの座標とコア点座標を重畳
+                    if (pos < 0 || pos >= layer.heightInt.data){ continue; }    //探査対象がマップ範囲外のときはスキップ
+                    if(mapIndex[pos] < 0){ continue; }                          //インデックスが存在しない場合はスキップ
+                    count_points += layer.size[ mapIndex[pos] ].data;           //クラスタかどうか判定するため、点の数をカウント
+                    if(searchedIndex[pos] < 0){ continue; }                     //探査済みの場合はスキップ
+                    tempIndex[tempSize++] = pos;                                //次の探査点（コア点）候補に追加（クラスタ判定されたらtaskIndexに追加する）
                 }
                 tempIndex.resize(tempSize);
                 if(count_points < minPts){ continue; } //クラスタ判定、窓内の店の数が基準を超えていない場合以下スキップ
