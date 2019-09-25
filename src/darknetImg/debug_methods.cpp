@@ -1,15 +1,36 @@
 #include <obstacle_detection_2019/darknetImgDebug.h>
 
-darknetImgDebug::darknetImgDebug(){
-
+darknetImgDebug::darknetImgDebug()
+:mapImageCB(new cv_bridge::CvImage),
+colorMap(1, 256, CV_8UC3)
+{
+    setMapImageConfig();
 }
 
 darknetImgDebug::~darknetImgDebug(){
-
 }
 
+void darknetImgDebug::setColorMap(uint32_t step){
+}
+
+void darknetImgDebug::setMapImageConfig(){
+    mapImageRows = mapRows * (cellSideLength + cellMargin) + cellMargin; //最後のMarginは端の余白分
+    mapImageCols = mapCols * (cellSideLength + cellMargin) + cellMargin; //最後のMarginは端の余白分
+    mapImageCB->image = cv::Mat(mapImageRows, mapImageCols, CV_8UC3);
+}
+
+
 void darknetImgDebug::drawClusterCells(obstacle_detection_2019::ClassificationElement& cluster){
-    
+    int mapRow, mapCol, mapImageRow_start, mapImageCol_start;
+    for(auto c_i : cluster.index){ //クラスタに属しているセルで走査
+        //インデックスからrowとcol算出
+        mapRow = c_i.data / mapRows;
+        mapCol = c_i.data % mapCols;
+        //セル描画
+        mapImageRow_start = mapRow * (cellSideLength + cellMargin) + cellMargin; //描画開始位置設定 mapImageRow
+        mapImageCol_start = mapCol * (cellSideLength + cellMargin) + cellMargin; //描画開始位置設定 mapImageCol
+        cv::rectangle(mapImageCB->image, cv::Rect(mapImageCol_start, mapImageRow_start, cellSideLength, cellSideLength), cv::Scalar(1,2,3), 1, CV_AA);
+    }
 }
 
 void darknetImgDebug::cluster2Image(){

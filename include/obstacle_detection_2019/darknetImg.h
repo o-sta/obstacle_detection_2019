@@ -65,9 +65,6 @@ class darknetImg {
         float distanceThreshold;        //床面モデルとどのくらい離れてもいいか
         float epsAngle;                 //許容できる平面
         int windowRangeCell;
-        //ローカルマップのパラメータ
-        float mapWidth, mapHeight, mapResolution;   //ローカルマップの横幅[m]、縦幅[m]、解像度[m/pixel]
-        int mapRows, mapCols, numberOfCells;        //ローカルマップの横幅[pixel]、縦幅[pixel]、マップのセル数[pixel]
         //窓
         std::vector<int> cellsInWindow;             //ウィンドウ内に入っているセルの数(セル番号を格納する)
         //関数用
@@ -86,6 +83,9 @@ class darknetImg {
         cv::Mat mask;
         bool is_size_initialized; //画像サイズが初期化されたか
     protected:
+        //ローカルマップのパラメータ
+        float mapWidth, mapHeight, mapResolution;   //ローカルマップの横幅[m]、縦幅[m]、解像度[m/pixel]
+        int mapRows, mapCols, numberOfCells;        //ローカルマップの横幅[pixel]、縦幅[pixel]、マップのセル数[pixel]
         obstacle_detection_2019::ClassificationData cd;                     //クラスタデータ
         bool convertToGrid(const float& x,const float& y,int& xg,int& yg);
         //窓内に含まれているセルを出力する関数
