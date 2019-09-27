@@ -21,9 +21,10 @@ ground_points(new pcl::PointCloud<pcl::PointXYZ>)
 {
     pub = nhPub.advertise<sensor_msgs::Image>("/dphog/boximage", 1);
     sync.registerCallback(boost::bind(&darknetImg::sensor_callback, this, _1, _2));
-    mapWidth = 8;
-    mapHeight = 8;
-    mapResolution = 0.05;
+    // mapWidth = 8;
+    // mapHeight = 8;
+    // mapResolution = 0.05;
+    setParam(); //パラメータのセットアップ
     mapRows = (int)(mapHeight/mapResolution);
     mapCols = (int)(mapWidth/mapResolution);
     numberOfCells = mapRows*mapCols;
@@ -59,6 +60,19 @@ void darknetImg::createWindow(){
     cellsInWindow.resize(count);
 }
 
+void darknetImg::setParam(){
+    nhPub.param<float>("camera/focus", f, f);
+    nhPub.param<float>("localMap/width/float", mapWidth, mapWidth);
+    nhPub.param<float>("localMap/height/float", mapHeight, mapHeight);
+    nhPub.param<float>("localMap/resolution", mapResolution, mapResolution);
+    nhPub.param<float>("groundEstimate/cameraHeight", camHeight, camHeight);
+    nhPub.param<float>("groundEstimate/candidateY", groundCandidateY, groundCandidateY);
+    nhPub.param<int>("groundEstimate/ransac/num", ransacNum, ransacNum);
+    nhPub.param<float>("groundEstimate/ransac/distanceThreshold", distanceThreshold, distanceThreshold);
+    nhPub.param<float>("groundEstimate/ransac/epsAngle", epsAngle, epsAngle);
+    nhPub.param<int>("window/minPts", minPts, minPts);
+    nhPub.param<int>("window/rangeCell", windowRangeCell, windowRangeCell);
+}
 
 void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb, const sensor_msgs::Image::ConstPtr& image)
 {
@@ -82,6 +96,7 @@ void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr
     // パブリッシュ(debgu移行予定)
     pub.publish(bridgeImage->toImageMsg());
 }
+
 
 void darknetImg::configCallback(obstacle_detection_2019::darknetImgConfig &config, uint32_t level){
     ROS_INFO_STREAM("Reconfigure Request:"
