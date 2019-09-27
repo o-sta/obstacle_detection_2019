@@ -237,7 +237,6 @@ add_executable(${PROJECT_NAME}_person # detectPersonHOG
 add_executable(${PROJECT_NAME}_darknet # darknet_ros
   src/darknetImg/main.cpp
   src/darknetImg/methods.cpp
-
 )
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -285,9 +284,7 @@ target_link_libraries(${PROJECT_NAME}_pcl ${catkin_LIBRARIES} ${OpenCV_LIBRARIES
 target_link_libraries(${PROJECT_NAME}_syncro ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # synchro image
 target_link_libraries(${PROJECT_NAME}_manage ${catkin_LIBRARIES} ) # manege 
 target_link_libraries(${PROJECT_NAME}_estimate ${catkin_LIBRARIES} ) # estimate 
-
 target_link_libraries(${PROJECT_NAME}_red ${catkin_LIBRARIES} ) # record experiment data
-
 target_link_libraries(${PROJECT_NAME}_person ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # manege 
 target_link_libraries(${PROJECT_NAME}_darknet ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # manege 
 

@@ -54,32 +54,33 @@ class darknetImg {
         message_filters::Subscriber<sensor_msgs::Image> image_sub;
         typedef message_filters::sync_policies::ApproximateTime<darknet_ros_msgs::BoundingBoxes, sensor_msgs::Image> MySyncPolicy;
         message_filters::Synchronizer<MySyncPolicy> sync;
-        //パラメータ設定（後でlaunchに移動）
-        float camHeight = 30.0;         //床からカメラまでの高さ（値は適当）
-        float groundCandidateY = 26.4;  //（値は適当）
-        float f = 600.35;               //カメラの焦点距離と画像の関連パラメータ（値は適当）
-        float ground_th;                //床面候補点の高さの閾値（値は適当）
-        float a,b,c,d;                  //床面方程式の係数
+        //launchパラメータ
+        float f;                                    //カメラの焦点距離と画像の関連パラメータ
+        float mapWidth, mapHeight, mapResolution;   //ローカルマップの横幅[m]、縦幅[m]、解像度[m/pixel]
+        //dynamic_reconfigure用launchパラメータ
+        float camHeight;                //床からカメラまでの高さ
+        float groundCandidateY;         //床面候補点に含めるときの高さの閾値（上限）
+        float ground_th;                //床面候補点の高さの閾値
         int minPts;                     //窓内に含まれる点の数の閾値
         int ransacNum;                  //RANSACを行う回数
         float distanceThreshold;        //床面モデルとどのくらい離れてもいいか
-        float epsAngle;                 //許容できる平面
-        int windowRangeCell;
+        float epsAngle;                 //許容できる平面？
+        int windowRangeCell;            //窓の大きさ（値*2+1が窓のセル数になる）
+        //算出値
+        float a,b,c,d;                  //床面方程式の係数
         //窓
         std::vector<int> cellsInWindow;             //ウィンドウ内に入っているセルの数(セル番号を格納する)
         //関数用
-        // pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;  //ポイントクラウド
         pcl::PointIndices::Ptr inliers;             //RANSAC後の点群データ
         pcl::ModelCoefficients::Ptr coefficients;   //床面方程式の係数
         pcl::SACSegmentation<pcl::PointXYZ> seg;    //セグメンテーション
         pcl::PointCloud<pcl::PointXYZ>::Ptr ground_points;                  //床面候補点
         obstacle_detection_2019::SensorMapDataMultiLayer smdml;             //複数マップ
         obstacle_detection_2019::SensorMapDataMultiLayer smdmlLowDimension; //複数マップ(cols=1)
-        //--rqt_reconfigure
+        //--rqt_reconfigure用サーバ
         dynamic_reconfigure::Server<obstacle_detection_2019::darknetImgConfig> server;
         dynamic_reconfigure::Server<obstacle_detection_2019::darknetImgConfig>::CallbackType fc;
         //深度画像のマスク（有効で1、無効で0）
-        //std::vector<std::vector<char>> mask;
         cv::Mat mask;
         bool is_size_initialized; //画像サイズが初期化されたか
     protected:
@@ -96,7 +97,7 @@ class darknetImg {
         void detect();              //人間を検出
         void sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb,const sensor_msgs::ImageConstPtr& image); //データ受信
         void configCallback(obstacle_detection_2019::darknetImgConfig &config, uint32_t level); //パラメータ受信
-        void setLaunchParam();
+        void setParam();      //yamlのセットアップ
         bool subscribeSensorData(); //データ受信
         void publishData();         //データ送信
         //パラメータ設定関数
