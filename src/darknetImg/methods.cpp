@@ -19,37 +19,41 @@ is_size_initialized(false),
 mask(1,1,CV_8UC1),
 ground_points(new pcl::PointCloud<pcl::PointXYZ>)
 {
-    pub = nhPub.advertise<sensor_msgs::Image>("/dphog/boximage", 1);
-    sync.registerCallback(boost::bind(&darknetImg::sensor_callback, this, _1, _2));
-    // mapWidth = 8;
-    // mapHeight = 8;
-    // mapResolution = 0.05;
-    setParam(); //パラメータのセットアップ
-    mapRows = (int)(mapHeight/mapResolution);
-    mapCols = (int)(mapWidth/mapResolution);
-    numberOfCells = mapRows*mapCols;
-    cellsInWindow.resize(mapRows*mapCols);
-    int count = 0;
-    for(int row=-1; row<2; row++){
-            cellsInWindow[count++] = row;
-    }
-    cellsInWindow.resize(count);
-    //RANSACパラメータ設定
-    seg.setOptimizeCoefficients (true);
-	//seg.setModelType (pcl::SACMODEL_PLANE);//全平面抽出
-	seg.setModelType (pcl::SACMODEL_PERPENDICULAR_PLANE);//ある軸に垂直な平面を抽出
-	seg.setMethodType (pcl::SAC_RANSAC);
-	seg.setMaxIterations (ransacNum);//RANSACの繰り返し回数
-	seg.setDistanceThreshold (distanceThreshold);//モデルとどのくらい離れていてもいいか(モデルの評価に使用)
-	seg.setAxis(Eigen::Vector3f (0.0,0.0,1.0));//法線ベクトル
-	seg.setEpsAngle(epsAngle * (M_PI/180.0f));//許容出来る平面
-    // rqt_reconfigure
-    fc = boost::bind(&darknetImg::configCallback, this, _1, _2);
-	server.setCallback(fc);
-    ROS_INFO_STREAM("Started darknetImg");
+    // ROS_INFO_STREAM("debug setParam");
+    // pub = nhPub.advertise<sensor_msgs::Image>("/dphog/boximage", 1);
+    // ROS_INFO_STREAM("debug setParam");
+    // sync.registerCallback(boost::bind(&darknetImg::sensor_callback, this, _1, _2));
+    // // mapWidth = 8;
+    // // mapHeight = 8;
+    // // mapResolution = 0.05;
+    // setParam(); //パラメータのセットアップ
+    // mapRows = (int)(mapHeight/mapResolution);
+    // mapCols = (int)(mapWidth/mapResolution);
+    // numberOfCells = mapRows*mapCols;
+    // cellsInWindow.resize(mapRows*mapCols);
+    // int count = 0;
+    // for(int row=-1; row<2; row++){
+    //         cellsInWindow[count++] = row;
+    // }
+    // cellsInWindow.resize(count);
+    // //RANSACパラメータ設定
+    // seg.setOptimizeCoefficients (true);
+	// //seg.setModelType (pcl::SACMODEL_PLANE);//全平面抽出
+	// seg.setModelType (pcl::SACMODEL_PERPENDICULAR_PLANE);//ある軸に垂直な平面を抽出
+	// seg.setMethodType (pcl::SAC_RANSAC);
+	// seg.setMaxIterations (ransacNum);//RANSACの繰り返し回数
+	// seg.setDistanceThreshold (distanceThreshold);//モデルとどのくらい離れていてもいいか(モデルの評価に使用)
+	// seg.setAxis(Eigen::Vector3f (0.0,0.0,1.0));//法線ベクトル
+	// seg.setEpsAngle(epsAngle * (M_PI/180.0f));//許容出来る平面
+    // // rqt_reconfigure
+    // fc = boost::bind(&darknetImg::configCallback, this, _1, _2);
+	// server.setCallback(fc);
+    // ROS_INFO_STREAM("Started darknetImg");
 }
 
+
 darknetImg::~darknetImg(){}
+
 
 void darknetImg::createWindow(){
     cellsInWindow.resize(mapRows*mapCols);
@@ -60,7 +64,9 @@ void darknetImg::createWindow(){
     cellsInWindow.resize(count);
 }
 
+
 void darknetImg::setParam(){
+    ROS_INFO_STREAM("debug setParam");
     nhPub.param<float>("camera/focus", f, f);
     nhPub.param<float>("localMap/width/float", mapWidth, mapWidth);
     nhPub.param<float>("localMap/height/float", mapHeight, mapHeight);
@@ -73,6 +79,7 @@ void darknetImg::setParam(){
     nhPub.param<int>("window/minPts", minPts, minPts);
     nhPub.param<int>("window/rangeCell", windowRangeCell, windowRangeCell);
 }
+
 
 void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb, const sensor_msgs::Image::ConstPtr& image)
 {
@@ -155,6 +162,7 @@ void darknetImg::pickUpGroundPointCandidates(){
     ROS_INFO_STREAM("ground_points->points.size():"<<ground_points->points.size()<<"\n");
 }
 
+
 void darknetImg::estimateGroundCoefficients(){
     seg.setInputCloud(ground_points);
 	seg.segment(*inliers, *coefficients);
@@ -179,6 +187,7 @@ void darknetImg::estimateGroundCoefficients(){
                                     << c << " "
                                     << d << "\n");
 }
+
 
 void darknetImg::removeGroundPoints(){
     int row = 0, col = 0;
@@ -208,12 +217,14 @@ void darknetImg::removeGroundPoints(){
     }
 }
 
+
 void darknetImg::trimPoints(){
     int i = 0;
     for(const auto& bb : boundingBoxesMsg.bounding_boxes){
         cv::rectangle(mask, cv::Point(bb.xmin, bb.ymin), cv::Point(bb.xmax, bb.ymax), cv::Scalar(++i), -1, CV_FILLED);
     }
 }
+
 
 void darknetImg::generateGridmap(){
     int row = 0, col = 0, i; //深度画像の行と列
@@ -269,6 +280,7 @@ void darknetImg::generateGridmap(){
     }
 }
 
+
 void darknetImg::dimensionalityReductionGridmap(){
     std_msgs::Int32 initial_value;
     geometry_msgs::Point pt;
@@ -321,6 +333,7 @@ void darknetImg::dimensionalityReductionGridmap(){
     }
 }
 
+
 bool darknetImg::convertToGrid(const float& x,const float& y,int& xg,int& yg){
 	//マップ上の中心座標(ふつうは　センサ位置＝マップ中心座標　のため　cx=cy=0)
 	float cx=0;
@@ -339,6 +352,7 @@ bool darknetImg::convertToGrid(const float& x,const float& y,int& xg,int& yg){
     //変換成功
 	return true;
 }
+
 
 void darknetImg::classifyPoints(){
     //設定データ
@@ -462,12 +476,14 @@ void darknetImg::classifyPoints(){
     cd.data.resize(cd.size.data);
 }
 
+
 void darknetImg::estimatePersonPosition(){
     int i;
     for(auto& ce : cd.data){
         ROS_INFO_STREAM("person[" << i++ <<"] : [" << ce.gc.x << ce.gc.y << ce.gc.z << "]");
     }
 }
+
 
 void darknetImg::predictPersonPosition(){
     

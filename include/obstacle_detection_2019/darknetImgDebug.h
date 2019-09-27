@@ -13,8 +13,9 @@ class darknetImgDebug : public darknetImg {
         int mapImageCols;       //マップイメージの列
         void registerPubData(); //パブリッシュするデータを登録
     protected:
-        void drawClusterCells(obstacle_detection_2019::ClassificationElement& cluster);    //セルの塗りつぶし
+        void drawClusterCells(obstacle_detection_2019::ClassificationElement& cluster, int colorMode);    //セルの塗りつぶし
         void setMapImageConfig();   //マップイメージの詳細設定
+        void setColorMap();
     public:
         darknetImgDebug();
         ~darknetImgDebug();

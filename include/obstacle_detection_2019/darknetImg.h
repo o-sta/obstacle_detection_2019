@@ -41,11 +41,6 @@
 //  処理を行うクラスに分ける予定（一緒だと処理の流れが追いにくく、改変が難しい）
 class darknetImg {
     private:
-        //ノードハンドルとサブスクライパ、パブリッシャ
-		ros::NodeHandle nhSub;
-		ros::Subscriber sub;
-		ros::NodeHandle nhPub;
-        ros::Publisher pub;
         //センサーデータ
         cv_bridge::CvImagePtr bridgeImage;                  //深度画像
         darknet_ros_msgs::BoundingBoxes boundingBoxesMsg;   //検出された人物の枠線
@@ -56,7 +51,6 @@ class darknetImg {
         message_filters::Synchronizer<MySyncPolicy> sync;
         //launchパラメータ
         float f;                                    //カメラの焦点距離と画像の関連パラメータ
-        float mapWidth, mapHeight, mapResolution;   //ローカルマップの横幅[m]、縦幅[m]、解像度[m/pixel]
         //dynamic_reconfigure用launchパラメータ
         float camHeight;                //床からカメラまでの高さ
         float groundCandidateY;         //床面候補点に含めるときの高さの閾値（上限）
@@ -84,6 +78,11 @@ class darknetImg {
         cv::Mat mask;
         bool is_size_initialized; //画像サイズが初期化されたか
     protected:
+        //ノードハンドルとサブスクライパ、パブリッシャ
+		ros::NodeHandle nhSub;
+		ros::Subscriber sub;
+		ros::NodeHandle nhPub;
+        ros::Publisher pub;
         //ローカルマップのパラメータ
         float mapWidth, mapHeight, mapResolution;   //ローカルマップの横幅[m]、縦幅[m]、解像度[m/pixel]
         int mapRows, mapCols, numberOfCells;        //ローカルマップの横幅[pixel]、縦幅[pixel]、マップのセル数[pixel]
