@@ -1,4 +1,3 @@
-#include <ros/ros.h>
 #include <obstacle_detection_2019/darknetImg.h>
 // #include "opencv2/opencv.hpp"
 

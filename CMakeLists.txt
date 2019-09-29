@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(obstacle_detection_2019)
+set(CMAKE_BUILD_TYPE Debug)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -258,9 +259,7 @@ add_dependencies(${PROJECT_NAME}_pcl ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_syncro ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_manage ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_estimate ${PROJECT_NAME}_generate_messages_cpp)
-
 add_dependencies(${PROJECT_NAME}_red ${PROJECT_NAME}_generate_messages_cpp)
-
 add_dependencies(${PROJECT_NAME}_person ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_darknet ${PROJECT_NAME}_generate_messages_cpp)
 

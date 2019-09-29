@@ -7,6 +7,7 @@
 //for image processing on ros
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
+#include <sensor_msgs/Image.h>
 //PointCloud
 #include <pcl_ros/point_cloud.h>
 #include <pcl/segmentation/sac_segmentation.h>
@@ -40,6 +41,11 @@
 //※将来的にはパブリッシャとサブスクライバを用いた入力と出力を行うクラスと
 //  処理を行うクラスに分ける予定（一緒だと処理の流れが追いにくく、改変が難しい）
 class darknetImg {
+    protected:
+        ros::NodeHandle nhSub;
+		ros::Subscriber sub;
+		ros::NodeHandle nhPub;
+        ros::Publisher pub;
     private:
         //センサーデータ
         cv_bridge::CvImagePtr bridgeImage;                  //深度画像
@@ -71,18 +77,14 @@ class darknetImg {
         pcl::PointCloud<pcl::PointXYZ>::Ptr ground_points;                  //床面候補点
         obstacle_detection_2019::SensorMapDataMultiLayer smdml;             //複数マップ
         obstacle_detection_2019::SensorMapDataMultiLayer smdmlLowDimension; //複数マップ(cols=1)
-        //--rqt_reconfigure用サーバ
+        // --rqt_reconfigure用サーバ
         dynamic_reconfigure::Server<obstacle_detection_2019::darknetImgConfig> server;
         dynamic_reconfigure::Server<obstacle_detection_2019::darknetImgConfig>::CallbackType fc;
         //深度画像のマスク（有効で1、無効で0）
         cv::Mat mask;
         bool is_size_initialized; //画像サイズが初期化されたか
-    protected:
         //ノードハンドルとサブスクライパ、パブリッシャ
-		ros::NodeHandle nhSub;
-		ros::Subscriber sub;
-		ros::NodeHandle nhPub;
-        ros::Publisher pub;
+    protected:
         //ローカルマップのパラメータ
         float mapWidth, mapHeight, mapResolution;   //ローカルマップの横幅[m]、縦幅[m]、解像度[m/pixel]
         int mapRows, mapCols, numberOfCells;        //ローカルマップの横幅[pixel]、縦幅[pixel]、マップのセル数[pixel]
@@ -93,8 +95,7 @@ class darknetImg {
     public:
         darknetImg();
         ~darknetImg();
-        void detect();              //人間を検出
-        void sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb,const sensor_msgs::ImageConstPtr& image); //データ受信
+        void sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb,const sensor_msgs::Image::ConstPtr& image); //データ受信
         void configCallback(obstacle_detection_2019::darknetImgConfig &config, uint32_t level); //パラメータ受信
         void setParam();      //yamlのセットアップ
         bool subscribeSensorData(); //データ受信

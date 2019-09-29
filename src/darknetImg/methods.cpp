@@ -1,5 +1,5 @@
 #include <obstacle_detection_2019/darknetImg.h>
-#include <boost/range/algorithm.hpp>
+// #include <boost/range/algorithm.hpp>
 
 // sensor_callback用コンストラクタ
 // darknetImg::darknetImg(/* args */)
@@ -11,7 +11,7 @@
 
 // sensor_callback2用コンストラクタ
 darknetImg::darknetImg(/* args */)
-: 
+:
 bb_sub(nhSub, "/darknet_ros/bounding_boxes", 1), 
 image_sub(nhSub, "/robot2/zed_node/left/image_rect_color", 1), 
 sync(MySyncPolicy(10),bb_sub, image_sub),
@@ -19,36 +19,33 @@ is_size_initialized(false),
 mask(1,1,CV_8UC1),
 ground_points(new pcl::PointCloud<pcl::PointXYZ>)
 {
-    // ROS_INFO_STREAM("debug setParam");
-    // pub = nhPub.advertise<sensor_msgs::Image>("/dphog/boximage", 1);
-    // ROS_INFO_STREAM("debug setParam");
-    // sync.registerCallback(boost::bind(&darknetImg::sensor_callback, this, _1, _2));
-    // // mapWidth = 8;
-    // // mapHeight = 8;
-    // // mapResolution = 0.05;
-    // setParam(); //パラメータのセットアップ
-    // mapRows = (int)(mapHeight/mapResolution);
-    // mapCols = (int)(mapWidth/mapResolution);
-    // numberOfCells = mapRows*mapCols;
-    // cellsInWindow.resize(mapRows*mapCols);
-    // int count = 0;
-    // for(int row=-1; row<2; row++){
-    //         cellsInWindow[count++] = row;
-    // }
-    // cellsInWindow.resize(count);
-    // //RANSACパラメータ設定
-    // seg.setOptimizeCoefficients (true);
-	// //seg.setModelType (pcl::SACMODEL_PLANE);//全平面抽出
-	// seg.setModelType (pcl::SACMODEL_PERPENDICULAR_PLANE);//ある軸に垂直な平面を抽出
-	// seg.setMethodType (pcl::SAC_RANSAC);
-	// seg.setMaxIterations (ransacNum);//RANSACの繰り返し回数
-	// seg.setDistanceThreshold (distanceThreshold);//モデルとどのくらい離れていてもいいか(モデルの評価に使用)
-	// seg.setAxis(Eigen::Vector3f (0.0,0.0,1.0));//法線ベクトル
-	// seg.setEpsAngle(epsAngle * (M_PI/180.0f));//許容出来る平面
-    // // rqt_reconfigure
-    // fc = boost::bind(&darknetImg::configCallback, this, _1, _2);
-	// server.setCallback(fc);
-    // ROS_INFO_STREAM("Started darknetImg");
+    ROS_INFO_STREAM("debug setParam");
+    pub = nhPub.advertise<sensor_msgs::Image>("/dphog/boximage", 1);
+    ROS_INFO_STREAM("debug setParam");
+    sync.registerCallback(boost::bind(&darknetImg::sensor_callback, this, _1, _2));
+    setParam(); //パラメータのセットアップ
+    mapRows = (int)(mapHeight/mapResolution);
+    mapCols = (int)(mapWidth/mapResolution);
+    numberOfCells = mapRows*mapCols;
+    cellsInWindow.resize(mapRows*mapCols);
+    int count = 0;
+    for(int row=-1; row<2; row++){
+            cellsInWindow[count++] = row;
+    }
+    cellsInWindow.resize(count);
+    //RANSACパラメータ設定
+    seg.setOptimizeCoefficients (true);
+	//seg.setModelType (pcl::SACMODEL_PLANE);//全平面抽出
+	seg.setModelType (pcl::SACMODEL_PERPENDICULAR_PLANE);//ある軸に垂直な平面を抽出
+	seg.setMethodType (pcl::SAC_RANSAC);
+	seg.setMaxIterations (ransacNum);//RANSACの繰り返し回数
+	seg.setDistanceThreshold (distanceThreshold);//モデルとどのくらい離れていてもいいか(モデルの評価に使用)
+	seg.setAxis(Eigen::Vector3f (0.0,0.0,1.0));//法線ベクトル
+	seg.setEpsAngle(epsAngle * (M_PI/180.0f));//許容出来る平面
+    // rqt_reconfigure
+    fc = boost::bind(&darknetImg::configCallback, this, _1, _2);
+	server.setCallback(fc);
+    ROS_INFO_STREAM("Started darknetImg");
 }
 
 
@@ -68,16 +65,16 @@ void darknetImg::createWindow(){
 void darknetImg::setParam(){
     ROS_INFO_STREAM("debug setParam");
     nhPub.param<float>("camera/focus", f, f);
-    nhPub.param<float>("localMap/width/float", mapWidth, mapWidth);
-    nhPub.param<float>("localMap/height/float", mapHeight, mapHeight);
-    nhPub.param<float>("localMap/resolution", mapResolution, mapResolution);
-    nhPub.param<float>("groundEstimate/cameraHeight", camHeight, camHeight);
-    nhPub.param<float>("groundEstimate/candidateY", groundCandidateY, groundCandidateY);
-    nhPub.param<int>("groundEstimate/ransac/num", ransacNum, ransacNum);
-    nhPub.param<float>("groundEstimate/ransac/distanceThreshold", distanceThreshold, distanceThreshold);
-    nhPub.param<float>("groundEstimate/ransac/epsAngle", epsAngle, epsAngle);
-    nhPub.param<int>("window/minPts", minPts, minPts);
-    nhPub.param<int>("window/rangeCell", windowRangeCell, windowRangeCell);
+    nhPub.param<float>("localMap/width/float", mapWidth, 8.0);
+    nhPub.param<float>("localMap/height/float", mapHeight, 8.0);
+    nhPub.param<float>("localMap/resolution", mapResolution, 0.05);
+    nhPub.param<float>("groundEstimate/cameraHeight", camHeight, 0.3);
+    nhPub.param<float>("groundEstimate/candidateY", groundCandidateY, 0.5);
+    nhPub.param<int>("groundEstimate/ransac/num", ransacNum, 10);
+    nhPub.param<float>("groundEstimate/ransac/distanceThreshold", distanceThreshold, 0.5);
+    nhPub.param<float>("groundEstimate/ransac/epsAngle", epsAngle, 15.0);
+    nhPub.param<int>("window/minPts", minPts, 1600);
+    nhPub.param<int>("window/rangeCell", windowRangeCell, 2);
 }
 
 
