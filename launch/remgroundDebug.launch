@@ -1,0 +1,56 @@
+<launch>
+ <!--argument-->
+ <!--camera-->
+ <!-- <arg name="camera/minDeg" default="-45"/>
+ <arg name="camera/maxDeg" default="45"/> -->
+ <!-- <arg name="camera/focus" default="350.505"/> -->
+ <arg name="camera/focus" default="701.010"/>
+ <!--map-->
+ <arg name="localMap/width/float" default="16.0"/>
+ <arg name="localMap/height/float" default="16.0"/>
+ <arg name="localMap/resolution" default="0.05"/>
+ <!--window-->
+ <!-- <arg name="window/DivisionDegree" default="3"/>
+ <arg name="window/height" default="0.15"/>
+ <arg name="window/width" default="0.3"/>
+ <arg name="window/minPts" default="1000"/> -->
+ <!-- rqt_reconfigure -->
+ <arg name="groundEstimate/rqt_reconfigure" default="false"/>
+ <!-- <arg name="classification/rqt_reconfigure" default="false"/> -->
+ <!--node-->
+ <!--ground removement-->
+ <node pkg="obstacle_detection_2019" name="obstacle_detection_2019_gr" type="obstacle_detection_2019_gr" >
+   <param name="camera/focus" value="$(arg camera/focus)"/>
+   <!--map parameter-->
+   <param name="localMap/width/float" value="$(arg localMap/width/float)"/>
+   <param name="localMap/height/float" value="$(arg localMap/height/float)"/>
+   <param name="localMap/resolution" value="$(arg localMap/resolution)"/>
+   <!-- ground remove parameter -->
+   <param name="groundEstimate/ransac/num" value="500"/>
+   <param name="groundEstimate/ransac/distanceThreshold" value="0.1"/>
+   <param name="groundEstimate/ransac/epsAngle" value="15.0"/>
+   <param name="groundEstimate/candidateY" value="0.3"/>
+   <param name="groundEstimate/cameraHeight" value="0.4125"/>
+   <param name="groundEstimate/groundThreshold" value="0.2"/>
+   <param name="groundEstimate/heightThreshold" value="1.0"/>
+    <!-- rqt_reconfigure -->
+    <param name="groundEstimate/rqt_reconfigure" value="$(arg groundEstimate/rqt_reconfigure)"/>
+ </node>
+ <!--classification-->
+ <!-- <node pkg="obstacle_detection_2019" name="obstacle_detection_2019_cc" type="obstacle_detection_2019_cc" >
+   <!--camera parameter-->
+   <param name="camera/minDeg" value="$(arg camera/minDeg)"/>
+   <param name="camera/maxDeg" value="$(arg camera/maxDeg)"/>
+   <!--map parameter-->
+   <param name="localMap/width/float" value="$(arg localMap/width/float)"/>
+   <param name="localMap/height/float" value="$(arg localMap/height/float)"/>
+   <param name="localMap/resolution" value="$(arg localMap/resolution)"/>
+   <!--window parameter-->
+   <param name="window/DivisionDegree" value="$(arg window/DivisionDegree)"/>
+   <param name="window/height" value="$(arg window/height)"/>
+   <param name="window/width" value="$(arg window/width)"/>
+   <param name="window/minPts" value="$(arg window/minPts)"/>
+    <!-- rqt_reconfigure -->
+    <param name="classification/rqt_reconfigure" value="$(arg classification/rqt_reconfigure)"/>
+ </node> -->
+</launch>

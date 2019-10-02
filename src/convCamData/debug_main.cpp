@@ -8,7 +8,7 @@
 int main(int argc,char **argv){
 	ros::init(argc,argv,"obstacle_detection_2019_gr");
 
-    convCamDataClass ccd;
+    d_convCamDataClass ccd;
     ros::spin();
 	// reconfigure test のためコメントアウト
 	// int lr_value = 60; //loop rate value
