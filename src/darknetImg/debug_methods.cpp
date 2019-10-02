@@ -55,10 +55,22 @@ void darknetImgDebug::cluster2PointCloud(){
 
 void darknetImgDebug::gridmap2Image(obstacle_detection_2019::SensorMapDataMultiLayer& smdml, cv::Mat& image){
     //セルに含まれる点の数を画像で表示するプログラム。閾値を用意し、それ以上を赤、それ以下を黒で表示するプログラムの開発を行う。
+    //各レイヤーのセルに含まれている点の数を数える
+    int count = 0;
+    int max_pt_num = 0; //セルに含まれていた最大点
     std::fill(num_temp.begin(), num_temp.end(), 0); //テンプレートの初期化
     for(auto layer : smdml.layer){
-        
+        count = 0;
+        for(auto cell : layer.index){
+            if(cell.data != -1){
+                num_temp[count] += layer.size[count].data;
+                if(max_pt_num)
+            }
+            count++;
+        }
     }
+    //
+    
 }
 
 
