@@ -164,13 +164,13 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_cc # classification
-  src/classification/constructor.cpp
-  src/classification/methods.cpp
-  src/classification/debug_main.cpp
-  src/classification/debug_methods.cpp
-  src/classification/property.cpp
-)
+# add_executable(${PROJECT_NAME}_cc # classification
+#   src/classification/constructor.cpp
+#   src/classification/methods.cpp
+#   src/classification/debug_main.cpp
+#   src/classification/debug_methods.cpp
+#   src/classification/property.cpp
+# )
 add_executable(${PROJECT_NAME}_gr # ground plane remove
   src/convCamData/constructor.cpp
   src/convCamData/methods.cpp
@@ -178,60 +178,60 @@ add_executable(${PROJECT_NAME}_gr # ground plane remove
   src/convCamData/debug_method.cpp
   src/convCamData/property.cpp
 )
-add_executable(${PROJECT_NAME}_lrf # laser range finder
-  src/convLRFData/constructor.cpp
-  src/convLRFData/methods.cpp
-  src/convLRFData/debug_main.cpp
-)
-add_executable(${PROJECT_NAME}_im # image matching
-   src/imageMatching/constructor.cpp
-   src/imageMatching/methods.cpp
-   src/imageMatching/debug_main.cpp
-   src/imageMatching/debug_methods.cpp
-   src/imageMatching/property.cpp
- )
- add_executable(${PROJECT_NAME}_mv # measure Velocity
- src/measureVelocity/constructor.cpp
- src/measureVelocity/methods.cpp
- src/measureVelocity/debug_main.cpp
- src/measureVelocity/debug_methods.cpp
- src/measureVelocity/property.cpp
-)
-add_executable(${PROJECT_NAME}_pcl # point cloud
-  src/convPCLData/constructor.cpp
-  src/convPCLData/methods.cpp
-  src/convPCLData/debug_main.cpp
-)
-add_executable(${PROJECT_NAME}_syncro # point cloud
-  src/synchroImage/constructor.cpp
-  src/synchroImage/methods.cpp
-  src/synchroImage/debug_main.cpp
-  src/synchroImage/debug_methods.cpp
-  src/synchroImage/property.cpp
-)
-add_executable(${PROJECT_NAME}_manage # manage
-  src/management/constructor.cpp
-  src/management/methods.cpp
-  src/management/debug_main.cpp
-  src/management/debug_methods.cpp
-  src/management/property.cpp
-)
+# add_executable(${PROJECT_NAME}_lrf # laser range finder
+#   src/convLRFData/constructor.cpp
+#   src/convLRFData/methods.cpp
+#   src/convLRFData/debug_main.cpp
+# )
+# add_executable(${PROJECT_NAME}_im # image matching
+#    src/imageMatching/constructor.cpp
+#    src/imageMatching/methods.cpp
+#    src/imageMatching/debug_main.cpp
+#    src/imageMatching/debug_methods.cpp
+#    src/imageMatching/property.cpp
+#  )
+#  add_executable(${PROJECT_NAME}_mv # measure Velocity
+#  src/measureVelocity/constructor.cpp
+#  src/measureVelocity/methods.cpp
+#  src/measureVelocity/debug_main.cpp
+#  src/measureVelocity/debug_methods.cpp
+#  src/measureVelocity/property.cpp
+# )
+# add_executable(${PROJECT_NAME}_pcl # point cloud
+#   src/convPCLData/constructor.cpp
+#   src/convPCLData/methods.cpp
+#   src/convPCLData/debug_main.cpp
+# )
+# add_executable(${PROJECT_NAME}_syncro # point cloud
+#   src/synchroImage/constructor.cpp
+#   src/synchroImage/methods.cpp
+#   src/synchroImage/debug_main.cpp
+#   src/synchroImage/debug_methods.cpp
+#   src/synchroImage/property.cpp
+# )
+# add_executable(${PROJECT_NAME}_manage # manage
+#   src/management/constructor.cpp
+#   src/management/methods.cpp
+#   src/management/debug_main.cpp
+#   src/management/debug_methods.cpp
+#   src/management/property.cpp
+# )
 
-add_executable(${PROJECT_NAME}_estimate # manage
-  src/estimationVelocity/constructor.cpp
-  src/estimationVelocity/methods.cpp
-  src/estimationVelocity/debug_main.cpp
-  src/estimationVelocity/property.cpp
-  src/estimationVelocity/debug_methods.cpp
-)
+# add_executable(${PROJECT_NAME}_estimate # manage
+#   src/estimationVelocity/constructor.cpp
+#   src/estimationVelocity/methods.cpp
+#   src/estimationVelocity/debug_main.cpp
+#   src/estimationVelocity/property.cpp
+#   src/estimationVelocity/debug_methods.cpp
+# )
 
-add_executable(${PROJECT_NAME}_red # record experiment data
-  src/recordExData/constructor.cpp
-  src/recordExData/methods.cpp
-  src/recordExData/debug_main.cpp
-  src/recordExData/property.cpp
-  src/recordExData/debug_methods.cpp
-)
+# add_executable(${PROJECT_NAME}_red # record experiment data
+#   src/recordExData/constructor.cpp
+#   src/recordExData/methods.cpp
+#   src/recordExData/debug_main.cpp
+#   src/recordExData/property.cpp
+#   src/recordExData/debug_methods.cpp
+# )
 
 # add_executable(${PROJECT_NAME}_person # detectPersonHOG
 #   src/detectPersonHOG/main.cpp
@@ -252,40 +252,40 @@ add_executable(${PROJECT_NAME}_red # record experiment data
 
 
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(${PROJECT_NAME}_cc ${PROJECT_NAME}_generate_messages_cpp)
+# add_dependencies(${PROJECT_NAME}_cc ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_gr ${PROJECT_NAME}_generate_messages_cpp)
-add_dependencies(${PROJECT_NAME}_lrf ${PROJECT_NAME}_generate_messages_cpp)
-add_dependencies(${PROJECT_NAME}_im ${PROJECT_NAME}_generate_messages_cpp)
-add_dependencies(${PROJECT_NAME}_mv ${PROJECT_NAME}_generate_messages_cpp)
-add_dependencies(${PROJECT_NAME}_pcl ${PROJECT_NAME}_generate_messages_cpp)
-add_dependencies(${PROJECT_NAME}_syncro ${PROJECT_NAME}_generate_messages_cpp)
-add_dependencies(${PROJECT_NAME}_manage ${PROJECT_NAME}_generate_messages_cpp)
-add_dependencies(${PROJECT_NAME}_estimate ${PROJECT_NAME}_generate_messages_cpp)
-add_dependencies(${PROJECT_NAME}_red ${PROJECT_NAME}_generate_messages_cpp)
+# add_dependencies(${PROJECT_NAME}_lrf ${PROJECT_NAME}_generate_messages_cpp)
+# add_dependencies(${PROJECT_NAME}_im ${PROJECT_NAME}_generate_messages_cpp)
+# add_dependencies(${PROJECT_NAME}_mv ${PROJECT_NAME}_generate_messages_cpp)
+# add_dependencies(${PROJECT_NAME}_pcl ${PROJECT_NAME}_generate_messages_cpp)
+# add_dependencies(${PROJECT_NAME}_syncro ${PROJECT_NAME}_generate_messages_cpp)
+# add_dependencies(${PROJECT_NAME}_manage ${PROJECT_NAME}_generate_messages_cpp)
+# add_dependencies(${PROJECT_NAME}_estimate ${PROJECT_NAME}_generate_messages_cpp)
+# add_dependencies(${PROJECT_NAME}_red ${PROJECT_NAME}_generate_messages_cpp)
 # add_dependencies(${PROJECT_NAME}_person ${PROJECT_NAME}_generate_messages_cpp)
 # add_dependencies(${PROJECT_NAME}_darknet ${PROJECT_NAME}_generate_messages_cpp)
 
 # c++ ROSノードのDynamic Reconfigureの依存の追加
-add_dependencies(${PROJECT_NAME}_cc ${PROJECT_NAME}_gencfg)
+# add_dependencies(${PROJECT_NAME}_cc ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_gr ${PROJECT_NAME}_gencfg)
-add_dependencies(${PROJECT_NAME}_estimate ${PROJECT_NAME}_gencfg)
-add_dependencies(${PROJECT_NAME}_im ${PROJECT_NAME}_gencfg)
-add_dependencies(${PROJECT_NAME}_mv ${PROJECT_NAME}_gencfg)
+# add_dependencies(${PROJECT_NAME}_estimate ${PROJECT_NAME}_gencfg)
+# add_dependencies(${PROJECT_NAME}_im ${PROJECT_NAME}_gencfg)
+# add_dependencies(${PROJECT_NAME}_mv ${PROJECT_NAME}_gencfg)
 # add_dependencies(${PROJECT_NAME}_darknet ${PROJECT_NAME}_gencfg)
-add_dependencies(${PROJECT_NAME}_red ${PROJECT_NAME}_gencfg)
+# add_dependencies(${PROJECT_NAME}_red ${PROJECT_NAME}_gencfg)
 
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}_cc ${catkin_LIBRARIES}) # classification
+# target_link_libraries(${PROJECT_NAME}_cc ${catkin_LIBRARIES}) # classification
 target_link_libraries(${PROJECT_NAME}_gr ${catkin_LIBRARIES}) # ground plane remove
-target_link_libraries(${PROJECT_NAME}_lrf ${catkin_LIBRARIES}) # laser range finder
-target_link_libraries(${PROJECT_NAME}_im ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # image matching
-target_link_libraries(${PROJECT_NAME}_mv ${catkin_LIBRARIES} ) # measurement velocity
-target_link_libraries(${PROJECT_NAME}_pcl ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # point cloud
-target_link_libraries(${PROJECT_NAME}_syncro ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # synchro image
-target_link_libraries(${PROJECT_NAME}_manage ${catkin_LIBRARIES} ) # manege 
-target_link_libraries(${PROJECT_NAME}_estimate ${catkin_LIBRARIES} ) # estimate 
-target_link_libraries(${PROJECT_NAME}_red ${catkin_LIBRARIES} ) # record experiment data
+# target_link_libraries(${PROJECT_NAME}_lrf ${catkin_LIBRARIES}) # laser range finder
+# target_link_libraries(${PROJECT_NAME}_im ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # image matching
+# target_link_libraries(${PROJECT_NAME}_mv ${catkin_LIBRARIES} ) # measurement velocity
+# target_link_libraries(${PROJECT_NAME}_pcl ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # point cloud
+# target_link_libraries(${PROJECT_NAME}_syncro ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # synchro image
+# target_link_libraries(${PROJECT_NAME}_manage ${catkin_LIBRARIES} ) # manege 
+# target_link_libraries(${PROJECT_NAME}_estimate ${catkin_LIBRARIES} ) # estimate 
+# target_link_libraries(${PROJECT_NAME}_red ${catkin_LIBRARIES} ) # record experiment data
 # target_link_libraries(${PROJECT_NAME}_person ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # manege 
 # target_link_libraries(${PROJECT_NAME}_darknet ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # manege 
 
