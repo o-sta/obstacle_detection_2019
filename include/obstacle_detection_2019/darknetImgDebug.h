@@ -11,6 +11,7 @@ class darknetImgDebug : public darknetImg {
         int cellSideLength;     //セルの辺の長さ[px]
         int mapImageRows;       //マップイメージの行
         int mapImageCols;       //マップイメージの列
+        std::vector<int> num_temp;  //一時変数（要素数はマップセルの数）
         void registerPubData(); //パブリッシュするデータを登録
     protected:
         void drawClusterCells(obstacle_detection_2019::ClassificationElement& cluster, int colorIndex);    //セルの塗りつぶし
@@ -20,7 +21,7 @@ class darknetImgDebug : public darknetImg {
         darknetImgDebug();
         ~darknetImgDebug();
         void gridmap2PointCloud();  //グリッドマップをポイントクラウドに変換
-        void gridmap2Image(obstacle_detection_2019::ClassificationData& clusterData, cv::Mat& image);       //グリッドマップを画像に変換
+        void gridmap2Image(obstacle_detection_2019::SensorMapDataMultiLayer& smdml, cv::Mat& image);       //グリッドマップを画像に変換
         void cluster2PointCloud();  //クラスタ情報を含むグリッドマップをポイントクラウドに変換
         void cluster2Image(obstacle_detection_2019::ClassificationData& clusterData, cv::Mat& image);       //クラスタ情報を含むグリッドマップを画像に変換
         void publishDebugData();    //パブリッシュリストに存在するデータをpublishする

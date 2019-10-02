@@ -4,6 +4,7 @@ darknetImgDebug::darknetImgDebug()
 :mapImageCB(new cv_bridge::CvImage)
 {
     setMapImageConfig();
+    num_temp.resize(numberOfCells);
 }
 
 darknetImgDebug::~darknetImgDebug(){
@@ -13,6 +14,7 @@ darknetImgDebug::~darknetImgDebug(){
 void darknetImgDebug::setColorMap(std::vector<int>& colorMap){
     nhSub.param("colorMap/data", colorMap, colorMap);
     colorMap.resize(colorMap.size() - (colorMap.size() % 3)); //要素数が3の倍数(RGB)になるようにリサイズ
+
 }
 
 void darknetImgDebug::setMapImageConfig(){
@@ -51,9 +53,14 @@ void darknetImgDebug::cluster2PointCloud(){
     
 }
 
-void darknetImgDebug::gridmap2Image(obstacle_detection_2019::ClassificationData& clusterData, cv::Mat& image){
+void darknetImgDebug::gridmap2Image(obstacle_detection_2019::SensorMapDataMultiLayer& smdml, cv::Mat& image){
     //セルに含まれる点の数を画像で表示するプログラム。閾値を用意し、それ以上を赤、それ以下を黒で表示するプログラムの開発を行う。
+    std::fill(num_temp.begin(), num_temp.end(), 0); //テンプレートの初期化
+    for(auto layer : smdml.layer){
+        
+    }
 }
+
 
 // void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb, const sensor_msgs::Image::ConstPtr& image)
 // {
