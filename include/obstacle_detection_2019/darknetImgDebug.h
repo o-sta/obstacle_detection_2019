@@ -14,14 +14,42 @@ class darknetImgDebug : public darknetImg {
         std::vector<int> num_temp;  //一時変数（要素数はマップセルの数）
         void registerPubData(); //パブリッシュするデータを登録
     protected:
-        void drawClusterCells(obstacle_detection_2019::ClassificationElement& cluster, int colorIndex);    //セルの塗りつぶし
-        void setMapImageConfig();   //マップイメージの詳細設定
+        /**クラスタに属しているセルを探してマップ画像に色を付ける
+         * cluster 入力クラスタ
+         * colorIndex 色番号
+         * image 出力画像
+         */
+        void drawClusterCells(obstacle_detection_2019::ClassificationElement& cluster, int colorIndex, cv::Mat& image);
+
+        /**マップ画像の詳細設定を行う
+         * 画像の幅、高さをcv::Matに適用
+         */ 
+        void setMapImageConfig();
+
+        /**カラーマップの配列を3の倍数(BGR?)に設定
+         */ 
         void setColorMap(std::vector<int>&);
     public:
         darknetImgDebug();
         ~darknetImgDebug();
-        void gridmap2PointCloud();  //グリッドマップをポイントクラウドに変換
-        void gridmap2Image(obstacle_detection_2019::SensorMapDataMultiLayer& smdml, cv::Mat& image);       //グリッドマップを画像に変換
+
+        /**グリッドマップをポイントクラウドに変換
+         * 未実装
+         */
+        void gridmap2PointCloud();
+
+        /**グリッドマップを画像に変換
+         * セルに存在する点の数が閾値よりも大きい場合、そのセルを赤色にする
+         * それ以外は黒色
+         * smdml マップのレイヤ(入力)
+         * pt\num_threthold 閾値
+         * image 出力画像
+         */
+        void gridmap2Image(obstacle_detection_2019::SensorMapDataMultiLayer& smdml,int pt_num_threthold ,cv::Mat& image);
+
+        /**
+         * 
+         */ 
         void cluster2PointCloud();  //クラスタ情報を含むグリッドマップをポイントクラウドに変換
         void cluster2Image(obstacle_detection_2019::ClassificationData& clusterData, cv::Mat& image);       //クラスタ情報を含むグリッドマップを画像に変換
         void publishDebugData();    //パブリッシュリストに存在するデータをpublishする
