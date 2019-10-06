@@ -2,6 +2,9 @@
 #ifndef INCLUDE_DARKNET_DEBUG
 #define INCLUDE_DARKNET_DEBUG
 #include <obstacle_detection_2019/darknetImg.h>
+#include <sensor_msgs/PointCloud2.h>
+#include <sensor_msgs/point_cloud2_iterator.h>
+
 
 class darknetImgDebug : public darknetImg {
     private:
@@ -34,7 +37,7 @@ class darknetImgDebug : public darknetImg {
         ~darknetImgDebug();
 
         /**グリッドマップをポイントクラウドに変換
-         * 未実装
+         * 実装予定無し
          */
         void gridmap2PointCloud();
 
@@ -42,15 +45,15 @@ class darknetImgDebug : public darknetImg {
          * セルに存在する点の数が閾値よりも大きい場合、そのセルを赤色にする
          * それ以外は黒色
          * smdml マップのレイヤ(入力)
-         * pt\num_threthold 閾値
+         * pt_num_threthold 閾値
          * image 出力画像
          */
         void gridmap2Image(obstacle_detection_2019::SensorMapDataMultiLayer& smdml,int pt_num_threthold ,cv::Mat& image);
 
         /**
-         * 
+         * クラスタ情報を含むグリッドマップをポイントクラウドに変換する
          */ 
-        void cluster2PointCloud();  //クラスタ情報を含むグリッドマップをポイントクラウドに変換
+        void cluster2PointCloud(obstacle_detection_2019::ClassificationData& clusterData, sensor_msgs::PointCloud2& pc_msg);
         void cluster2Image(obstacle_detection_2019::ClassificationData& clusterData, cv::Mat& image);       //クラスタ情報を含むグリッドマップを画像に変換
         void publishDebugData();    //パブリッシュリストに存在するデータをpublishする
 };
