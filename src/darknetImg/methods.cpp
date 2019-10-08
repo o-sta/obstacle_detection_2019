@@ -12,6 +12,7 @@
 // sensor_callback2用コンストラクタ
 darknetImg::darknetImg(/* args */)
 :
+nhPub("~"),
 bb_sub(nhSub, "/darknet_ros/bounding_boxes", 1), 
 image_sub(nhSub, "/robot2/zed_node/left/image_rect_color", 1), 
 sync(MySyncPolicy(10),bb_sub, image_sub),
@@ -65,8 +66,8 @@ void darknetImg::createWindow(){
 void darknetImg::setParam(){
     ROS_INFO_STREAM("debug setParam");
     nhPub.param<float>("camera/focus", f, f);
-    nhPub.param<float>("localMap/width/float", mapWidth, 8.0);
-    nhPub.param<float>("localMap/height/float", mapHeight, 8.0);
+    nhPub.param<float>("localMap/float", mapWidth, 8.0);
+    nhPub.param<float>("localMap/float", mapHeight, 8.0);
     nhPub.param<float>("localMap/resolution", mapResolution, 0.05);
     nhPub.param<float>("groundEstimate/cameraHeight", camHeight, 0.3);
     nhPub.param<float>("groundEstimate/candidateY", groundCandidateY, 0.5);
@@ -75,6 +76,7 @@ void darknetImg::setParam(){
     nhPub.param<float>("groundEstimate/ransac/epsAngle", epsAngle, 15.0);
     nhPub.param<int>("window/minPts", minPts, 1600);
     nhPub.param<int>("window/rangeCell", windowRangeCell, 2);
+    ROS_INFO_STREAM("focus value" << f);
 }
 
 

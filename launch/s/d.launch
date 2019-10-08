@@ -1,0 +1,12 @@
+<launch>
+  <arg name="od" default="obstacle_detection_2019" />
+  <arg name="odf" default="$(find obstacle_detection_2019)" />
+  <group ns="dr">
+    <node pkg="$(arg od)" type="$(arg od)_darknet" name="$(arg od)_darknet" output="screen">
+        <rosparam file="$(arg odf)/config/colorMap.yaml" command="load" />
+        <rosparam file="$(arg odf)/config/camera.yaml" command="load" />
+        <rosparam file="$(arg odf)/config/groundEstimate.yaml" command="load" />
+        <rosparam file="$(arg odf)/config/localMap.yaml" command="load" />
+    </node>
+  </group>
+</launch>

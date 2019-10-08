@@ -238,6 +238,7 @@ add_executable(${PROJECT_NAME}_person # detectPersonHOG
 add_executable(${PROJECT_NAME}_darknet # darknet_ros
   src/darknetImg/main.cpp
   src/darknetImg/methods.cpp
+  src/darknetImg/debug_methods.cpp
 )
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
