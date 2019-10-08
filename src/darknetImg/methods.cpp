@@ -14,7 +14,7 @@ darknetImg::darknetImg(/* args */)
 :
 nhPub("~"),
 bb_sub(nhSub, "/darknet_ros/bounding_boxes", 1), 
-image_sub(nhSub, "/robot2/zed_node/left/image_rect_color", 1), 
+image_sub(nhSub, "/zed/zed_node/left/image_rect_color", 1), 
 sync(MySyncPolicy(10),bb_sub, image_sub),
 is_size_initialized(false),
 mask(1,1,CV_8UC1),
