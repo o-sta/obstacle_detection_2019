@@ -16,6 +16,10 @@ class darknetImgDebug : public darknetImg {
         int mapImageCols;       //マップイメージの列
         std::vector<int> num_temp;  //一時変数（要素数はマップセルの数）
         void registerPubData(); //パブリッシュするデータを登録
+        std::string topic_clusterImage; //クラスタ用セルのパブリッシュトピック
+        std::string topic_clusterPCL;   //クラスタ用ポイントクラウドのパブリッシュトピック
+        std::string topic_gridMapImage; //グリッドマップ用ポイントクラウドのパブリッシュトピック
+        std::string topic_image;        //bbとdepthImageを結合した時のパブリッシュトピック
     protected:
         /**クラスタに属しているセルを探してマップ画像に色を付ける
          * cluster 入力クラスタ
@@ -36,6 +40,7 @@ class darknetImgDebug : public darknetImg {
         darknetImgDebug();
         ~darknetImgDebug();
 
+        void setParam();
         /**グリッドマップをポイントクラウドに変換
          * 実装予定無し
          */

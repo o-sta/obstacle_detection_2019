@@ -13,18 +13,21 @@
 darknetImg::darknetImg(/* args */)
 :
 nhPub("~"),
-bb_sub(nhSub, "/darknet_ros/bounding_boxes", 1), 
-image_sub(nhSub, "/zed/zed_node/left/image_rect_color", 1), 
+// bb_sub(nhSub, "/darknet_ros/bounding_boxes", 1), 
+// image_sub(nhSub, "/zed/zed_node/left/image_rect_color", 1), 
+bb_sub(), 
+image_sub(), 
 sync(MySyncPolicy(10),bb_sub, image_sub),
 is_size_initialized(false),
 mask(1,1,CV_8UC1),
 ground_points(new pcl::PointCloud<pcl::PointXYZ>)
 {
-    ROS_INFO_STREAM("debug setParam");
+    setParam(); //パラメータのセットアップ
     pub = nhPub.advertise<sensor_msgs::Image>("/dphog/boximage", 1);
     ROS_INFO_STREAM("debug setParam");
+    bb_sub.subscribe(nhSub, topic_bb, 1);
+    image_sub.subscribe(nhSub, topic_depthImage, 1);
     sync.registerCallback(boost::bind(&darknetImg::sensor_callback, this, _1, _2));
-    setParam(); //パラメータのセットアップ
     mapRows = (int)(mapHeight/mapResolution);
     mapCols = (int)(mapWidth/mapResolution);
     numberOfCells = mapRows*mapCols;
@@ -65,6 +68,8 @@ void darknetImg::createWindow(){
 
 void darknetImg::setParam(){
     ROS_INFO_STREAM("debug setParam");
+    nhPub.param<std::string>("topic/subscriber/boundingBoxes", topic_bb, "darknet_ros/bounding_boxes");
+    nhPub.param<std::string>("topic/subscriber/depthImage", topic_depthImage, "left/image_rect_color");
     nhPub.param<float>("camera/focus", f, f);
     nhPub.param<float>("localMap/float", mapWidth, 8.0);
     nhPub.param<float>("localMap/float", mapHeight, 8.0);

@@ -1,0 +1,11 @@
+#darknetImgDebugノードのパラメータ
+topic: #ROSトピック
+  publisher: #出力
+    #sensor_msgs::Image 人間の周囲に枠線が描画された画像
+    image: image
+    #sensor_msgs::Image クラスタを構成するセルが描画されたマップ画像
+    clusterImage: clusterImage
+    #sensor_msgs::PointColud2 クラスタをポイントクラウドで表示
+    clusterPCL: clusterPCL
+    #sensor_msgs::Image 一定以上の点を持つセルが表示されるマップ画像
+    gridMapImage: gridMapImage

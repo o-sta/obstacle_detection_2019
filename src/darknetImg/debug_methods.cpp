@@ -10,6 +10,13 @@ darknetImgDebug::darknetImgDebug()
 darknetImgDebug::~darknetImgDebug(){
 
 }
+void darknetImgDebug::setParam(){
+    darknetImg::setParam();
+    nhPub.param<std::string>("topic/publisher/image", topic_image, "image");
+    nhPub.param<std::string>("topic/publisher/clusterImage", topic_clusterImage, "clusterImage");
+    nhPub.param<std::string>("topic/publisher/clusterPCL", topic_clusterPCL, "clusterPCL");
+    nhPub.param<std::string>("topic/publisher/gridMapImage", topic_gridMapImage, "gridMapImage");
+}
 
 void darknetImgDebug::setColorMap(std::vector<int>& colorMap){
     nhSub.param("colorMap/data", colorMap, colorMap);

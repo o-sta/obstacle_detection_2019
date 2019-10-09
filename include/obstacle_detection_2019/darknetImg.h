@@ -55,8 +55,12 @@ class darknetImg {
         message_filters::Subscriber<sensor_msgs::Image> image_sub;
         typedef message_filters::sync_policies::ApproximateTime<darknet_ros_msgs::BoundingBoxes, sensor_msgs::Image> MySyncPolicy;
         message_filters::Synchronizer<MySyncPolicy> sync;
+        //topicパラメータ
+        std::string topic_bb;           //BoundingBoxesのサブスクライブトピック
+        std::string topic_depthImage;   //depthImageのサブスクライブトピック
+        std::string topic_image;        //bbとdepthImageを結合した時のパブリッシュトピック
         //launchパラメータ
-        float f;                                    //カメラの焦点距離と画像の関連パラメータ
+        float f;                        //カメラの焦点距離と画像の関連パラメータ
         //dynamic_reconfigure用launchパラメータ
         float camHeight;                //床からカメラまでの高さ
         float groundCandidateY;         //床面候補点に含めるときの高さの閾値（上限）
@@ -97,7 +101,7 @@ class darknetImg {
         ~darknetImg();
         void sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb,const sensor_msgs::Image::ConstPtr& image); //データ受信
         void configCallback(obstacle_detection_2019::darknetImgConfig &config, uint32_t level); //パラメータ受信
-        void setParam();      //yamlのセットアップ
+        virtual void setParam();      //yamlのセットアップ
         bool subscribeSensorData(); //データ受信
         void publishData();         //データ送信
         //パラメータ設定関数

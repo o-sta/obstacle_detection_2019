@@ -235,7 +235,7 @@ add_executable(${PROJECT_NAME}_person # detectPersonHOG
   src/detectPersonHOG/main.cpp
   src/detectPersonHOG/methods.cpp
 )
-add_executable(${PROJECT_NAME}_darknet # darknet_ros
+add_executable(${PROJECT_NAME}_darknet_debug # darknet_ros
   src/darknetImg/main.cpp
   src/darknetImg/methods.cpp
   src/darknetImg/debug_methods.cpp
