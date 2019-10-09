@@ -262,7 +262,7 @@ add_dependencies(${PROJECT_NAME}_manage ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_estimate ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_red ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME}_person ${PROJECT_NAME}_generate_messages_cpp)
-add_dependencies(${PROJECT_NAME}_darknet ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(${PROJECT_NAME}_darknet_debug ${PROJECT_NAME}_generate_messages_cpp)
 
 # c++ ROSノードのDynamic Reconfigureの依存の追加
 add_dependencies(${PROJECT_NAME}_cc ${PROJECT_NAME}_gencfg)
@@ -270,7 +270,7 @@ add_dependencies(${PROJECT_NAME}_gr ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_estimate ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_im ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_mv ${PROJECT_NAME}_gencfg)
-add_dependencies(${PROJECT_NAME}_darknet ${PROJECT_NAME}_gencfg)
+add_dependencies(${PROJECT_NAME}_darknet_debug ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_red ${PROJECT_NAME}_gencfg)
 
 
@@ -286,7 +286,7 @@ target_link_libraries(${PROJECT_NAME}_manage ${catkin_LIBRARIES} ) # manege
 target_link_libraries(${PROJECT_NAME}_estimate ${catkin_LIBRARIES} ) # estimate 
 target_link_libraries(${PROJECT_NAME}_red ${catkin_LIBRARIES} ) # record experiment data
 target_link_libraries(${PROJECT_NAME}_person ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # manege 
-target_link_libraries(${PROJECT_NAME}_darknet ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # manege 
+target_link_libraries(${PROJECT_NAME}_darknet_debug ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # manege 
 
 
 
