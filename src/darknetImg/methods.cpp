@@ -298,7 +298,7 @@ void darknetImg::generateGridmap(){
                 zt = bi[col*ch];
                 xt=-(((float)row-(float)rows/2)*zt/f-camHeight);
                 if(convertToGrid(xt, zt, mapCol, mapRow) == true){
-                    index = &smdml.layer[mi[col]].index[mapRow*mapCols+mapCol].data;
+                    index = &smdml.layer[mi[col]-1].index[mapRow*mapCols+mapCol].data;
                     if(index < 0){
                         *index = count++;
                     }
