@@ -99,13 +99,15 @@ void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr
         ROS_ERROR("Could not convert from '%s' to 'TYPE_32FC1'.",image->encoding.c_str());
         return;
     }
+    pickUpGroundPointCandidates();
+    //枠線描画用コード　debugの方に移動予定
     // bounding_boxedに書かれた枠の描画
-    auto iter = bb->bounding_boxes.begin();
-    for (; iter != bb->bounding_boxes.end(); ++iter){
-        cv::rectangle(bridgeImage->image, cv::Point(iter->xmin, iter->ymin), cv::Point(iter->xmax, iter->ymax), cv::Scalar(0, 0, 200), 5, 8);
-    }
-    // パブリッシュ(debgu移行予定)
-    pub.publish(bridgeImage->toImageMsg());
+    // auto iter = bb->bounding_boxes.begin();
+    // for (; iter != bb->bounding_boxes.end(); ++iter){
+    //     cv::rectangle(bridgeImage->image, cv::Point(iter->xmin, iter->ymin), cv::Point(iter->xmax, iter->ymax), cv::Scalar(0, 0, 200), 5, 8);
+    // }
+    // // パブリッシュ(debgu移行予定)
+    // pub.publish(bridgeImage->toImageMsg());
 }
 
 
