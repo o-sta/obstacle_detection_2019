@@ -20,7 +20,9 @@ image_sub(),
 sync(MySyncPolicy(10),bb_sub, image_sub),
 is_size_initialized(false),
 mask(1,1,CV_8UC1),
-ground_points(new pcl::PointCloud<pcl::PointXYZ>)
+ground_points(new pcl::PointCloud<pcl::PointXYZ>),
+inliers (new pcl::PointIndices),
+coefficients(new pcl::ModelCoefficients)
 {
     setParam(); //パラメータのセットアップ
     pub = nhPub.advertise<sensor_msgs::Image>("/dphog/boximage", 1);
