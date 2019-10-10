@@ -5,7 +5,7 @@
   <arg name="odf" default="$(find obstacle_detection_2019)" />
   <group ns="dr">
     <group if="$(arg debug_mode)">
-      <node pkg="$(arg od)" type="$(arg od)_darknet_debug" name="$(arg od)_darknet_debug" output="screen">
+      <node pkg="$(arg od)" type="$(arg od)_darknet_debug" name="$(arg od)_darknet_debug" output="screen" launch-prefix="gdb --args">
           <rosparam file="$(arg odf)/config/colorMap.yaml" command="load" />
           <rosparam file="$(arg odf)/config/camera.yaml" command="load" />
           <rosparam file="$(arg odf)/config/groundEstimate.yaml" command="load" />
