@@ -303,10 +303,10 @@ void darknetImg::generateGridmap(){
                         *index = count++;
                     }
                     yt = ((float)rows/2-row)*zt/f;
-                    smdml.layer[mi[col]].size[*index].data++;
-                    smdml.layer[mi[col]].pt[*index].x += xt;
-                    smdml.layer[mi[col]].pt[*index].y += yt;
-                    smdml.layer[mi[col]].pt[*index].z += zt;
+                    smdml.layer[mi[col]-1].size[*index].data++;
+                    smdml.layer[mi[col]-1].pt[*index].x += xt;
+                    smdml.layer[mi[col]-1].pt[*index].y += yt;
+                    smdml.layer[mi[col]-1].pt[*index].z += zt;
                 }
             }
         }
