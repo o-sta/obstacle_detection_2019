@@ -101,6 +101,16 @@ void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr
         ROS_ERROR("Could not convert from '%s' to 'TYPE_32FC1'.",image->encoding.c_str());
         return;
     }
+
+    //枠線描画用コード　debugの方に移動予定
+    // bounding_boxedに書かれた枠の描画
+    auto iter = bb->bounding_boxes.begin();
+    for (; iter != bb->bounding_boxes.end(); ++iter){
+        cv::rectangle(bridgeImage->image, cv::Point(iter->xmin, iter->ymin), cv::Point(iter->xmax, iter->ymax), cv::Scalar(0, 0, 200), 5, 8);
+    }
+    // パブリッシュ(debgu移行予定)
+    pub.publish(bridgeImage->toImageMsg());
+
     boundingBoxesMsg = *bb;
     if (bb->bounding_boxes.size() > 0){
         ROS_INFO_STREAM("pickUpGroundPointCandidates");
@@ -126,14 +136,7 @@ void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr
         ROS_INFO_STREAM("not person detection");
     }
     
-    //枠線描画用コード　debugの方に移動予定
-    // bounding_boxedに書かれた枠の描画
-    // auto iter = bb->bounding_boxes.begin();
-    // for (; iter != bb->bounding_boxes.end(); ++iter){
-    //     cv::rectangle(bridgeImage->image, cv::Point(iter->xmin, iter->ymin), cv::Point(iter->xmax, iter->ymax), cv::Scalar(0, 0, 200), 5, 8);
-    // }
-    // // パブリッシュ(debgu移行予定)
-    // pub.publish(bridgeImage->toImageMsg());
+
 }
 
 
