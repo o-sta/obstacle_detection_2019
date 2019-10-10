@@ -251,9 +251,9 @@ void darknetImg::removeGroundPoints(){
 
 
 void darknetImg::trimPoints(){
-    int i = 0;
+    int i = 1;
     for(const auto& bb : boundingBoxesMsg.bounding_boxes){
-        cv::rectangle(mask, cv::Point(bb.xmin, bb.ymin), cv::Point(bb.xmax, bb.ymax), cv::Scalar(i,i,i), -1, CV_FILLED);
+        cv::rectangle(mask, cv::Point(bb.xmin, bb.ymin), cv::Point(bb.xmax, bb.ymax), i, CV_FILLED, 0);
         ++i;
     }
 }
