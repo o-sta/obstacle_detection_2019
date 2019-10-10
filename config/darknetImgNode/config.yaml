@@ -2,6 +2,6 @@
 topic: #ROSトピック
   subscriber: #入力側
     #darknet_ros_msgs::BoundingBoxes 人を囲む枠線
-    boundingBoxes: darknet_ros/bounding_boxes
+    boundingBoxes: /darknet_ros/bounding_boxes
     #sensor_msgs::Image 深度画像
-    depthImage: left/image_rect_color
+    depthImage: /zed/zed_node/left/image_rect_color
