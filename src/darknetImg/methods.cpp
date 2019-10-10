@@ -99,7 +99,25 @@ void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr
         ROS_ERROR("Could not convert from '%s' to 'TYPE_32FC1'.",image->encoding.c_str());
         return;
     }
+    ROS_INFO_STREAM("pickUpGroundPointCandidates");
     pickUpGroundPointCandidates();
+    ROS_INFO_STREAM("estimateGroundCoefficients");
+    estimateGroundCoefficients();
+    ROS_INFO_STREAM("removeGroundPoints");
+    removeGroundPoints();
+    ROS_INFO_STREAM("trimPoints");
+    trimPoints();
+    ROS_INFO_STREAM("generateGridmap");
+    generateGridmap();
+    ROS_INFO_STREAM("dimensionalityReductionGridmap");
+    dimensionalityReductionGridmap();
+    ROS_INFO_STREAM("classifyPoints");
+    classifyPoints();
+    ROS_INFO_STREAM("estimatePersonPosition");
+    estimatePersonPosition();
+    ROS_INFO_STREAM("predictPersonPosition");
+    predictPersonPosition();
+    ROS_INFO_STREAM("iteration finished");
     //枠線描画用コード　debugの方に移動予定
     // bounding_boxedに書かれた枠の描画
     // auto iter = bb->bounding_boxes.begin();
