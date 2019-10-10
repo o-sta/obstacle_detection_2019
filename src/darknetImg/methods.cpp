@@ -273,7 +273,8 @@ void darknetImg::generateGridmap(){
     pt.x = 0; pt.y = 0; pt.z = 0;
     int mapRow, mapCol; // マップの行と列
     //初期設定
-    smdml = obstacle_detection_2019::SensorMapDataMultiLayer();
+    //smdml = boost::make_shared<obstacle_detection_2019::SensorMapDataMultiLayer>();
+    smdml.layer.
     smdml.layer.resize(boundingBoxesMsg.bounding_boxes.size());//■error
     for(auto& layer : smdml.layer){
         layer.header = smdml.header;
