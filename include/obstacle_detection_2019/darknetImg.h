@@ -94,6 +94,8 @@ class darknetImg {
         int mapRows, mapCols, numberOfCells;        //ローカルマップの横幅[pixel]、縦幅[pixel]、マップのセル数[pixel]
         obstacle_detection_2019::ClassificationData cd;                     //クラスタデータ
         bool convertToGrid(const float& x,const float& y,int& xg,int& yg);
+        void clearMsg(obstacle_detection_2019::SensorMapDataMultiLayer& smdml_msg);
+        void clearMsg(obstacle_detection_2019::SensorMapData& smd_msg);
         //窓内に含まれているセルを出力する関数
     /* data */
     public:

@@ -10,83 +10,6 @@
 // }
 
 // sensor_callback2用コンストラクタ
-darknetImg::darknetImg(/* args */)
-:
-nhPub("~"),
-// bb_sub(nhSub, "/darknet_ros/bounding_boxes", 1), 
-// image_sub(nhSub, "/zed/zed_node/left/image_rect_color", 1), 
-bb_sub(), 
-image_sub(), 
-sync(MySyncPolicy(10),bb_sub, image_sub),
-is_size_initialized(false),
-mask(1,1,CV_8UC1),
-ground_points(new pcl::PointCloud<pcl::PointXYZ>),
-inliers (new pcl::PointIndices),
-coefficients(new pcl::ModelCoefficients)
-{
-    setParam(); //パラメータのセットアップ
-    pub = nhPub.advertise<sensor_msgs::Image>("/dphog/boximage", 1);
-    ROS_INFO_STREAM("debug setParam");
-    bb_sub.subscribe(nhSub, topic_bb, 1);
-    image_sub.subscribe(nhSub, topic_depthImage, 1);
-    sync.registerCallback(boost::bind(&darknetImg::sensor_callback, this, _1, _2));
-    mapRows = (int)(mapHeight/mapResolution);
-    mapCols = (int)(mapWidth/mapResolution);
-    numberOfCells = mapRows*mapCols;
-    cellsInWindow.resize(mapRows*mapCols);
-    int count = 0;
-    for(int row=-1; row<2; row++){
-            cellsInWindow[count++] = row;
-    }
-    cellsInWindow.resize(count);
-    //RANSACパラメータ設定
-    seg.setOptimizeCoefficients (true);
-	//seg.setModelType (pcl::SACMODEL_PLANE);//全平面抽出
-	seg.setModelType (pcl::SACMODEL_PERPENDICULAR_PLANE);//ある軸に垂直な平面を抽出
-	seg.setMethodType (pcl::SAC_RANSAC);
-	seg.setMaxIterations (ransacNum);//RANSACの繰り返し回数
-	seg.setDistanceThreshold (distanceThreshold);//モデルとどのくらい離れていてもいいか(モデルの評価に使用)
-	seg.setAxis(Eigen::Vector3f (0.0,0.0,1.0));//法線ベクトル
-	seg.setEpsAngle(epsAngle * (M_PI/180.0f));//許容出来る平面
-    // rqt_reconfigure
-    fc = boost::bind(&darknetImg::configCallback, this, _1, _2);
-	server.setCallback(fc);
-    ROS_INFO_STREAM("Started darknetImg");
-}
-
-
-darknetImg::~darknetImg(){}
-
-
-void darknetImg::createWindow(){
-    cellsInWindow.resize(mapRows*mapCols);
-    int count = 0;
-    for(int row=-1; row<2; row++){
-            cellsInWindow[count++] = row;
-    }
-    cellsInWindow.resize(count);
-}
-
-
-void darknetImg::setParam(){
-    ROS_INFO_STREAM("debug setParam");
-    nhPub.param<std::string>("topic/subscriber/boundingBoxes", topic_bb, "darknet_ros/bounding_boxes");
-    nhPub.param<std::string>("topic/subscriber/depthImage", topic_depthImage, "left/image_rect_color");
-    nhPub.param<float>("camera/focus", f, f);
-    nhPub.param<float>("localMap/float", mapWidth, 8.0);
-    nhPub.param<float>("localMap/float", mapHeight, 8.0);
-    nhPub.param<float>("localMap/resolution", mapResolution, 0.05);
-    nhPub.param<float>("groundEstimate/cameraHeight", camHeight, 0.3);
-    nhPub.param<float>("groundEstimate/candidateY", groundCandidateY, 0.5);
-    nhPub.param<int>("groundEstimate/ransac/num", ransacNum, 10);
-    nhPub.param<float>("groundEstimate/ransac/distanceThreshold", distanceThreshold, 0.5);
-    nhPub.param<float>("groundEstimate/ransac/epsAngle", epsAngle, 15.0);
-    nhPub.param<int>("window/minPts", minPts, 1600);
-    nhPub.param<int>("window/rangeCell", windowRangeCell, 2);
-    ROS_INFO_STREAM("focus value" << f);
-}
-
-
 void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb, const sensor_msgs::Image::ConstPtr& image)
 {
     // debug移行予定
@@ -135,34 +58,8 @@ void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr
     }else{
         ROS_INFO_STREAM("not person detection");
     }
-    
-
-}
-
-
-void darknetImg::configCallback(obstacle_detection_2019::darknetImgConfig &config, uint32_t level){
-    ROS_INFO_STREAM("Reconfigure Request:"
-                    << " " << config.cameraHeight
-                    << " " << config.groundThreshold
-                    << " " << config.windowMinPts
-                    << " " << config.windowRangeCell
-                    << " " << config.ransacNum
-                    << " " << config.ransacDistanceThreshold
-                    << " " << config.ransacEpsAngle
-                    << " " << config.estimateCandidateY
-                    );
-    //ransac パラメータ
-    ransacNum = config.ransacNum;
-    distanceThreshold = config.ransacDistanceThreshold;
-    epsAngle = config.ransacEpsAngle;
-    //ground パラメータ
-    groundCandidateY = config.estimateCandidateY;
-    camHeight = config.cameraHeight;
-    ground_th = config.groundThreshold;
-    //window パラメータ
-    minPts = config.windowMinPts;
-    windowRangeCell = config.windowRangeCell;   
-    createWindow();
+    clearMsg(smdml);
+    ROS_INFO_STREAM("----------------------------------------");
 }
 
 
@@ -274,7 +171,6 @@ void darknetImg::generateGridmap(){
     int mapRow, mapCol; // マップの行と列
     //初期設定
     //smdml = boost::make_shared<obstacle_detection_2019::SensorMapDataMultiLayer>();
-    smdml.layer.
     smdml.layer.resize(boundingBoxesMsg.bounding_boxes.size());//■error
     for(auto& layer : smdml.layer){
         layer.header = smdml.header;
@@ -527,3 +423,15 @@ void darknetImg::predictPersonPosition(){
     
 }
 
+void clearMsg(obstacle_detection_2019::SensorMapDataMultiLayer& smdml_msg){
+    for(auto smd_msg : smdml_msg.layer){
+        clearMsg(smd_msg);
+    }
+}
+
+void clearMsg(obstacle_detection_2019::SensorMapData& smd_msg){
+    smd_msg.header.frame_id.clear();
+    smd_msg.index.clear();
+    smd_msg.pt.clear();
+    smd_msg.size.clear();
+}
