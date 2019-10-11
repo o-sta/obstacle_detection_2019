@@ -423,9 +423,9 @@ void darknetImg::predictPersonPosition(){
     
 }
 
-void clearMsg(obstacle_detection_2019::SensorMapDataMultiLayer& smdml_msg){
+void darknetImg::clearMsg(obstacle_detection_2019::SensorMapDataMultiLayer& smdml_msg){
     for(auto smd_msg : smdml_msg.layer){
-        smd_msg.header.frame_id.clear();
+    smd_msg.header.frame_id.clear();
     smd_msg.index.clear();
     smd_msg.pt.clear();
     smd_msg.size.clear();
