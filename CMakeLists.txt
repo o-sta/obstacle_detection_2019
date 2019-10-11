@@ -239,6 +239,7 @@ add_executable(${PROJECT_NAME}_darknet_debug # darknet_ros
   src/darknetImg/main.cpp
   src/darknetImg/constructor.cpp
   src/darknetImg/methods.cpp
+  src/darknetImg/property.cpp
   src/darknetImg/debug_methods.cpp
 )
 
