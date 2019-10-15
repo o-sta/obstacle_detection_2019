@@ -41,6 +41,8 @@
 //※将来的にはパブリッシャとサブスクライバを用いた入力と出力を行うクラスと
 //  処理を行うクラスに分ける予定（一緒だと処理の流れが追いにくく、改変が難しい）
 class darknetImg {
+    public:
+        enum Relationship{NONE, MIX, IN};
     protected:
         ros::NodeHandle nhSub;
 		ros::Subscriber sub;
@@ -86,6 +88,7 @@ class darknetImg {
         dynamic_reconfigure::Server<obstacle_detection_2019::darknetImgConfig>::CallbackType fc;
         //深度画像のマスク（有効で1、無効で0）
         cv::Mat mask;
+        std::vector<std::vector<char>> mask2;
         bool is_size_initialized; //画像サイズが初期化されたか
         //ノードハンドルとサブスクライパ、パブリッシャ
     protected:
@@ -95,6 +98,9 @@ class darknetImg {
         obstacle_detection_2019::ClassificationData cd;                     //クラスタデータ
         bool convertToGrid(const float& x,const float& y,int& xg,int& yg);
         void clearMsg(obstacle_detection_2019::SensorMapDataMultiLayer& smdml_msg);
+        void addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs, std::vector<bool>& checkFlag, int coreNumber, int groupNumber);
+        Relationship checkBoundingBoxesRelationship(darknet_ros_msgs::BoundingBoxes& bbs, int core_index, int target_index);
+        void drawMask(darknet_ros_msgs::BoundingBoxes& bbs, int target_indexs, char value,  std::vector<std::vector<char>>& mask);
         //窓内に含まれているセルを出力する関数
     /* data */
     public:
@@ -113,12 +119,15 @@ class darknetImg {
         void removeGroundPoints();              //床面の点を除外する
         //歩行者位置推定関数
         void trimPoints();                      //枠線を元に点をトリミング（枠外の点を除去）
+        void trimPoints_v2(darknet_ros_msgs::BoundingBoxes& bbs);  //枠線を元に点をトリミング（再帰関数を使用したバージョン、こっちに切り替える予定）
         void generateGridmap();                 //深度画像からグリッドマップ作成
         void dimensionalityReductionGridmap();  // グリッドマップのを行のみ（奥行きのみ）のマップに変換
         void classifyPoints();                  //DBSCANによるクラスタリング
         void estimatePersonPosition();          //歩行者位置推定
         void predictPersonPosition();           //歩行者位置予測（カルマンフィルタ）※未実装
 };
+
+
 
 #endif
 

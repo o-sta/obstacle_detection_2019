@@ -35,30 +35,32 @@ void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr
     pub.publish(bridgeImage->toImageMsg());
 
     boundingBoxesMsg = *bb;
-    if (bb->bounding_boxes.size() > 0){
-        ROS_INFO_STREAM("pickUpGroundPointCandidates");
-        pickUpGroundPointCandidates();
-        ROS_INFO_STREAM("estimateGroundCoefficients");
-        estimateGroundCoefficients();
-        ROS_INFO_STREAM("removeGroundPoints");
-        removeGroundPoints();
-        ROS_INFO_STREAM("trimPoints");
-        trimPoints();
-        ROS_INFO_STREAM("generateGridmap");
-        generateGridmap();
-        ROS_INFO_STREAM("dimensionalityReductionGridmap");
-        dimensionalityReductionGridmap();
-        ROS_INFO_STREAM("classifyPoints");
-        classifyPoints();
-        ROS_INFO_STREAM("estimatePersonPosition");
-        estimatePersonPosition();
-        ROS_INFO_STREAM("predictPersonPosition");
-        predictPersonPosition();
-        ROS_INFO_STREAM("iteration finished");
-    }else{
-        ROS_INFO_STREAM("not person detection");
-    }
-    clearMsg(smdml);
+
+
+    // if (bb->bounding_boxes.size() > 0){
+    //     ROS_INFO_STREAM("pickUpGroundPointCandidates");
+    //     pickUpGroundPointCandidates();
+    //     ROS_INFO_STREAM("estimateGroundCoefficients");
+    //     estimateGroundCoefficients();
+    //     ROS_INFO_STREAM("removeGroundPoints");
+    //     removeGroundPoints();
+    //     ROS_INFO_STREAM("trimPoints");
+    //     trimPoints();
+    //     ROS_INFO_STREAM("generateGridmap");
+    //     generateGridmap();
+    //     ROS_INFO_STREAM("dimensionalityReductionGridmap");
+    //     dimensionalityReductionGridmap();
+    //     ROS_INFO_STREAM("classifyPoints");
+    //     classifyPoints();
+    //     ROS_INFO_STREAM("estimatePersonPosition");
+    //     estimatePersonPosition();
+    //     ROS_INFO_STREAM("predictPersonPosition");
+    //     predictPersonPosition();
+    //     ROS_INFO_STREAM("iteration finished");
+    // }else{
+    //     ROS_INFO_STREAM("not person detection");
+    // }
+    // clearMsg(smdml);
     ROS_INFO_STREAM("----------------------------------------");
 }
 
@@ -157,6 +159,77 @@ void darknetImg::trimPoints(){
         ++i;
     }
 }
+
+void darknetImg::trimPoints_v2(darknet_ros_msgs::BoundingBoxes& bbs){
+    std::vector<bool> checkFlag;
+    int groupNumber = 0;
+    checkFlag.resize(bbs.bounding_boxes.size());
+    std::fill(checkFlag.begin(), checkFlag.end(), false);
+    for(int i = 0; i < checkFlag.size(); ++i){
+        if(!checkFlag[i]){
+            ++groupNumber;
+            addBBGroupRecursively(bbs, checkFlag, i, groupNumber);
+        }
+    }
+}
+
+void addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs, std::vector<bool>& checkFlag, int coreNumber, int groupNumber){
+    int searchNumber;
+    checkFlag[coreNumber] = true;
+    for(searchNumber = 0; searchNumber < checkFlag.size(); ++searchNumber){
+        if(!checkFlag[searchNumber]){
+            switch (checkBoundingBoxesRelationship(bbs, coreNumber, searchNumber)){ //他のBBとの関連を調べる
+                case darknetImg::Relationship::IN: //完全に含まれている場合は同groupであるが、関連を調べる意味が無いので探査済みにする
+                    checkFlag[searchNumber] = true;
+                    break;
+                case darknetImg::Relationship::MIX: //一部含まれている場合は同groupであり、探査BBをcoreにして再度関連を調べる -> 探査済みにする
+                    addBBGroupRecursively(bbs, checkFlag, searchNumber, groupNumber);
+                    break;
+                case darknetImg::Relationship::NONE: //含まれていない場合は別groupであるため、何もしない
+                    break;
+            }
+        }
+    }
+}
+
+darknetImg::Relationship checkBoundingBoxesRelationship(darknet_ros_msgs::BoundingBoxes& bbs, int core_index, int target_index){
+    int count = 0;
+    //targetの点(xmin, ymin)がcoreのBBに含まれているか
+    if(   bbs.bounding_boxes[core_index].xmin < bbs.bounding_boxes[target_index].xmin 
+       && bbs.bounding_boxes[target_index].xmin < bbs.bounding_boxes[core_index].xmax
+       && bbs.bounding_boxes[core_index].ymin < bbs.bounding_boxes[target_index].ymin
+       && bbs.bounding_boxes[target_index].ymin < bbs.bounding_boxes[core_index].ymax
+    ){
+        count++;
+    }
+    //targetの点(xmax, ymax)がcoreのBBに含まれているか
+    if(   bbs.bounding_boxes[core_index].xmin < bbs.bounding_boxes[target_index].xmax 
+       && bbs.bounding_boxes[target_index].xmax < bbs.bounding_boxes[core_index].xmax
+       && bbs.bounding_boxes[core_index].ymin < bbs.bounding_boxes[target_index].ymax
+       && bbs.bounding_boxes[target_index].ymax < bbs.bounding_boxes[core_index].ymax
+    ){
+        count++;
+    }
+    switch (count) {
+        case 0:
+            return darknetImg::Relationship::NONE;
+            break;
+        case 1:
+            return darknetImg::Relationship::MIX;
+            break;
+        case 2:
+            return darknetImg::Relationship::IN;
+            break;
+    }
+
+}
+
+void darknetImg::drawMask(darknet_ros_msgs::BoundingBoxes& bbs, int target_indexs, char value, std::vector<std::vector<char>>& mask){
+    std::vector<char> mask_row(mapRows, 0);
+    std::fill();
+}
+
+
 
 
 void darknetImg::generateGridmap(){
