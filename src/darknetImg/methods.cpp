@@ -153,7 +153,7 @@ void darknetImg::removeGroundPoints(){
 void darknetImg::trimPoints(){
     int i = 1;
     for(const auto& bb : boundingBoxesMsg.bounding_boxes){
-        cv::rectangle(mask, cv::Point(bb.xmin, bb.ymin), cv::Point(bb.xmax, bb.ymax), cv::Scalar(i,i,i), 1, CV_FILLED, 0);
+        cv::rectangle(mask, cv::Point(bb.xmin, bb.ymin), cv::Point(bb.xmax, bb.ymax), cv::Scalar(i,0,0), 1, CV_FILLED, 0);
         ++i;
     }
 }
