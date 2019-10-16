@@ -25,7 +25,8 @@ void darknetImgDebug::debug_callback(const darknet_ros_msgs::BoundingBoxes::Cons
         ROS_ERROR("Could not convert from '%s' to 'TYPE_32FC1'.",image->encoding.c_str());
         return;
     }
-
+    mask2.resize(bridgeImage->image.rows);
+    // mask2.resize(bridgeImage);
     //枠線描画用コード　debugの方に移動予定
     // bounding_boxedに書かれた枠の描画
     // auto iter = bb->bounding_boxes.begin();

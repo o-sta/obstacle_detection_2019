@@ -192,7 +192,7 @@ void darknetImg::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs, std
             }
         }
     }
-    drawMask(bbs, coreNumber, (char)groupNumber, mask2);
+    // drawMask(bbs, coreNumber, (char)groupNumber, mask2);
 }
 
 darknetImg::Relationship darknetImg::checkBoundingBoxesRelationship(darknet_ros_msgs::BoundingBoxes& bbs, int core_index, int target_index){
