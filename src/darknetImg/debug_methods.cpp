@@ -5,6 +5,7 @@ darknetImgDebug::darknetImgDebug()
 {
     ROS_INFO_STREAM("debug constructer");
     setCallback();
+    setColorMap(colorMap);
     //setMapImageConfig(); //■error
     num_temp.resize(numberOfCells);
 }
