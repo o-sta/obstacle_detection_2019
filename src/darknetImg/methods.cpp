@@ -224,9 +224,14 @@ darknetImg::Relationship checkBoundingBoxesRelationship(darknet_ros_msgs::Boundi
 
 }
 
-void darknetImg::drawMask(darknet_ros_msgs::BoundingBoxes& bbs, int target_indexs, char value, std::vector<std::vector<char>>& mask){
+void darknetImg::drawMask(darknet_ros_msgs::BoundingBoxes& bbs, int target_indexs, char value, std::vector<std::vector<char>>& output_mask){
     std::vector<char> mask_row(mapRows, 0);
-    std::fill();
+    std::fill(mask_row.begin() + bbs.bounding_boxes[target_indexs].xmin, 
+              mask_row.begin() + bbs.bounding_boxes[target_indexs].xmax, 
+              value);
+    std::fill(output_mask.begin() + bbs.bounding_boxes[target_indexs].ymin,
+              output_mask.begin() + bbs.bounding_boxes[target_indexs].ymax,
+              mask_row);
 }
 
 
