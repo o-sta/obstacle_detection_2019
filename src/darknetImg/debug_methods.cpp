@@ -3,6 +3,7 @@
 darknetImgDebug::darknetImgDebug()
 :mapImageCB(new cv_bridge::CvImage)
 {
+    ROS_INFO_STREAM("debug constructer")
     setCallback();
     setMapImageConfig();
     num_temp.resize(numberOfCells);
