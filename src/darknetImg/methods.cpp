@@ -195,7 +195,7 @@ void darknetImg::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs, std
     drawMask(bbs, coreNumber, (char)groupNumber, mask2);
 }
 
-darknetImg::Relationship checkBoundingBoxesRelationship(darknet_ros_msgs::BoundingBoxes& bbs, int core_index, int target_index){
+darknetImg::Relationship darknetImg::checkBoundingBoxesRelationship(darknet_ros_msgs::BoundingBoxes& bbs, int core_index, int target_index){
     int count = 0;
     //targetの点(xmin, ymin)がcoreのBBに含まれているか
     if(   bbs.bounding_boxes[core_index].xmin < bbs.bounding_boxes[target_index].xmin 
