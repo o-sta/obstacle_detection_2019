@@ -3,6 +3,7 @@
 darknetImgDebug::darknetImgDebug()
 :mapImageCB(new cv_bridge::CvImage)
 {
+    setCallback();
     setMapImageConfig();
     num_temp.resize(numberOfCells);
 }
@@ -74,9 +75,11 @@ void darknetImgDebug::setParam(){
 }
 
 void darknetImgDebug::setCallback(){
+    ROS_INFO_STREAM("debug setCallback");
+    sync.init();
     sync.registerCallback(boost::bind(&darknetImgDebug::debug_callback, this, _1, _2));
-    fc = boost::bind(&darknetImg::configCallback, this, _1, _2);
-	server.setCallback(fc);
+    // fc = boost::bind(&darknetImg::configCallback, this, _1, _2);
+	// server.setCallback(fc);
 }
 
 void darknetImgDebug::setColorMap(std::vector<int>& colorMap){
