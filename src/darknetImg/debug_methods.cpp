@@ -242,7 +242,7 @@ void darknetImgDebug::gridmap2Image(obstacle_detection_2019::SensorMapDataMultiL
 void darknetImgDebug::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs, std::vector<bool>& checkFlag, int coreNumber, int groupNumber){
     darknetImg::addBBGroupRecursively(bbs, checkFlag, coreNumber, groupNumber);
     cv::rectangle(bridgeImage->image, cv::Point(bbs.bounding_boxes[coreNumber].xmin, bbs.bounding_boxes[coreNumber].ymin), 
-                  cv::Point(bbs.bounding_boxes[coreNumber].xmax, bbs.bounding_boxes[coreNumber].ymax), getColorFromColorMap(groupNumber), 5, 8);
+                  cv::Point(bbs.bounding_boxes[coreNumber].xmax, bbs.bounding_boxes[coreNumber].ymax), getColorFromColorMap(groupNumber-1), 5, 8);
 }
 
 
