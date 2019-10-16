@@ -51,3 +51,9 @@ void darknetImg::createWindow(){
     }
     cellsInWindow.resize(count);
 }
+
+void darknetImg::setCallback(){
+    sync.registerCallback(boost::bind(&darknetImg::sensor_callback, this, _1, _2));
+    fc = boost::bind(&darknetImg::configCallback, this, _1, _2);
+	server.setCallback(fc);
+}

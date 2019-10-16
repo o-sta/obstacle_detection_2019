@@ -20,6 +20,7 @@ class darknetImgDebug : public darknetImg {
         std::string topic_clusterPCL;   //クラスタ用ポイントクラウドのパブリッシュトピック
         std::string topic_gridMapImage; //グリッドマップ用ポイントクラウドのパブリッシュトピック
         std::string topic_image;        //bbとdepthImageを結合した時のパブリッシュトピック
+        std::string topic_mask;         //Imageにマスクをかけた時のパブリッシュトピック
     protected:
         /**クラスタに属しているセルを探してマップ画像に色を付ける
          * cluster 入力クラスタ
@@ -36,11 +37,16 @@ class darknetImgDebug : public darknetImg {
         /**カラーマップの配列を3の倍数(BGR?)に設定
          */ 
         void setColorMap(std::vector<int>&);
+        cv::Scalar getColorFromColorMap(int colorIndex);
     public:
         darknetImgDebug();
         ~darknetImgDebug();
 
         void setParam();
+        void debug_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb,const sensor_msgs::Image::ConstPtr& image);
+        void setCallback();     //コールバック関数の設定
+
+
         /**グリッドマップをポイントクラウドに変換
          * 実装予定無し
          */
@@ -61,6 +67,12 @@ class darknetImgDebug : public darknetImg {
         void cluster2PointCloud(obstacle_detection_2019::ClassificationData& clusterData, sensor_msgs::PointCloud2& pc_msg);
         void cluster2Image(obstacle_detection_2019::ClassificationData& clusterData, cv::Mat& image);       //クラスタ情報を含むグリッドマップを画像に変換
         void publishDebugData();    //パブリッシュリストに存在するデータをpublishする
+        /**
+         * 画像にマスクかけて、出力する
+         */ 
+        void mask2Image(std::vector<std::vector<char>> input_mask, sensor_msgs::Image input_image);
+        void addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs, std::vector<bool>& checkFlag, int coreNumber, int groupNumber);
+
 };
 
 #endif

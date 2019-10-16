@@ -173,7 +173,7 @@ void darknetImg::trimPoints_v2(darknet_ros_msgs::BoundingBoxes& bbs){
     }
 }
 
-void addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs, std::vector<bool>& checkFlag, int coreNumber, int groupNumber){
+void darknetImg::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs, std::vector<bool>& checkFlag, int coreNumber, int groupNumber){
     int searchNumber;
     checkFlag[coreNumber] = true;
     for(searchNumber = 0; searchNumber < checkFlag.size(); ++searchNumber){
@@ -190,6 +190,7 @@ void addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs, std::vector<boo
             }
         }
     }
+    drawMask(bbs, coreNumber, (char)groupNumber, mask2);
 }
 
 darknetImg::Relationship checkBoundingBoxesRelationship(darknet_ros_msgs::BoundingBoxes& bbs, int core_index, int target_index){
@@ -233,9 +234,6 @@ void darknetImg::drawMask(darknet_ros_msgs::BoundingBoxes& bbs, int target_index
               output_mask.begin() + bbs.bounding_boxes[target_indexs].ymax,
               mask_row);
 }
-
-
-
 
 void darknetImg::generateGridmap(){
     int row = 0, col = 0, i; //深度画像の行と列

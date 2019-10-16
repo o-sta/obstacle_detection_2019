@@ -9,7 +9,7 @@ bb_sub(),
 image_sub(), 
 sync(MySyncPolicy(10),bb_sub, image_sub),
 is_size_initialized(false),
-mask(1,1,CV_8UC1),
+mask(1,1,CV_8UC1), 
 ground_points(new pcl::PointCloud<pcl::PointXYZ>),
 inliers (new pcl::PointIndices),
 coefficients(new pcl::ModelCoefficients)
@@ -19,7 +19,6 @@ coefficients(new pcl::ModelCoefficients)
     ROS_INFO_STREAM("debug setParam");
     bb_sub.subscribe(nhSub, topic_bb, 1);
     image_sub.subscribe(nhSub, topic_depthImage, 1);
-    sync.registerCallback(boost::bind(&darknetImg::sensor_callback, this, _1, _2));
     mapRows = (int)(mapHeight/mapResolution);
     mapCols = (int)(mapWidth/mapResolution);
     numberOfCells = mapRows*mapCols;
@@ -38,11 +37,8 @@ coefficients(new pcl::ModelCoefficients)
 	seg.setDistanceThreshold (distanceThreshold);//モデルとどのくらい離れていてもいいか(モデルの評価に使用)
 	seg.setAxis(Eigen::Vector3f (0.0,0.0,1.0));//法線ベクトル
 	seg.setEpsAngle(epsAngle * (M_PI/180.0f));//許容出来る平面
-    // rqt_reconfigure
-    fc = boost::bind(&darknetImg::configCallback, this, _1, _2);
-	server.setCallback(fc);
     ROS_INFO_STREAM("Started darknetImg");
+    setCallback();  //コールバック関数のセットアップ
 }
-
 
 darknetImg::~darknetImg(){}

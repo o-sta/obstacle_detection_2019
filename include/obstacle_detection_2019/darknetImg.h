@@ -48,15 +48,21 @@ class darknetImg {
 		ros::Subscriber sub;
 		ros::NodeHandle nhPub;
         ros::Publisher pub;
-    private:
-        //センサーデータ
-        cv_bridge::CvImagePtr bridgeImage;                  //深度画像
-        darknet_ros_msgs::BoundingBoxes boundingBoxesMsg;   //検出された人物の枠線
-        //メッセージフィルタ
         message_filters::Subscriber<darknet_ros_msgs::BoundingBoxes> bb_sub;
         message_filters::Subscriber<sensor_msgs::Image> image_sub;
         typedef message_filters::sync_policies::ApproximateTime<darknet_ros_msgs::BoundingBoxes, sensor_msgs::Image> MySyncPolicy;
         message_filters::Synchronizer<MySyncPolicy> sync;
+        //BBのマスク用変数
+        cv::Mat mask;
+        std::vector<std::vector<char>> mask2;
+        // --rqt_reconfigure用サーバ
+        dynamic_reconfigure::Server<obstacle_detection_2019::darknetImgConfig> server;
+        dynamic_reconfigure::Server<obstacle_detection_2019::darknetImgConfig>::CallbackType fc;
+        //センサーデータ
+        cv_bridge::CvImagePtr bridgeImage;                  //深度画像
+        darknet_ros_msgs::BoundingBoxes boundingBoxesMsg;   //検出された人物の枠線
+    private:
+        //メッセージフィルタ
         //topicパラメータ
         std::string topic_bb;           //BoundingBoxesのサブスクライブトピック
         std::string topic_depthImage;   //depthImageのサブスクライブトピック
@@ -83,12 +89,7 @@ class darknetImg {
         pcl::PointCloud<pcl::PointXYZ>::Ptr ground_points;                  //床面候補点
         obstacle_detection_2019::SensorMapDataMultiLayer smdml;             //複数マップ
         obstacle_detection_2019::SensorMapDataMultiLayer smdmlLowDimension; //複数マップ(cols=1)
-        // --rqt_reconfigure用サーバ
-        dynamic_reconfigure::Server<obstacle_detection_2019::darknetImgConfig> server;
-        dynamic_reconfigure::Server<obstacle_detection_2019::darknetImgConfig>::CallbackType fc;
         //深度画像のマスク（有効で1、無効で0）
-        cv::Mat mask;
-        std::vector<std::vector<char>> mask2;
         bool is_size_initialized; //画像サイズが初期化されたか
         //ノードハンドルとサブスクライパ、パブリッシャ
     protected:
@@ -98,7 +99,7 @@ class darknetImg {
         obstacle_detection_2019::ClassificationData cd;                     //クラスタデータ
         bool convertToGrid(const float& x,const float& y,int& xg,int& yg);
         void clearMsg(obstacle_detection_2019::SensorMapDataMultiLayer& smdml_msg);
-        void addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs, std::vector<bool>& checkFlag, int coreNumber, int groupNumber);
+        virtual void addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs, std::vector<bool>& checkFlag, int coreNumber, int groupNumber);
         Relationship checkBoundingBoxesRelationship(darknet_ros_msgs::BoundingBoxes& bbs, int core_index, int target_index);
         void drawMask(darknet_ros_msgs::BoundingBoxes& bbs, int target_indexs, char value,  std::vector<std::vector<char>>& mask);
         //窓内に含まれているセルを出力する関数
@@ -108,11 +109,12 @@ class darknetImg {
         ~darknetImg();
         void sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb,const sensor_msgs::Image::ConstPtr& image); //データ受信
         void configCallback(obstacle_detection_2019::darknetImgConfig &config, uint32_t level); //パラメータ受信
-        virtual void setParam();      //yamlのセットアップ
-        bool subscribeSensorData(); //データ受信
-        void publishData();         //データ送信
+        virtual void setParam();        //yamlのセットアップ
+        bool subscribeSensorData();     //データ受信
+        void publishData();             //データ送信
+        virtual void setCallback();     //コールバック関数の設定
         //パラメータ設定関数
-        void createWindow();        //窓作成
+        void createWindow();            //窓作成
         //床面除去関数
         void pickUpGroundPointCandidates();     //床面候補点の選択
         void estimateGroundCoefficients();      //床面係数abcdの算出
