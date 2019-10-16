@@ -185,8 +185,10 @@ void darknetImg::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs, std
                 //     break;
                 case darknetImg::Relationship::MIX: //一部含まれている場合は同groupであり、探査BBをcoreにして再度関連を調べる -> 探査済みにする
                     addBBGroupRecursively(bbs, checkFlag, searchNumber, groupNumber);
+                    ROS_INFO_STREAM("MIX " << coreNumber << " : " << searchNumber << " in " << groupNumber << " group");
                     break;
                 case darknetImg::Relationship::NONE: //含まれていない場合は別groupであるため、何もしない
+                    ROS_INFO_STREAM("NONE " << coreNumber << " : " << searchNumber << " in " << groupNumber << " group");
                     break;
             }
         }
