@@ -42,7 +42,8 @@
 //  処理を行うクラスに分ける予定（一緒だと処理の流れが追いにくく、改変が難しい）
 class darknetImg {
     public:
-        enum Relationship{NONE, MIX, IN};
+        enum Relationship{NONE, MIX};
+        // enum Relationship{NONE, MIX, IN};
     protected:
         ros::NodeHandle nhSub;
 		ros::Subscriber sub;

@@ -181,9 +181,9 @@ void darknetImg::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs, std
     for(searchNumber = 0; searchNumber < checkFlag.size(); ++searchNumber){
         if(!checkFlag[searchNumber]){
             switch (relationship_flag) { //他のBBとの関連を調べる
-                case darknetImg::Relationship::IN: //完全に含まれている場合は同groupであるが、関連を調べる意味が無いので探査済みにする
-                    checkFlag[searchNumber] = true;
-                    break;
+                // case darknetImg::Relationship::IN: //完全に含まれている場合は同groupであるが、関連を調べる意味が無いので探査済みにする
+                //     checkFlag[searchNumber] = true;
+                //     break;
                 case darknetImg::Relationship::MIX: //一部含まれている場合は同groupであり、探査BBをcoreにして再度関連を調べる -> 探査済みにする
                     addBBGroupRecursively(bbs, checkFlag, searchNumber, groupNumber);
                     break;
@@ -195,36 +195,22 @@ void darknetImg::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs, std
     // drawMask(bbs, coreNumber, (char)groupNumber, mask2);
 }
 
-darknetImg::Relationship darknetImg::checkBoundingBoxesRelationship(darknet_ros_msgs::BoundingBoxes& bbs, int core_index, int target_index){
-    int count = 0;
-    //targetの点(xmin, ymin)がcoreのBBに含まれているか
-    if(   bbs.bounding_boxes[core_index].xmin < bbs.bounding_boxes[target_index].xmin 
-       && bbs.bounding_boxes[target_index].xmin < bbs.bounding_boxes[core_index].xmax
-       && bbs.bounding_boxes[core_index].ymin < bbs.bounding_boxes[target_index].ymin
-       && bbs.bounding_boxes[target_index].ymin < bbs.bounding_boxes[core_index].ymax
-    ){
-        count++;
-    }
-    //targetの点(xmax, ymax)がcoreのBBに含まれているか
-    if(   bbs.bounding_boxes[core_index].xmin < bbs.bounding_boxes[target_index].xmax 
-       && bbs.bounding_boxes[target_index].xmax < bbs.bounding_boxes[core_index].xmax
-       && bbs.bounding_boxes[core_index].ymin < bbs.bounding_boxes[target_index].ymax
-       && bbs.bounding_boxes[target_index].ymax < bbs.bounding_boxes[core_index].ymax
-    ){
-        count++;
-    }
-    switch (count) {
-        case 0:
-            return darknetImg::Relationship::NONE;
-            break;
-        case 1:
-            return darknetImg::Relationship::MIX;
-            break;
-        case 2:
-            return darknetImg::Relationship::IN;
-            break;
-    }
+darknetImg::Relationship darknetImg::checkBoundingBoxesRelationship(darknet_ros_msgs::BoundingBoxes& bbs, int index_1, int index_2){
+    int center_1_x = (bbs.bounding_boxes[index_1].xmax + bbs.bounding_boxes[index_1].xmin) / 2;
+    int center_1_y = (bbs.bounding_boxes[index_1].ymax + bbs.bounding_boxes[index_1].ymin) / 2;
+    int center_2_x = (bbs.bounding_boxes[index_2].xmax + bbs.bounding_boxes[index_2].xmin) / 2;
+    int center_2_y = (bbs.bounding_boxes[index_2].ymax + bbs.bounding_boxes[index_2].ymin) / 2;
+    int halfSide_1_w = (bbs.bounding_boxes[index_1].xmax - bbs.bounding_boxes[index_1].xmin) / 2;
+    int halfSide_1_h = (bbs.bounding_boxes[index_1].ymax - bbs.bounding_boxes[index_1].ymin) / 2;
+    int halfSide_2_w = (bbs.bounding_boxes[index_2].xmax + bbs.bounding_boxes[index_2].xmin) / 2;
+    int halfSide_2_h = (bbs.bounding_boxes[index_2].ymax + bbs.bounding_boxes[index_2].ymin) / 2;
 
+    if(   halfSide_1_w + halfSide_2_w > abs(center_1_x - center_2_x) 
+       && halfSide_1_h + halfSide_2_h > abs(center_1_y - center_2_y)
+    ){
+        return darknetImg::Relationship::NONE;
+    }
+    return darknetImg::Relationship::MIX;
 }
 
 void darknetImg::drawMask(darknet_ros_msgs::BoundingBoxes& bbs, int target_indexs, char value, std::vector<std::vector<char>>& output_mask){
