@@ -209,6 +209,7 @@ darknetImg::Relationship darknetImg::checkBoundingBoxesRelationship(darknet_ros_
        && halfSide_1_h + halfSide_2_h > abs(center_1_y - center_2_y)
     ){
         return darknetImg::Relationship::NONE;
+        ROS_INFO_STREAM("match");
     }
     return darknetImg::Relationship::MIX;
 }
