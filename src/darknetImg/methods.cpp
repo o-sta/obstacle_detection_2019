@@ -202,14 +202,14 @@ darknetImg::Relationship darknetImg::checkBoundingBoxesRelationship(darknet_ros_
     int center_2_y = (bbs.bounding_boxes[index_2].ymax + bbs.bounding_boxes[index_2].ymin) / 2;
     int halfSide_1_w = (bbs.bounding_boxes[index_1].xmax - bbs.bounding_boxes[index_1].xmin) / 2;
     int halfSide_1_h = (bbs.bounding_boxes[index_1].ymax - bbs.bounding_boxes[index_1].ymin) / 2;
-    int halfSide_2_w = (bbs.bounding_boxes[index_2].xmax + bbs.bounding_boxes[index_2].xmin) / 2;
-    int halfSide_2_h = (bbs.bounding_boxes[index_2].ymax + bbs.bounding_boxes[index_2].ymin) / 2;
+    int halfSide_2_w = (bbs.bounding_boxes[index_2].xmax - bbs.bounding_boxes[index_2].xmin) / 2;
+    int halfSide_2_h = (bbs.bounding_boxes[index_2].ymax - bbs.bounding_boxes[index_2].ymin) / 2;
 
     if(   halfSide_1_w + halfSide_2_w > abs(center_1_x - center_2_x) 
        && halfSide_1_h + halfSide_2_h > abs(center_1_y - center_2_y)
     ){
         return darknetImg::Relationship::NONE;
-        ROS_INFO_STREAM("match");
+        // ROS_INFO_STREAM("match");
     }
     return darknetImg::Relationship::MIX;
 }
