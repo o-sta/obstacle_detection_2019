@@ -38,7 +38,7 @@ coefficients(new pcl::ModelCoefficients)
 	seg.setAxis(Eigen::Vector3f (0.0,0.0,1.0));//法線ベクトル
 	seg.setEpsAngle(epsAngle * (M_PI/180.0f));//許容出来る平面
     ROS_INFO_STREAM("Started darknetImg");
-    setCallback();  //コールバック関数のセットアップ
+    // setCallback();  //コールバック関数のセットアップ
 }
 
 darknetImg::~darknetImg(){}
