@@ -86,7 +86,7 @@ void darknetImgDebug::setCallback(){
 }
 
 void darknetImgDebug::setColorMap(std::vector<int>& colorMap){
-    nhSub.param("colorMap/data", colorMap, colorMap);
+    nhPub.param("colorMap/data", colorMap, colorMap);
     colorMap.resize(colorMap.size() - (colorMap.size() % 3)); //要素数が3の倍数(RGB)になるようにリサイズ
 }
 
