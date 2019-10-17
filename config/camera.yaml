@@ -1,0 +1,5 @@
+#各パラメータに説明を加えてください
+camera:
+  minDeg: -45
+  maxDeg: 45
+  focus: 701.010

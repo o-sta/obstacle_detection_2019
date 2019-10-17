@@ -1,0 +1,9 @@
+groundEstimate: #各パラメータに説明を加えてください
+  ransac:
+    num: 500
+    distanceThreshold: 0.1
+    epsAngle: 15.0
+  candidateY: 0.3
+  cameraHeight: 0.4125
+  groundThreshold: 0.2
+  heightThreshold: 1.0

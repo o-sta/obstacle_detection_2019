@@ -1,0 +1,27 @@
+<launch>
+  <!-- デバッグする場合はtrue、それ以外はfalse -->
+  <arg name="debug_mode" default="true"/>
+  <arg name="od" default="obstacle_detection_2019" />
+  <arg name="odf" default="$(find obstacle_detection_2019)" />
+  <group ns="dr">
+    <group if="$(arg debug_mode)">
+      <node pkg="$(arg od)" type="$(arg od)_darknet_debug" name="$(arg od)_darknet_debug" output="screen" launch-prefix="gdb --args">
+          <rosparam file="$(arg odf)/config/colorMap.yaml" command="load" />
+          <rosparam file="$(arg odf)/config/camera.yaml" command="load" />
+          <rosparam file="$(arg odf)/config/groundEstimate.yaml" command="load" />
+          <rosparam file="$(arg odf)/config/localMap.yaml" command="load" />
+          <rosparam file="$(arg odf)/config/darknetImgNode/config.yaml" command="load" />
+          <rosparam file="$(arg odf)/config/darknetImgNode/configDebug.yaml" command="load" />
+      </node>
+    </group>
+    <group unless="$(arg debug_mode)">
+      <node pkg="$(arg od)" type="$(arg od)_darknet" name="$(arg od)_darknet" output="screen">
+          <rosparam file="$(arg odf)/config/colorMap.yaml" command="load" />
+          <rosparam file="$(arg odf)/config/camera.yaml" command="load" />
+          <rosparam file="$(arg odf)/config/groundEstimate.yaml" command="load" />
+          <rosparam file="$(arg odf)/config/localMap.yaml" command="load" />
+          <rosparam file="$(arg odf)/config/darknetImgNode/config.yaml" command="load" />
+      </node>
+    </group>
+  </group>
+</launch>

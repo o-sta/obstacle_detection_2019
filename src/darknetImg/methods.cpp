@@ -1,5 +1,5 @@
 #include <obstacle_detection_2019/darknetImg.h>
-#include <boost/range/algorithm.hpp>
+// #include <boost/range/algorithm.hpp>
 
 // sensor_callback用コンストラクタ
 // darknetImg::darknetImg(/* args */)
@@ -10,56 +10,6 @@
 // }
 
 // sensor_callback2用コンストラクタ
-darknetImg::darknetImg(/* args */)
-: 
-bb_sub(nhSub, "/darknet_ros/bounding_boxes", 1), 
-image_sub(nhSub, "/robot2/zed_node/left/image_rect_color", 1), 
-sync(MySyncPolicy(10),bb_sub, image_sub),
-is_size_initialized(false),
-mask(1,1,CV_8UC1),
-ground_points(new pcl::PointCloud<pcl::PointXYZ>)
-{
-    pub = nhPub.advertise<sensor_msgs::Image>("/dphog/boximage", 1);
-    sync.registerCallback(boost::bind(&darknetImg::sensor_callback, this, _1, _2));
-    mapWidth = 8;
-    mapHeight = 8;
-    mapResolution = 0.05;
-    mapRows = (int)(mapHeight/mapResolution);
-    mapCols = (int)(mapWidth/mapResolution);
-    numberOfCells = mapRows*mapCols;
-    cellsInWindow.resize(mapRows*mapCols);
-    int count = 0;
-    for(int row=-1; row<2; row++){
-            cellsInWindow[count++] = row;
-    }
-    cellsInWindow.resize(count);
-    //RANSACパラメータ設定
-    seg.setOptimizeCoefficients (true);
-	//seg.setModelType (pcl::SACMODEL_PLANE);//全平面抽出
-	seg.setModelType (pcl::SACMODEL_PERPENDICULAR_PLANE);//ある軸に垂直な平面を抽出
-	seg.setMethodType (pcl::SAC_RANSAC);
-	seg.setMaxIterations (ransacNum);//RANSACの繰り返し回数
-	seg.setDistanceThreshold (distanceThreshold);//モデルとどのくらい離れていてもいいか(モデルの評価に使用)
-	seg.setAxis(Eigen::Vector3f (0.0,0.0,1.0));//法線ベクトル
-	seg.setEpsAngle(epsAngle * (M_PI/180.0f));//許容出来る平面
-    // rqt_reconfigure
-    fc = boost::bind(&darknetImg::configCallback, this, _1, _2);
-	server.setCallback(fc);
-    ROS_INFO_STREAM("Started darknetImg");
-}
-
-darknetImg::~darknetImg(){}
-
-void darknetImg::createWindow(){
-    cellsInWindow.resize(mapRows*mapCols);
-    int count = 0;
-    for(int row=-1; row<2; row++){
-            cellsInWindow[count++] = row;
-    }
-    cellsInWindow.resize(count);
-}
-
-
 void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb, const sensor_msgs::Image::ConstPtr& image)
 {
     // debug移行予定
@@ -74,6 +24,8 @@ void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr
         ROS_ERROR("Could not convert from '%s' to 'TYPE_32FC1'.",image->encoding.c_str());
         return;
     }
+
+    //枠線描画用コード　debugの方に移動予定
     // bounding_boxedに書かれた枠の描画
     auto iter = bb->bounding_boxes.begin();
     for (; iter != bb->bounding_boxes.end(); ++iter){
@@ -81,30 +33,35 @@ void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr
     }
     // パブリッシュ(debgu移行予定)
     pub.publish(bridgeImage->toImageMsg());
-}
 
-void darknetImg::configCallback(obstacle_detection_2019::darknetImgConfig &config, uint32_t level){
-    ROS_INFO_STREAM("Reconfigure Request:"
-                    << " " << config.cameraHeight
-                    << " " << config.groundThreshold
-                    << " " << config.windowMinPts
-                    << " " << config.windowRangeCell
-                    << " " << config.ransacNum
-                    << " " << config.ransacDistanceThreshold
-                    << " " << config.ransacEpsAngle
-                    << " " << config.estimateCandidateY
-                    );
-    //ransac パラメータ
-    ransacNum = config.ransacNum;
-    distanceThreshold = config.ransacDistanceThreshold;
-    epsAngle = config.ransacEpsAngle;
-    //ground パラメータ
-    groundCandidateY = config.estimateCandidateY;
-    camHeight = config.cameraHeight;
-    ground_th = config.groundThreshold;
-    //window パラメータ
-    minPts = config.windowMinPts;
-    windowRangeCell = config.windowRangeCell;   
+    boundingBoxesMsg = *bb;
+
+
+    // if (bb->bounding_boxes.size() > 0){
+    //     ROS_INFO_STREAM("pickUpGroundPointCandidates");
+    //     pickUpGroundPointCandidates();
+    //     ROS_INFO_STREAM("estimateGroundCoefficients");
+    //     estimateGroundCoefficients();
+    //     ROS_INFO_STREAM("removeGroundPoints");
+    //     removeGroundPoints();
+    //     ROS_INFO_STREAM("trimPoints");
+    //     trimPoints();
+    //     ROS_INFO_STREAM("generateGridmap");
+    //     generateGridmap();
+    //     ROS_INFO_STREAM("dimensionalityReductionGridmap");
+    //     dimensionalityReductionGridmap();
+    //     ROS_INFO_STREAM("classifyPoints");
+    //     classifyPoints();
+    //     ROS_INFO_STREAM("estimatePersonPosition");
+    //     estimatePersonPosition();
+    //     ROS_INFO_STREAM("predictPersonPosition");
+    //     predictPersonPosition();
+    //     ROS_INFO_STREAM("iteration finished");
+    // }else{
+    //     ROS_INFO_STREAM("not person detection");
+    // }
+    // clearMsg(smdml);
+    ROS_INFO_STREAM("----------------------------------------");
 }
 
 
@@ -139,6 +96,7 @@ void darknetImg::pickUpGroundPointCandidates(){
     ROS_INFO_STREAM("ground_points->points.size():"<<ground_points->points.size()<<"\n");
 }
 
+
 void darknetImg::estimateGroundCoefficients(){
     seg.setInputCloud(ground_points);
 	seg.segment(*inliers, *coefficients);
@@ -163,6 +121,7 @@ void darknetImg::estimateGroundCoefficients(){
                                     << c << " "
                                     << d << "\n");
 }
+
 
 void darknetImg::removeGroundPoints(){
     int row = 0, col = 0;
@@ -192,11 +151,87 @@ void darknetImg::removeGroundPoints(){
     }
 }
 
+
 void darknetImg::trimPoints(){
-    int i = 0;
+    int i = 1;
     for(const auto& bb : boundingBoxesMsg.bounding_boxes){
-        cv::rectangle(mask, cv::Point(bb.xmin, bb.ymin), cv::Point(bb.xmax, bb.ymax), cv::Scalar(++i), -1, CV_FILLED);
+        cv::rectangle(mask, cv::Point(bb.xmin, bb.ymin), cv::Point(bb.xmax, bb.ymax), cv::Scalar(i,0,0), 1, CV_FILLED, 0);
+        ++i;
     }
+}
+
+void darknetImg::trimPoints_v2(darknet_ros_msgs::BoundingBoxes& bbs){
+    std::vector<bool> checkFlag;
+    int groupNumber = 0;
+    checkFlag.resize(bbs.bounding_boxes.size());
+    std::fill(checkFlag.begin(), checkFlag.end(), false);
+    for(int i = 0; i < checkFlag.size(); ++i){
+        if(!checkFlag[i]){
+            ++groupNumber;
+            addBBGroupRecursively(bbs, checkFlag, i, groupNumber);
+        }
+    }
+}
+
+void darknetImg::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs, std::vector<bool>& checkFlag, int coreNumber, int groupNumber){
+    int searchNumber = 0;
+    Relationship relationship_flag;
+    checkFlag[coreNumber] = true;
+    for(searchNumber = 0; searchNumber < checkFlag.size(); ++searchNumber){
+        if(!checkFlag[searchNumber]){
+            switch (checkBoundingBoxesRelationship(bbs, coreNumber, searchNumber)) { //他のBBとの関連を調べる
+                // case darknetImg::Relationship::IN: //完全に含まれている場合は同groupであるが、関連を調べる意味が無いので探査済みにする
+                //     checkFlag[searchNumber] = true;
+                //     break;
+                case darknetImg::Relationship::MIX: //一部含まれている場合は同groupであり、探査BBをcoreにして再度関連を調べる -> 探査済みにする
+                    addBBGroupRecursively(bbs, checkFlag, searchNumber, groupNumber);
+                    ROS_INFO_STREAM("MIX " << coreNumber << "(" << bbs.bounding_boxes[coreNumber].xmin << "," << bbs.bounding_boxes[coreNumber].ymin << ")-" 
+                                    << "(" << bbs.bounding_boxes[coreNumber].xmax << "," << bbs.bounding_boxes[coreNumber].ymax << ")" 
+                                    << " : " << searchNumber << "(" << bbs.bounding_boxes[searchNumber].xmin << "," << bbs.bounding_boxes[searchNumber].ymin << ")-"
+                                    << "(" << bbs.bounding_boxes[searchNumber].xmax << "," << bbs.bounding_boxes[searchNumber].ymax << ") in" 
+                                    << groupNumber << " group");
+                    break;
+                case darknetImg::Relationship::NONE: //含まれていない場合は別groupであるため、何もしない
+                    ROS_INFO_STREAM("NONE " << coreNumber << "(" << bbs.bounding_boxes[coreNumber].xmin << "," << bbs.bounding_boxes[coreNumber].ymin << ")-" 
+                                    << "(" << bbs.bounding_boxes[coreNumber].xmax << "," << bbs.bounding_boxes[coreNumber].ymax << ")" 
+                                    << " : " << searchNumber << "(" << bbs.bounding_boxes[searchNumber].xmin << "," << bbs.bounding_boxes[searchNumber].ymin << ")-"
+                                    << "(" << bbs.bounding_boxes[searchNumber].xmax << "," << bbs.bounding_boxes[searchNumber].ymax << ") in" 
+                                    << groupNumber << " group");
+                    break;
+            }
+        }
+    }
+    ROS_INFO_STREAM("groupNumber" << groupNumber);
+    // drawMask(bbs, coreNumber, (char)groupNumber, mask2);
+}
+
+darknetImg::Relationship darknetImg::checkBoundingBoxesRelationship(darknet_ros_msgs::BoundingBoxes& bbs, int index_1, int index_2){
+    int center_1_x = (bbs.bounding_boxes[index_1].xmax + bbs.bounding_boxes[index_1].xmin) / 2;
+    int center_1_y = (bbs.bounding_boxes[index_1].ymax + bbs.bounding_boxes[index_1].ymin) / 2;
+    int center_2_x = (bbs.bounding_boxes[index_2].xmax + bbs.bounding_boxes[index_2].xmin) / 2;
+    int center_2_y = (bbs.bounding_boxes[index_2].ymax + bbs.bounding_boxes[index_2].ymin) / 2;
+    int halfSide_1_w = (bbs.bounding_boxes[index_1].xmax - bbs.bounding_boxes[index_1].xmin) / 2;
+    int halfSide_1_h = (bbs.bounding_boxes[index_1].ymax - bbs.bounding_boxes[index_1].ymin) / 2;
+    int halfSide_2_w = (bbs.bounding_boxes[index_2].xmax - bbs.bounding_boxes[index_2].xmin) / 2;
+    int halfSide_2_h = (bbs.bounding_boxes[index_2].ymax - bbs.bounding_boxes[index_2].ymin) / 2;
+
+    if(   halfSide_1_w + halfSide_2_w < abs(center_1_x - center_2_x) 
+       && halfSide_1_h + halfSide_2_h < abs(center_1_y - center_2_y)
+    ){
+        return darknetImg::Relationship::NONE;
+        // ROS_INFO_STREAM("match");
+    }
+    return darknetImg::Relationship::MIX;
+}
+
+void darknetImg::drawMask(darknet_ros_msgs::BoundingBoxes& bbs, int target_indexs, char value, std::vector<std::vector<char>>& output_mask){
+    std::vector<char> mask_row(mapRows, 0);
+    std::fill(mask_row.begin() + bbs.bounding_boxes[target_indexs].xmin, 
+              mask_row.begin() + bbs.bounding_boxes[target_indexs].xmax, 
+              value);
+    std::fill(output_mask.begin() + bbs.bounding_boxes[target_indexs].ymin,
+              output_mask.begin() + bbs.bounding_boxes[target_indexs].ymax,
+              mask_row);
 }
 
 void darknetImg::generateGridmap(){
@@ -210,7 +245,8 @@ void darknetImg::generateGridmap(){
     pt.x = 0; pt.y = 0; pt.z = 0;
     int mapRow, mapCol; // マップの行と列
     //初期設定
-    smdml.layer.resize(boundingBoxesMsg.bounding_boxes.size());
+    //smdml = boost::make_shared<obstacle_detection_2019::SensorMapDataMultiLayer>();
+    smdml.layer.resize(boundingBoxesMsg.bounding_boxes.size());//■error
     for(auto& layer : smdml.layer){
         layer.header = smdml.header;
         layer.width.data = mapWidth;
@@ -238,20 +274,21 @@ void darknetImg::generateGridmap(){
                 zt = bi[col*ch];
                 xt=-(((float)row-(float)rows/2)*zt/f-camHeight);
                 if(convertToGrid(xt, zt, mapCol, mapRow) == true){
-                    index = &smdml.layer[mi[col]].index[mapRow*mapCols+mapCol].data;
+                    index = &smdml.layer[mi[col]-1].index[mapRow*mapCols+mapCol].data;
                     if(index < 0){
                         *index = count++;
                     }
                     yt = ((float)rows/2-row)*zt/f;
-                    smdml.layer[mi[col]].size[*index].data++;
-                    smdml.layer[mi[col]].pt[*index].x += xt;
-                    smdml.layer[mi[col]].pt[*index].y += yt;
-                    smdml.layer[mi[col]].pt[*index].z += zt;
+                    smdml.layer[mi[col]-1].size[*index].data++;
+                    smdml.layer[mi[col]-1].pt[*index].x += xt;
+                    smdml.layer[mi[col]-1].pt[*index].y += yt;
+                    smdml.layer[mi[col]-1].pt[*index].z += zt;
                 }
             }
         }
     }
 }
+
 
 void darknetImg::dimensionalityReductionGridmap(){
     std_msgs::Int32 initial_value;
@@ -305,6 +342,7 @@ void darknetImg::dimensionalityReductionGridmap(){
     }
 }
 
+
 bool darknetImg::convertToGrid(const float& x,const float& y,int& xg,int& yg){
 	//マップ上の中心座標(ふつうは　センサ位置＝マップ中心座標　のため　cx=cy=0)
 	float cx=0;
@@ -323,6 +361,7 @@ bool darknetImg::convertToGrid(const float& x,const float& y,int& xg,int& yg){
     //変換成功
 	return true;
 }
+
 
 void darknetImg::classifyPoints(){
     //設定データ
@@ -389,13 +428,13 @@ void darknetImg::classifyPoints(){
 
                 //窓内に含まれているセルを列挙して、点の数を数える
                 //また、コア点として探査されていない点を候補に追加
-                for(int i=0; i < cellsInWindow.size(); i++){ //窓内セルに対して走査
-                    int pos = taskIndex[n] + cellsInWindow[i]; //窓内セルの座標とコア点座標を重畳
-                    if (pos < 0 || pos >= layer.heightInt.data){ continue; } //探査対象がマップ範囲外のときはスキップ
-                    if(mapIndex[pos] < 0){ continue; }//インデックスが存在しない場合はスキップ
-                    count_points += layer.size[ mapIndex[pos] ].data; //クラスタかどうか判定するため、点の数をカウント
-                    if(searchedIndex[pos] < 0){ continue; } //探査済みの場合はスキップ
-                    tempIndex[tempSize++] = pos; //次の探査点（コア点）候補に追加（クラスタ判定されたらtaskIndexに追加する）
+                for(int i=0; i < cellsInWindow.size(); i++){                    //窓内セルに対して走査
+                    int pos = taskIndex[n] + cellsInWindow[i];                  //窓内セルの座標とコア点座標を重畳
+                    if (pos < 0 || pos >= layer.heightInt.data){ continue; }    //探査対象がマップ範囲外のときはスキップ
+                    if(mapIndex[pos] < 0){ continue; }                          //インデックスが存在しない場合はスキップ
+                    count_points += layer.size[ mapIndex[pos] ].data;           //クラスタかどうか判定するため、点の数をカウント
+                    if(searchedIndex[pos] < 0){ continue; }                     //探査済みの場合はスキップ
+                    tempIndex[tempSize++] = pos;                                //次の探査点（コア点）候補に追加（クラスタ判定されたらtaskIndexに追加する）
                 }
                 tempIndex.resize(tempSize);
                 if(count_points < minPts){ continue; } //クラスタ判定、窓内の店の数が基準を超えていない場合以下スキップ
@@ -446,6 +485,7 @@ void darknetImg::classifyPoints(){
     cd.data.resize(cd.size.data);
 }
 
+
 void darknetImg::estimatePersonPosition(){
     int i;
     for(auto& ce : cd.data){
@@ -453,7 +493,16 @@ void darknetImg::estimatePersonPosition(){
     }
 }
 
+
 void darknetImg::predictPersonPosition(){
     
 }
 
+void darknetImg::clearMsg(obstacle_detection_2019::SensorMapDataMultiLayer& smdml_msg){
+    for(auto smd_msg : smdml_msg.layer){
+    smd_msg.header.frame_id.clear();
+    smd_msg.index.clear();
+    smd_msg.pt.clear();
+    smd_msg.size.clear();
+    }
+}

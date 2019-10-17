@@ -1,0 +1,5 @@
+window:
+  DivisionDegree: 10
+  height: 0.3
+  width: 0.4
+  minPts: 10
