@@ -263,7 +263,7 @@ void darknetImgDebug::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs
                                     << groupNumber << " group";
                     break;
             }
-            cv::putText(bridgeImage->image, ss.str(), cv::Point(20, 45 + text_row * 45), cv::FONT_HERSHEY_SIMPLEX, 0.7, getColorFromColorMap(5), 2, CV_AA);
+            cv::putText(bridgeImage->image, ss.str(), cv::Point(20, 45 + text_row * 60), cv::FONT_HERSHEY_SIMPLEX, 0.7, getColorFromColorMap(5), 2, CV_AA);
             ++text_row;
         }
     }

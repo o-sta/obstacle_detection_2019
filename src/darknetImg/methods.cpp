@@ -179,29 +179,14 @@ void darknetImg::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs, std
     for(searchNumber = 0; searchNumber < checkFlag.size(); ++searchNumber){
         if(!checkFlag[searchNumber]){
             switch (checkBoundingBoxesRelationship(bbs, coreNumber, searchNumber)) { //他のBBとの関連を調べる
-                // case darknetImg::Relationship::IN: //完全に含まれている場合は同groupであるが、関連を調べる意味が無いので探査済みにする
-                //     checkFlag[searchNumber] = true;
-                //     break;
                 case darknetImg::Relationship::MIX: //一部含まれている場合は同groupであり、探査BBをcoreにして再度関連を調べる -> 探査済みにする
                     addBBGroupRecursively(bbs, checkFlag, searchNumber, groupNumber);
-                    ROS_INFO_STREAM("MIX " << coreNumber << "(" << bbs.bounding_boxes[coreNumber].xmin << "," << bbs.bounding_boxes[coreNumber].ymin << ")-" 
-                                    << "(" << bbs.bounding_boxes[coreNumber].xmax << "," << bbs.bounding_boxes[coreNumber].ymax << ")" 
-                                    << " : " << searchNumber << "(" << bbs.bounding_boxes[searchNumber].xmin << "," << bbs.bounding_boxes[searchNumber].ymin << ")-"
-                                    << "(" << bbs.bounding_boxes[searchNumber].xmax << "," << bbs.bounding_boxes[searchNumber].ymax << ") in" 
-                                    << groupNumber << " group");
-                    
                     break;
                 case darknetImg::Relationship::NONE: //含まれていない場合は別groupであるため、何もしない
-                    ROS_INFO_STREAM("NONE " << coreNumber << "(" << bbs.bounding_boxes[coreNumber].xmin << "," << bbs.bounding_boxes[coreNumber].ymin << ")-" 
-                                    << "(" << bbs.bounding_boxes[coreNumber].xmax << "," << bbs.bounding_boxes[coreNumber].ymax << ")" 
-                                    << " : " << searchNumber << "(" << bbs.bounding_boxes[searchNumber].xmin << "," << bbs.bounding_boxes[searchNumber].ymin << ")-"
-                                    << "(" << bbs.bounding_boxes[searchNumber].xmax << "," << bbs.bounding_boxes[searchNumber].ymax << ") in" 
-                                    << groupNumber << " group");
                     break;
             }
         }
     }
-    ROS_INFO_STREAM("groupNumber" << groupNumber);
     // drawMask(bbs, coreNumber, (char)groupNumber, mask2);
 }
 
@@ -216,7 +201,7 @@ darknetImg::Relationship darknetImg::checkBoundingBoxesRelationship(darknet_ros_
     int halfSide_2_h = (bbs.bounding_boxes[index_2].ymax - bbs.bounding_boxes[index_2].ymin) / 2;
 
     if(   halfSide_1_w + halfSide_2_w < abs(center_1_x - center_2_x) 
-       && halfSide_1_h + halfSide_2_h < abs(center_1_y - center_2_y)
+       || halfSide_1_h + halfSide_2_h < abs(center_1_y - center_2_y)
     ){
         return darknetImg::Relationship::NONE;
         // ROS_INFO_STREAM("match");
