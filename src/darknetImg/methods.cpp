@@ -175,7 +175,6 @@ void darknetImg::trimPoints_v2(darknet_ros_msgs::BoundingBoxes& bbs){
 
 void darknetImg::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs, std::vector<bool>& checkFlag, int coreNumber, int groupNumber){
     int searchNumber = 0;
-    Relationship relationship_flag;
     checkFlag[coreNumber] = true;
     for(searchNumber = 0; searchNumber < checkFlag.size(); ++searchNumber){
         if(!checkFlag[searchNumber]){
@@ -190,6 +189,7 @@ void darknetImg::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs, std
                                     << " : " << searchNumber << "(" << bbs.bounding_boxes[searchNumber].xmin << "," << bbs.bounding_boxes[searchNumber].ymin << ")-"
                                     << "(" << bbs.bounding_boxes[searchNumber].xmax << "," << bbs.bounding_boxes[searchNumber].ymax << ") in" 
                                     << groupNumber << " group");
+                    
                     break;
                 case darknetImg::Relationship::NONE: //含まれていない場合は別groupであるため、何もしない
                     ROS_INFO_STREAM("NONE " << coreNumber << "(" << bbs.bounding_boxes[coreNumber].xmin << "," << bbs.bounding_boxes[coreNumber].ymin << ")-" 
