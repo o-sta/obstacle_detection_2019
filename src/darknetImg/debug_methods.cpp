@@ -245,8 +245,8 @@ void darknetImgDebug::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs
                   cv::Point(bbs.bounding_boxes[coreNumber].xmax, bbs.bounding_boxes[coreNumber].ymax), getColorFromColorMap(groupNumber-1), 5, 8);
     std::stringstream ss;
     ss << "N" << coreNumber << " : G" << groupNumber;
-    cv::putText(bridgeImage->image, ss.str(), cv::Point(bbs.bounding_boxes[coreNumber].xmin, bbs.bounding_boxes[coreNumber].xmin), cv::FONT_HERSHEY_SIMPLEX,
-    2, getColorFromColorMap(groupNumber-1), 1, CV_AA);
+    cv::putText(bridgeImage->image, ss.str(), cv::Point(bbs.bounding_boxes[coreNumber].xmin, bbs.bounding_boxes[coreNumber].ymin), cv::FONT_HERSHEY_SIMPLEX,
+    1, getColorFromColorMap(groupNumber-1), 1, CV_AA);
 }
 
 
