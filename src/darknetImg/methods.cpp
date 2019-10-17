@@ -36,7 +36,6 @@ void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr
 
     boundingBoxesMsg = *bb;
 
-
     // if (bb->bounding_boxes.size() > 0){
     //     ROS_INFO_STREAM("pickUpGroundPointCandidates");
     //     pickUpGroundPointCandidates();
