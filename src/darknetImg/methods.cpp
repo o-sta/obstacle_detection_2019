@@ -35,7 +35,11 @@ void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr
     pub.publish(bridgeImage->toImageMsg());
 
     boundingBoxesMsg = *bb;
-
+    if (imageRows != bridgeImage->image.rows || imageCols != bridgeImage->image.cols){
+        imageRows = bridgeImage->image.rows;
+        imageCols = bridgeImage->image.cols;
+        setMaskSize();
+    }
     // if (bb->bounding_boxes.size() > 0){
     //     ROS_INFO_STREAM("pickUpGroundPointCandidates");
     //     pickUpGroundPointCandidates();

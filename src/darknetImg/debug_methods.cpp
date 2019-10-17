@@ -37,7 +37,11 @@ void darknetImgDebug::debug_callback(const darknet_ros_msgs::BoundingBoxes::Cons
     // // パブリッシュ(debgu移行予定)
     // pub.publish(bridgeImage->toImageMsg());
     boundingBoxesMsg = *bb;
-
+    if (imageRows != bridgeImage->image.rows || imageCols != bridgeImage->image.cols){
+        imageRows = bridgeImage->image.rows;
+        imageCols = bridgeImage->image.cols;
+        setMaskSize();
+    }
     trimPoints_v2(boundingBoxesMsg);
     pub.publish(bridgeImage->toImageMsg());
     // if (bb->bounding_boxes.size() > 0){

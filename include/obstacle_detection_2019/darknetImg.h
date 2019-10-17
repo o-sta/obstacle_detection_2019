@@ -98,6 +98,7 @@ class darknetImg {
         float mapWidth, mapHeight, mapResolution;   //ローカルマップの横幅[m]、縦幅[m]、解像度[m/pixel]
         int mapRows, mapCols, numberOfCells;        //ローカルマップの横幅[pixel]、縦幅[pixel]、マップのセル数[pixel]
         obstacle_detection_2019::ClassificationData cd;                     //クラスタデータ
+        int imageRows, imageCols;
         bool convertToGrid(const float& x,const float& y,int& xg,int& yg);
         void clearMsg(obstacle_detection_2019::SensorMapDataMultiLayer& smdml_msg);
         virtual void addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs, std::vector<bool>& checkFlag, int coreNumber, int groupNumber);
@@ -114,6 +115,7 @@ class darknetImg {
         bool subscribeSensorData();     //データ受信
         void publishData();             //データ送信
         virtual void setCallback();     //コールバック関数の設定
+        void setMaskSize();             //maskの幅と高さ(px)を設定
         //パラメータ設定関数
         void createWindow();            //窓作成
         //床面除去関数

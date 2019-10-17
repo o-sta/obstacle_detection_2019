@@ -57,3 +57,10 @@ void darknetImg::setCallback(){
     fc = boost::bind(&darknetImg::configCallback, this, _1, _2);
 	server.setCallback(fc);
 }
+
+void setMaskSize(){
+    mask2.resize(imageRows);
+    for(auto& mask_row : mask2){
+        mask_row.resize(imageCols);
+    }
+}
