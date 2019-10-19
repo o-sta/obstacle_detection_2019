@@ -115,6 +115,9 @@ void velocityEstimation::showMarker(){
     marker.action = visualization_msgs::Marker::ADD;
     markerArray.markers.resize((int)filtedClstr.data.size() * 2);
     int count = 0;
+    //
+    //障害物判断
+    // decisionObstacleType();
     // float colors[12][3] ={{1.0,0,0},{0,1.0,0},{0,0,1.0},{1.0,1.0,0},{0,1.0,1.0},{1.0,0,1.0},{0.5,1.0,0},{0,0.5,1.0},{0.5,0,1.0},{1.0,0.5,0},{0,1.0,0.5},{1.0,0,0.5}};//色リスト
     for(int k=0; k<filtedClstr.data.size(); k++){
         marker.scale.x = 1;
@@ -137,11 +140,13 @@ void velocityEstimation::showMarker(){
         marker.color.g = colors[k][1];
         marker.color.b = colors[k][2];
 
+
         //障害物状態の判断: 静止, 移動
-        if( std::sqrt(sig_xh_t[k](2, 2) + sig_xh_t[k](3, 3) ) 
-            > std::sqrt(std::pow(filtedClstr.twist[k].linear.x, 2.0) + std::pow(filtedClstr.twist[k].linear.y, 2.0))
-            || std::sqrt(std::pow(filtedClstr.twist[k].linear.x, 2.0) + std::pow(filtedClstr.twist[k].linear.y, 2.0)) >= 1.5
-            || std::sqrt(std::pow(filtedClstr.twist[k].linear.x, 2.0) + std::pow(filtedClstr.twist[k].linear.y, 2.0)) <= 0.1){
+        // if( std::sqrt(sig_xh_t[k](2, 2) + sig_xh_t[k](3, 3) ) 
+        //     > std::sqrt(std::pow(filtedClstr.twist[k].linear.x, 2.0) + std::pow(filtedClstr.twist[k].linear.y, 2.0))
+        //     || std::sqrt(std::pow(filtedClstr.twist[k].linear.x, 2.0) + std::pow(filtedClstr.twist[k].linear.y, 2.0)) >= 1.5
+        //     || std::sqrt(std::pow(filtedClstr.twist[k].linear.x, 2.0) + std::pow(filtedClstr.twist[k].linear.y, 2.0)) <= 0.1){
+        if(filtedClstr.twist[k].linear.x == 0 && filtedClstr.twist[k].linear.y == 0 && filtedClstr.twist[k].linear.z == 0){
                 //
                 marker.scale.x = 0.2;
                 marker.scale.y = 0.2;

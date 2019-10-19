@@ -31,14 +31,21 @@
   <arg name="predictionSigma/4/2" default="0"/>
   <!-- threshold -->
   <arg name="estimationVelocity/trackThreshold" default="5"/>
+  <arg name="estimationVelocity/sizeMinThreshold" default="0.01"/>
+  <arg name="estimationVelocity/sizeMaxThreshold" default="0.5"/>
+  <arg name="estimationVelocity/velSigmaThreshold" default="1"/>
+  <arg name="estimationVelocity/velMinThreshold" default="0.1"/>
+  <arg name="estimationVelocity/velMaxThreshold" default="1.5"/>
+  <!-- average filter -->
+  <arg name="estimationVelocity/filterN" default="5"/>
   <!-- debug -->
   <arg name="estimationVelocity/debugType" default="1"/>
   <arg name="estimationVelocity/timeRange" default="5"/>
   <arg name="estimationVelocity/timeInteval" default="1"/>
   <!-- <arg name="robot_name"        default="robot2"/> -->
   <!-- <group ns="$(arg robot_name)"> -->
-  <!-- <node pkg="obstacle_detection_2019" name="obstacle_detection_2019_estimate" type="obstacle_detection_2019_estimate" output="screen" respawn="true"> -->
-  <node pkg="obstacle_detection_2019" name="obstacle_detection_2019_estimate" type="obstacle_detection_2019_estimate" respawn="true">
+  <node pkg="obstacle_detection_2019" name="obstacle_detection_2019_estimate" type="obstacle_detection_2019_estimate" output="screen" respawn="true">
+  <!-- <node pkg="obstacle_detection_2019" name="obstacle_detection_2019_estimate" type="obstacle_detection_2019_estimate" respawn="true"> -->
     <!-- 観測誤差 -->
     <param name="observationDelta/1/1" value="$(arg observationDelta/1/1)"/>
     <param name="observationDelta/2/2" value="$(arg observationDelta/2/2)"/>

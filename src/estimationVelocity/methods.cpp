@@ -19,6 +19,12 @@ void velocityEstimation::manage(){
 	ROS_INFO("kalmanFilter");
 	kalmanFilter();
 	//
+	ROS_INFO("recordTwistData");
+	recordTwistData();
+	ROS_INFO("averageFilter");
+	averageFilter();
+	ROS_INFO("decisionObstacleType");
+	decisionObstacleType();
 	ROS_INFO("publishData");
 	publishData();
 	ROS_INFO("debug");
@@ -165,7 +171,97 @@ void velocityEstimation::kalmanFilter(){//
 		filtedClstr.twist[i].linear.y = xh_t[i](3,0);
 	}
 }
+void velocityEstimation::decisionObstacleType(){
+	//移動障害物かどうかを判断
+	//静止障害物->速度ゼロ
+	//移動障害物->推定速度
+	float cellSize = filtedClstr.res.data * filtedClstr.res.data;
+	for(int k=0; k<filtedClstr.data.size(); k++){
+		//判断
+		std::cout<<"size "<< k << " = "<< filtedClstr.data[k].size.data << " * " << cellSize << std::endl;
+		if( std::sqrt(sig_xh_t[k](2, 2) + sig_xh_t[k](3, 3) ) 
+            > std::sqrt(std::pow(filtedClstr.twist[k].linear.x, 2.0) + std::pow(filtedClstr.twist[k].linear.y, 2.0))
+            || std::sqrt(std::pow(filtedClstr.twist[k].linear.x, 2.0) + std::pow(filtedClstr.twist[k].linear.y, 2.0)) >= velMaxThreshold
+            || std::sqrt(std::pow(filtedClstr.twist[k].linear.x, 2.0) + std::pow(filtedClstr.twist[k].linear.y, 2.0)) <= velMinThreshold
+			|| filtedClstr.data[k].size.data * cellSize < sizeMinThreshold
+			|| filtedClstr.data[k].size.data * cellSize > sizeMaxThreshold
+			|| filtedClstr.trackingNum[k] < trackThreshold){
+				filtedClstr.twist[k].linear.x = 0;
+				filtedClstr.twist[k].linear.y = 0;
+				filtedClstr.twist[k].linear.z = 0;
+        }
+        else{
+			//no process
+        }
+	}
+}
+void velocityEstimation::averageFilter(){
+	for(int k=0; k<record_twists.size();k++){
+		ROS_INFO("record_twists[%d].n = %d",k,record_twists[k].n);
+		if(record_twists[k].n == filterN){
+			record_twists[k].sum_twist = record_twists[k].twistArray[0];
+			for(int i=1;i<record_twists[k].n; i++){
+				record_twists[k].sum_twist.linear.x = record_twists[k].sum_twist.linear.x + record_twists[k].twistArray[i].linear.x;
+				record_twists[k].sum_twist.linear.y = record_twists[k].sum_twist.linear.y + record_twists[k].twistArray[i].linear.y;
+				record_twists[k].sum_twist.linear.z = record_twists[k].sum_twist.linear.z + record_twists[k].twistArray[i].linear.z;
+			}
+			filtedClstr.twist[k].linear.x = record_twists[k].sum_twist.linear.x / filterN; 
+			filtedClstr.twist[k].linear.y = record_twists[k].sum_twist.linear.y / filterN; 
+			filtedClstr.twist[k].linear.z = record_twists[k].sum_twist.linear.z / filterN; 
+		}
+	}
+}
+void velocityEstimation::recordTwistData(){
 
+	std::vector<record_twist> record_twists_temp;
+	record_twists_temp.resize(filtedClstr.data.size() );
+
+	if((int)record_twists.size() <= 0){
+		//記録データが皆無
+		//完全に初期処理
+		//推定データをそのまま確保する
+		record_twists_temp.resize(filtedClstr.data.size());
+		for(int k=0; k<filtedClstr.data.size();k++){
+			record_twists_temp[k].n = 1;
+			record_twists_temp[k].twistArray.resize(1);
+			record_twists_temp[k].twistArray[0] =  filtedClstr.twist[k];
+		}
+	}
+	else{
+		//データがある時
+		//処理回数２回以上
+		for(int k=0; k<filtedClstr.data.size();k++){
+			int prev_n =filtedClstr.match[k];
+			//データマッチングが取れない
+			//障害物を見失ったとき
+			if(prev_n == -1){
+				//データ追加(初期データ)
+				record_twists_temp[k].n = 1;
+				record_twists_temp[k].twistArray.resize(1);
+				record_twists_temp[k].twistArray[0] = filtedClstr.twist[k];
+			}
+			else{
+				//追跡中の障害物
+				//記録中データに取得データを追加する
+				//取得データ
+				record_twists_temp[k].n = 1;
+				record_twists_temp[k].twistArray.resize(1);
+				record_twists_temp[k].twistArray[0] = filtedClstr.twist[k];
+				//記録データを加算
+				record_twists_temp[k].n += record_twists[prev_n].n;
+				record_twists_temp[k].twistArray.reserve(filterN+1);
+				std::copy(record_twists[prev_n].twistArray.begin(),record_twists[prev_n].twistArray.end(),std::back_inserter(record_twists_temp[k].twistArray));
+				//サイズ超過時
+				while(record_twists_temp[k].n > filterN){
+					//一番後ろの要素を削除
+					record_twists_temp[k].twistArray.pop_back();
+					record_twists_temp[k].n -= 1;
+				}
+			}
+		}
+	}
+	record_twists = record_twists_temp;
+}
 void velocityEstimation::publishData(){//データ送信
     pub.publish(filtedClstr);
 }

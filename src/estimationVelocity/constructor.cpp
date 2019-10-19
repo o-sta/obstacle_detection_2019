@@ -58,6 +58,15 @@ velocityEstimation::velocityEstimation()
 	sig_wk(1,3)=0;//sig_wk(3,3)*ig_wk(1,1)/2;
 	sig_wk(2,0)=0;//sig_wk(0,2);//sig_wk(0,0)/(dt*dt);
 	sig_wk(3,1)=0;//sig_wk(1,3);//sig_wk(1,1)/(dt*dt);
+	//--
+    trackThreshold = 1;
+	sizeMinThreshold = 0;
+	sizeMaxThreshold = 1;
+	velSigmaThreshold = 1;
+	velMinThreshold = 0.1;
+	velMaxThreshold = 1.5;
+	//average filter
+	filterN = 1;
 
 	//launchファイルからパラメータの読み込み
 	//ROS_INFO("setLaunchParam");

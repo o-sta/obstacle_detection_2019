@@ -29,8 +29,16 @@ class velocityEstimation{
 		ros::NodeHandle nhPub;
         ros::Publisher pub;
         obstacle_detection_2019::ClassificationVelocityData filtedClstr;//速度データ付きのクラスタデータ
-
-		//---calmanfilter
+        struct average_twist{
+            int n;
+            geometry_msgs::Twist twist;
+        };
+		struct record_twist{
+            int n;
+            geometry_msgs::Twist sum_twist;
+            std::vector<geometry_msgs::Twist> twistArray;
+        };
+        //---calmanfilter
 		std::vector<Eigen::MatrixXd,Eigen::aligned_allocator<Eigen::MatrixXd> > xh_t;
 		std::vector<Eigen::MatrixXd,Eigen::aligned_allocator<Eigen::MatrixXd> > sig_xh_t;
 		std::vector<Eigen::MatrixXd,Eigen::aligned_allocator<Eigen::MatrixXd> > xh_t_1;
@@ -40,10 +48,21 @@ class velocityEstimation{
 		Eigen::MatrixXd sig_x0;
 		Eigen::MatrixXd sig_wk;
 		Eigen::MatrixXd I;
+        //decision
+        int trackThreshold;
+        float sizeMinThreshold;        
+        float sizeMaxThreshold;
+        float velSigmaThreshold;
+        float velMinThreshold;
+        float velMaxThreshold;
+        //avarage filter
+        int filterN;
+        std::vector<average_twist> average_twists;
+        std::vector<average_twist> pre_average_twists;
+        std::vector<record_twist> record_twists;
         //デバッグ用
 		ros::NodeHandle nhDeb;
         ros::Publisher pubDebPcl,pubDebMarker;
-        int trackThreshold;
         int debugType;
         float timeRange, timeInteval;//表示時間範囲(~秒後まで表示),表示時間間隔(~秒ごとに表示)
         // float colors[12][3] ={{1.0,0,0},{0,1.0,0},{0,0,1.0},{1.0,1.0,0},{0,1.0,1.0},{1.0,0,1.0},{0.5,1.0,0},{0,0.5,1.0},{0.5,0,1.0},{1.0,0.5,0},{0,1.0,0.5},{1.0,0,0.5}};//色リスト
@@ -76,6 +95,9 @@ class velocityEstimation{
         void configCallback(obstacle_detection_2019::velocityEstimationConfig &config, uint32_t level);
         //処理
 		void kalmanFilter(void);
+        void decisionObstacleType();
+        void averageFilter();
+        void recordTwistData();
         // データ送信
         void publishData();//データ送信
         // データ更新

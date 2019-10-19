@@ -9,9 +9,9 @@
  <arg name="classification/rqt_reconfigure" value="true"/>
  <arg name="imageMatching/rqt_reconfigure" value="true"/>
  <arg name="measurementVelocity/rqt_reconfigure" value="false"/>
- <arg name="estimationVelocity/rqt_reconfigure" value="false"/>
+ <arg name="estimationVelocity/rqt_reconfigure" value="true"/>
   <group ns="$(arg robot_name)">
-    <!-- synchro and magage node -->
+    <!-- synchro and manage node -->
     <include file="$(find obstacle_detection_2019)/launch/synchroManage.launch"/>
     <!-- ground removement and clussification node -->
     <include file="$(find obstacle_detection_2019)/launch/remgroundClassification.launch">
