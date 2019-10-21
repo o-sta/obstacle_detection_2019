@@ -221,7 +221,7 @@ darknetImg::Relationship darknetImg::checkBoundingBoxesRelationship(darknet_ros_
 //               mask_row);
 // }
 
-void drawMask(darknet_ros_msgs::BoundingBoxes& bbs, int target_indexs, char value,  cv::Mat& mask){
+void darknetImg::drawMask(darknet_ros_msgs::BoundingBoxes& bbs, int target_indexs, char value,  cv::Mat& mask){
     int row_min = bbs.bounding_boxes[target_indexs].ymin;
     int row_max = bbs.bounding_boxes[target_indexs].ymax;
     int col_min = bbs.bounding_boxes[target_indexs].xmin;
