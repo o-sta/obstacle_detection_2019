@@ -1,0 +1,34 @@
+#include <obstacle_detection_2019/darknetImgDebug.h>
+
+void darknetImgDebug::setParam(){
+    darknetImg::setParam();
+    nhPub.param<std::string>("topic/publisher/image", topic_image, "image");
+    nhPub.param<std::string>("topic/publisher/clusterImage", topic_clusterImage, "clusterImage");
+    nhPub.param<std::string>("topic/publisher/clusterPCL", topic_clusterPCL, "clusterPCL");
+    nhPub.param<std::string>("topic/publisher/gridMapImage", topic_gridMapImage, "gridMapImage");
+    nhPub.param<std::string>("topic/publisher/mask", topic_mask, "mask");
+}
+
+void darknetImgDebug::setCallback(){
+    ROS_INFO_STREAM("debug setCallback");
+    sync.init();
+    sync.registerCallback(boost::bind(&darknetImgDebug::debug_callback, this, _1, _2));
+    // fc = boost::bind(&darknetImg::configCallback, this, _1, _2);
+	// server.setCallback(fc);
+}
+
+void darknetImgDebug::setColorMap(std::vector<int>& colorMap){
+    nhPub.param("colorMap/data", colorMap, colorMap);
+    colorMap.resize(colorMap.size() - (colorMap.size() % 3)); //要素数が3の倍数(RGB)になるようにリサイズ
+}
+
+void darknetImgDebug::setMapImageConfig(){
+    mapImageRows = mapRows * (cellSideLength + cellMargin) + cellMargin; //最後のMarginは端の余白分
+    mapImageCols = mapCols * (cellSideLength + cellMargin) + cellMargin; //最後のMarginは端の余白分
+    mapImageCB->image = cv::Mat(mapImageRows, mapImageCols, CV_8UC3);
+}
+
+cv::Scalar darknetImgDebug::getColorFromColorMap(int colorIndex){
+    cv::Scalar drawColor(colorMap[(colorIndex*3)%colorMap.size()], colorMap[(colorIndex*3+1)%colorMap.size()], colorMap[(colorIndex*3+2)%colorMap.size()]);
+    return drawColor;
+}
