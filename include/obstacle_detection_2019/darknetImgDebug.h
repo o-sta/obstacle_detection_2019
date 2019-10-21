@@ -48,6 +48,8 @@ class darknetImgDebug : public darknetImg {
         void debug_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb,const sensor_msgs::Image::ConstPtr& image);
         void setCallback();     //コールバック関数の設定
 
+        void publishBoundingBoxes();
+        void publishMask();
 
         /**グリッドマップをポイントクラウドに変換
          * 実装予定無し

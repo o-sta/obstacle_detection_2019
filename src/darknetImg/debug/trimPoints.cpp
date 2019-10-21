@@ -1,5 +1,9 @@
 #include <obstacle_detection_2019/darknetImgDebug.h>
 
+void publishBoundingBoxes(){
+    
+}
+
 void darknetImgDebug::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs, std::vector<bool>& checkFlag, int coreNumber, int groupNumber){
     int searchNumber = 0;
     std::stringstream ss;
@@ -30,10 +34,12 @@ void darknetImgDebug::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs
     }
     ss.str("");
     ss.clear(std::stringstream::goodbit);
-    cv::rectangle(bridgeImage->image, cv::Point(bbs.bounding_boxes[coreNumber].xmin, bbs.bounding_boxes[coreNumber].ymin), 
-                  cv::Point(bbs.bounding_boxes[coreNumber].xmax, bbs.bounding_boxes[coreNumber].ymax), getColorFromColorMap(groupNumber-1), 5, 8);
-    ss << "N" << coreNumber << " : G" << groupNumber;
-    cv::putText(bridgeImage->image, ss.str(), cv::Point(bbs.bounding_boxes[coreNumber].xmin, bbs.bounding_boxes[coreNumber].ymin), cv::FONT_HERSHEY_SIMPLEX,
-    0.7, getColorFromColorMap(groupNumber-1), 2, CV_AA);
+    if(bridgeImage->encoding == sensor_msgs::image_encodings::TYPE_8UC3){
+        cv::rectangle(bridgeImage->image, cv::Point(bbs.bounding_boxes[coreNumber].xmin, bbs.bounding_boxes[coreNumber].ymin), 
+                        cv::Point(bbs.bounding_boxes[coreNumber].xmax, bbs.bounding_boxes[coreNumber].ymax), getColorFromColorMap(groupNumber-1), 5, 8);
+        ss << "N" << coreNumber << " : G" << groupNumber;
+        cv::putText(bridgeImage->image, ss.str(), cv::Point(bbs.bounding_boxes[coreNumber].xmin, bbs.bounding_boxes[coreNumber].ymin), cv::FONT_HERSHEY_SIMPLEX,
+        0.7, getColorFromColorMap(groupNumber-1), 2, CV_AA);
+    }
     drawMask(bbs, coreNumber, (char)groupNumber, mask);
 }

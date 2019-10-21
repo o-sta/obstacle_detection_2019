@@ -14,5 +14,5 @@ darknetImgDebug::darknetImgDebug()
 }
 
 darknetImgDebug::~darknetImgDebug(){
-
+    
 }
