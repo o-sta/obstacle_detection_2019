@@ -2,11 +2,11 @@
 
 void darknetImgDebug::setParam(){
     darknetImg::setParam();
-    nhPub.param<std::string>("topic/publisher/image", topic_image, "image");
+    nhPub.param<std::string>("topic/publisher/bbImage", topic_bbImage, "bbImage");
+    nhPub.param<std::string>("topic/publisher/bbMaskImage", topic_bbMaskImage, "bbMaskImage");
     nhPub.param<std::string>("topic/publisher/clusterImage", topic_clusterImage, "clusterImage");
     nhPub.param<std::string>("topic/publisher/clusterPCL", topic_clusterPCL, "clusterPCL");
     nhPub.param<std::string>("topic/publisher/gridMapImage", topic_gridMapImage, "gridMapImage");
-    nhPub.param<std::string>("topic/publisher/mask", topic_mask, "mask");
     ROS_INFO_STREAM("setparam debug mode");
 }
 

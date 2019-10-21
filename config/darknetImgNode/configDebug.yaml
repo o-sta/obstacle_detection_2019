@@ -2,7 +2,9 @@
 topic: #ROSトピック
   publisher: #出力
     #sensor_msgs::Image 人間の周囲に枠線が描画された画像
-    image: image
+    bbImage: bbImage
+    #sensor_msgs::Image 人間部分のマスク(グレースケール)
+    bbMaskImage: bbMaskImage
     #sensor_msgs::Image クラスタを構成するセルが描画されたマップ画像
     clusterImage: clusterImage
     #sensor_msgs::PointColud2 クラスタをポイントクラウドで表示

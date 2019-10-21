@@ -9,6 +9,7 @@
 class darknetImgDebug : public darknetImg {
     private:
         ros::Publisher bbImage_pub;         //BoundingBoxesのパブリッシャ
+        ros::Publisher bbMaskImage_pub;         //BoundingBoxesのパブリッシャ
         cv_bridge::CvImagePtr mapImageCB;   //クラスタ毎に色分けされたマップセル画像
         std::vector<int> colorMap;          //色付けを行うためのカラーマップ
         int cellMargin;         //セルの余白[px]
@@ -20,8 +21,8 @@ class darknetImgDebug : public darknetImg {
         std::string topic_clusterImage; //クラスタ用セルのパブリッシュトピック
         std::string topic_clusterPCL;   //クラスタ用ポイントクラウドのパブリッシュトピック
         std::string topic_gridMapImage; //グリッドマップ用ポイントクラウドのパブリッシュトピック
-        std::string topic_image;        //bbとdepthImageを結合した時のパブリッシュトピック
-        std::string topic_mask;         //Imageにマスクをかけた時のパブリッシュトピック
+        std::string topic_bbImage;        //bbとdepthImageを結合した時のパブリッシュトピック
+        std::string topic_bbMaskImage;         //Imageにマスクをかけた時のパブリッシュトピック
     protected:
         /**クラスタに属しているセルを探してマップ画像に色を付ける
          * cluster 入力クラスタ

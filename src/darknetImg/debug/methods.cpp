@@ -29,7 +29,8 @@ void darknetImgDebug::debug_callback(const darknet_ros_msgs::BoundingBoxes::Cons
     cvMask.encoding = sensor_msgs::image_encodings::TYPE_8UC1;
     cvMask.image = mask.clone();
     // pub.publish(bridgeImage->toImageMsg());
-    pub.publish(cvMask.toImageMsg());
+    bbMaskImage_pub.publish(cvMask.toImageMsg());
+    bbImage_pub.publish(bridgeImage->toImageMsg());
     // if (bb->bounding_boxes.size() > 0){
     //     ROS_INFO_STREAM("pickUpGroundPointCandidates");
     //     pickUpGroundPointCandidates();
