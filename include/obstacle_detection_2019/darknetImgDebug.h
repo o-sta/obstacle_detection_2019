@@ -8,6 +8,7 @@
 
 class darknetImgDebug : public darknetImg {
     private:
+        ros::Publisher bbImage_pub;         //BoundingBoxesのパブリッシャ
         cv_bridge::CvImagePtr mapImageCB;   //クラスタ毎に色分けされたマップセル画像
         std::vector<int> colorMap;          //色付けを行うためのカラーマップ
         int cellMargin;         //セルの余白[px]

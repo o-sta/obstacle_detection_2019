@@ -103,8 +103,8 @@ class darknetImg {
         void clearMsg(obstacle_detection_2019::SensorMapDataMultiLayer& smdml_msg);
         virtual void addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs, std::vector<bool>& checkFlag, int coreNumber, int groupNumber);
         Relationship checkBoundingBoxesRelationship(darknet_ros_msgs::BoundingBoxes& bbs, int core_index, int target_index);
-        void drawMask2(darknet_ros_msgs::BoundingBoxes& bbs, int target_indexs, char value,  std::vector<std::vector<char>>& mask);
         void drawMask(darknet_ros_msgs::BoundingBoxes& bbs, int target_indexs, char value,  cv::Mat& mask);
+        void resetMask(cv::Mat& mask);
         //窓内に含まれているセルを出力する関数
     /* data */
     public:
@@ -116,8 +116,6 @@ class darknetImg {
         bool subscribeSensorData();     //データ受信
         void publishData();             //データ送信
         virtual void setCallback();     //コールバック関数の設定
-        void setMaskSize();             //maskの幅と高さ(px)を設定
-        void setMaskSize2();             //maskの幅と高さ(px)を設定
         //パラメータ設定関数
         void createWindow();            //窓作成
         //床面除去関数

@@ -3,6 +3,7 @@
 void darknetImg::trimPoints(darknet_ros_msgs::BoundingBoxes& bbs){
     std::vector<bool> checkFlag;
     int groupNumber = 0;
+    resetMask(mask);
     checkFlag.resize(bbs.bounding_boxes.size());
     std::fill(checkFlag.begin(), checkFlag.end(), false);
     for(int i = 0; i < checkFlag.size(); ++i){
@@ -64,7 +65,25 @@ void darknetImg::drawMask(darknet_ros_msgs::BoundingBoxes& bbs, int target_index
     ROS_INFO_STREAM("min[" << col_min << ", " << row_min << "], max[" << col_max << ", " << row_max << "]");
 }
 
-//trimPoints()旧バージョン:廃止
+void darknetImg::resetMask(cv::Mat &mask){
+    int imageSize = imageRows * imageCols;
+    int it = 0;
+    //マスクサイズの設定
+    if (imageRows != bridgeImage->image.rows || imageCols != bridgeImage->image.cols){
+        imageRows = bridgeImage->image.rows;
+        imageCols = bridgeImage->image.cols;
+        cv::resize(mask, mask, cv::Size(imageCols, imageRows), 0, 0);
+    }
+    //マスクの初期化(0埋め)
+    auto *p = mask.ptr<char>(0);
+    while(it < imageSize){
+        *p = 0;
+        ++p;
+        ++it;
+    }
+}
+
+// trimPoints() 旧バージョン:重なったBBに対処できないため廃止
 // void darknetImg::trimPoints(){
 //     int i = 1;
 //     for(const auto& bb : boundingBoxesMsg.bounding_boxes){
@@ -73,3 +92,13 @@ void darknetImg::drawMask(darknet_ros_msgs::BoundingBoxes& bbs, int target_index
 //     }
 // }
 
+
+// drawMask() 旧バージョン:前に描画したBBが消えてしまうため廃止
+// void darknetImg::drawMask(darknet_ros_msgs::BoundingBoxes& bbs, int target_index, char value, std::vector<std::vector<char>>& output_mask){
+//     std::fill(mask_row.begin() + bbs.bounding_boxes[target_index].xmin, 
+//               mask_row.begin() + bbs.bounding_boxes[target_index].xmax, 
+//               value);
+//     std::fill(output_mask.begin() + bbs.bounding_boxes[target_index].ymin,
+//               output_mask.begin() + bbs.bounding_boxes[target_index].ymax,
+//               mask_row);
+// }

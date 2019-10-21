@@ -1,6 +1,5 @@
 #include <obstacle_detection_2019/darknetImgDebug.h>
 
-
 void darknetImgDebug::debug_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb,const sensor_msgs::Image::ConstPtr& image){
     ROS_INFO_STREAM("debug callback : " << "[bb : " << bb->header.stamp.toSec() << " ]," 
                                   << "[img : " << image->header.stamp.toSec() << " ],"
@@ -24,20 +23,7 @@ void darknetImgDebug::debug_callback(const darknet_ros_msgs::BoundingBoxes::Cons
     // // パブリッシュ(debgu移行予定)
     // pub.publish(bridgeImage->toImageMsg());
     boundingBoxesMsg = *bb;
-    if (imageRows != bridgeImage->image.rows || imageCols != bridgeImage->image.cols){
-        imageRows = bridgeImage->image.rows;
-        imageCols = bridgeImage->image.cols;
-        setMaskSize();
-    }
-    int imageSize = imageRows * imageCols;
-    int it = 0;
-    auto *p = mask.ptr<char>(0);
-    while(it < imageSize){
-        *p = 0;
-        ++p;
-        ++it;
-    }
-    trimPoints_v2(boundingBoxesMsg);
+    trimPoints(boundingBoxesMsg);
     cv_bridge::CvImage cvMask;
     cvMask.header = bridgeImage->header;
     cvMask.encoding = sensor_msgs::image_encodings::TYPE_8UC1;

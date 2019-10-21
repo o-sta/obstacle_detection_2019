@@ -35,11 +35,11 @@ void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr
     pub.publish(bridgeImage->toImageMsg());
 
     boundingBoxesMsg = *bb;
-    if (imageRows != bridgeImage->image.rows || imageCols != bridgeImage->image.cols){
-        imageRows = bridgeImage->image.rows;
-        imageCols = bridgeImage->image.cols;
-        setMaskSize();
-    }
+    // if (imageRows != bridgeImage->image.rows || imageCols != bridgeImage->image.cols){
+    //     imageRows = bridgeImage->image.rows;
+    //     imageCols = bridgeImage->image.cols;
+    //     setMaskSize();
+    // }
     // if (bb->bounding_boxes.size() > 0){
     //     ROS_INFO_STREAM("pickUpGroundPointCandidates");
     //     pickUpGroundPointCandidates();
@@ -66,17 +66,6 @@ void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr
     // clearMsg(smdml);
     ROS_INFO_STREAM("----------------------------------------");
 }
-
-
-// void darknetImg::drawMask(darknet_ros_msgs::BoundingBoxes& bbs, int target_index, char value, std::vector<std::vector<char>>& output_mask){
-//     std::fill(mask_row.begin() + bbs.bounding_boxes[target_index].xmin, 
-//               mask_row.begin() + bbs.bounding_boxes[target_index].xmax, 
-//               value);
-//     std::fill(output_mask.begin() + bbs.bounding_boxes[target_index].ymin,
-//               output_mask.begin() + bbs.bounding_boxes[target_index].ymax,
-//               mask_row);
-// }
-
 
 
 

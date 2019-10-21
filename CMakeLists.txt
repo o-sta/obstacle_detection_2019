@@ -240,7 +240,12 @@ add_executable(${PROJECT_NAME}_darknet_debug # darknet_ros
   src/darknetImg/constructor.cpp
   src/darknetImg/methods.cpp
   src/darknetImg/property.cpp
-  src/darknetImg/debug_methods.cpp
+  src/darknetImg/removeGroundPoints.cpp
+  src/darknetImg/trimPoints.cpp
+  src/darknetImg/debug/constructor.cpp
+  src/darknetImg/debug/methods.cpp
+  src/darknetImg/debug/property.cpp
+  src/darknetImg/debug/trimPoints.cpp
 )
 
 ## Rename C++ executable without prefix

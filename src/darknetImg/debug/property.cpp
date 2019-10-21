@@ -7,6 +7,7 @@ void darknetImgDebug::setParam(){
     nhPub.param<std::string>("topic/publisher/clusterPCL", topic_clusterPCL, "clusterPCL");
     nhPub.param<std::string>("topic/publisher/gridMapImage", topic_gridMapImage, "gridMapImage");
     nhPub.param<std::string>("topic/publisher/mask", topic_mask, "mask");
+    ROS_INFO_STREAM("setparam debug mode");
 }
 
 void darknetImgDebug::setCallback(){
