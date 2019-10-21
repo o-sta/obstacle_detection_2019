@@ -15,11 +15,11 @@
 //OpenCV
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/objdetect/objdetect.hpp>
-#include <opencv2/opencv.hpp>
+//#include <opencv2/objdetect/objdetect.hpp>
+//#include <opencv2/opencv.hpp>
 //メッセージインクルード
 //darknet_ros_msgs
-#include <darknet_ros_msgs/BoundingBox.h>
+//#include <darknet_ros_msgs/BoundingBox.h>
 #include <darknet_ros_msgs/BoundingBoxes.h>
 //obstacle_detection_2019_msgs
 #include <obstacle_detection_2019/SensorMapDataMultiLayer.h>

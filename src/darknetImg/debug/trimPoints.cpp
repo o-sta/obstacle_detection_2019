@@ -28,14 +28,16 @@ void darknetImgDebug::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs
                                     << groupNumber << " group";
                     break;
             }
-            cv::putText(bridgeImage->image, ss.str(), cv::Point(20, 45 + text_row * 60), cv::FONT_HERSHEY_SIMPLEX, 0.7, getColorFromColorMap(5), 2, CV_AA);
-            ++text_row;
+            if(bridgeImage->encoding == "rgb8"){
+                cv::putText(bridgeImage->image, ss.str(), cv::Point(20, 45 + text_row * 60), cv::FONT_HERSHEY_SIMPLEX, 0.7, getColorFromColorMap(5), 2, CV_AA);
+                ++text_row;
+            }
         }
     }
     ss.str("");
     ss.clear(std::stringstream::goodbit);
-    ROS_INFO_STREAM("BRIDGE : " << bridgeImage->encoding << "TYPE : " << sensor_msgs::image_encodings::TYPE_8UC3);
-    if(bridgeImage->encoding == sensor_msgs::image_encodings::TYPE_8UC3){
+    // ROS_INFO_STREAM("BRIDGE : " << bridgeImage->encoding << "TYPE : " << sensor_msgs::image_encodings::TYPE_8UC3);
+    if(bridgeImage->encoding == "rgb8"){
         cv::rectangle(bridgeImage->image, cv::Point(bbs.bounding_boxes[coreNumber].xmin, bbs.bounding_boxes[coreNumber].ymin), 
                         cv::Point(bbs.bounding_boxes[coreNumber].xmax, bbs.bounding_boxes[coreNumber].ymax), getColorFromColorMap(groupNumber-1), 5, 8);
         ss << "N" << coreNumber << " : G" << groupNumber;
