@@ -125,8 +125,7 @@ class darknetImg {
         void estimateGroundCoefficients();      //床面係数abcdの算出
         void removeGroundPoints();              //床面の点を除外する
         //歩行者位置推定関数
-        void trimPoints();                      //枠線を元に点をトリミング（枠外の点を除去）
-        void trimPoints_v2(darknet_ros_msgs::BoundingBoxes& bbs);  //枠線を元に点をトリミング（再帰関数を使用したバージョン、こっちに切り替える予定）
+        void trimPoints(darknet_ros_msgs::BoundingBoxes& bbs);  //枠線を元に点をトリミング
         void generateGridmap();                 //深度画像からグリッドマップ作成
         void dimensionalityReductionGridmap();  // グリッドマップのを行のみ（奥行きのみ）のマップに変換
         void classifyPoints();                  //DBSCANによるクラスタリング
