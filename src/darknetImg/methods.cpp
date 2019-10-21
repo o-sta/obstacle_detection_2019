@@ -226,13 +226,14 @@ void darknetImg::drawMask(darknet_ros_msgs::BoundingBoxes& bbs, int target_index
     int row_max = bbs.bounding_boxes[target_indexs].ymax;
     int col_min = bbs.bounding_boxes[target_indexs].xmin;
     int col_max = bbs.bounding_boxes[target_indexs].xmax;
-    for(int row = row_min; row <= row_max; ++row){
+    for(int row = row_min; row < row_max; ++row){
         auto *p = mask.ptr<char>(row) + col_min;
-        for(int col = col_min; col <= col_max; col++){
-            *p = value * 30;
+        for(int col = col_min; col < col_max; col++){
+            *p = value * 50;
             ++p;
         }
     }
+    ROS_INFO_STREAM("min[" << col_min << ", " << row_min << "], max[" << col_max << ", " << row_max << "]");
 }
 
 

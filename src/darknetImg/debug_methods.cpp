@@ -291,7 +291,7 @@ void darknetImgDebug::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs
     ss << "N" << coreNumber << " : G" << groupNumber;
     cv::putText(bridgeImage->image, ss.str(), cv::Point(bbs.bounding_boxes[coreNumber].xmin, bbs.bounding_boxes[coreNumber].ymin), cv::FONT_HERSHEY_SIMPLEX,
     0.7, getColorFromColorMap(groupNumber-1), 2, CV_AA);
-    //drawMask(bbs, coreNumber, (char)groupNumber, mask);
+    drawMask(bbs, coreNumber, (char)groupNumber, mask);
 }
 
 
