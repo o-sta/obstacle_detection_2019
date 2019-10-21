@@ -34,6 +34,7 @@ void darknetImgDebug::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs
     }
     ss.str("");
     ss.clear(std::stringstream::goodbit);
+    ROS_INFO_STREAM("BRIDGE : " << bridgeImage->encoding << "TYPE : " << sensor_msgs::image_encodings::TYPE_8UC3);
     if(bridgeImage->encoding == sensor_msgs::image_encodings::TYPE_8UC3){
         cv::rectangle(bridgeImage->image, cv::Point(bbs.bounding_boxes[coreNumber].xmin, bbs.bounding_boxes[coreNumber].ymin), 
                         cv::Point(bbs.bounding_boxes[coreNumber].xmax, bbs.bounding_boxes[coreNumber].ymax), getColorFromColorMap(groupNumber-1), 5, 8);
