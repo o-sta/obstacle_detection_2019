@@ -46,7 +46,7 @@ void darknetImgDebug::debug_callback(const darknet_ros_msgs::BoundingBoxes::Cons
     int it = 0;
     auto *p = mask.ptr<char>(0);
     while(it < imageSize){
-        *p = 0;
+        *p = 128;
         ++p;
         ++it;
     }
