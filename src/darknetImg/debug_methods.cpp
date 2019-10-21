@@ -68,7 +68,7 @@ void darknetImgDebug::debug_callback(const darknet_ros_msgs::BoundingBoxes::Cons
     //     ROS_INFO_STREAM("not person detection");
     // }
     // clearMsg(smdml);
-    ROS_INFO_STREAM("----------------------------------------");
+    //ROS_INFO_STREAM("----------------------------------------");
 }
 
 
