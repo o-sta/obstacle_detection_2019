@@ -1,8 +1,5 @@
 #include <obstacle_detection_2019/darknetImgDebug.h>
 
-void publishBoundingBoxes(){
-    
-}
 
 void darknetImgDebug::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs, std::vector<bool>& checkFlag, int coreNumber, int groupNumber){
     int searchNumber = 0;

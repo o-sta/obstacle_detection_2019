@@ -1,7 +1,5 @@
 #include <obstacle_detection_2019/darknetImg.h>
 
-
-
 void darknetImg::trimPoints(darknet_ros_msgs::BoundingBoxes& bbs){
     std::vector<bool> checkFlag;
     int groupNumber = 0;

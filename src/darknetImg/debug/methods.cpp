@@ -6,54 +6,58 @@ void darknetImgDebug::debug_callback(const darknet_ros_msgs::BoundingBoxes::Cons
                                   << "[diff : " << (bb->header.stamp - image->header.stamp).toSec() << "]");
     // image から cvbridgeImage に変換する
     try{
-        bridgeImage=cv_bridge::toCvCopy(image, sensor_msgs::image_encodings::RGB8);
+        // 枠線描画テスト・BoundingBoxesのテスト のときはこちら
+        // bridgeImage=cv_bridge::toCvCopy(image, sensor_msgs::image_encodings::RGB8);
+        // 実際の処理
+        bridgeImage=cv_bridge::toCvCopy(image, sensor_msgs::image_encodings::TYPE_32FC1);
     }
     catch(cv_bridge::Exception& e) {//エラー処理
         ROS_ERROR("Could not convert from '%s' to 'TYPE_32FC1'.",image->encoding.c_str());
         return;
     }
-    //mask2.resize(bridgeImage->image.rows);
-    // mask2.resize(bridgeImage);
-    //枠線描画用コード　debugの方に移動予定
-    // bounding_boxedに書かれた枠の描画
+    boundingBoxesMsg = *bb;
+
+    // 枠線描画テスト
+    // bounding_boxedに書かれた枠を描画する
     // auto iter = bb->bounding_boxes.begin();
     // for (; iter != bb->bounding_boxes.end(); ++iter){
     //     cv::rectangle(bridgeImage->image, cv::Point(iter->xmin, iter->ymin), cv::Point(iter->xmax, iter->ymax), cv::Scalar(0, 0, 200), 5, 8);
     // }
-    // // パブリッシュ(debgu移行予定)
     // pub.publish(bridgeImage->toImageMsg());
-    boundingBoxesMsg = *bb;
-    trimPoints(boundingBoxesMsg);
-    cv_bridge::CvImage cvMask;
-    cvMask.header = bridgeImage->header;
-    cvMask.encoding = sensor_msgs::image_encodings::TYPE_8UC1;
-    cvMask.image = mask.clone();
-    // pub.publish(bridgeImage->toImageMsg());
-    bbMaskImage_pub.publish(cvMask.toImageMsg());
-    bbImage_pub.publish(bridgeImage->toImageMsg());
-    // if (bb->bounding_boxes.size() > 0){
-    //     ROS_INFO_STREAM("pickUpGroundPointCandidates");
-    //     pickUpGroundPointCandidates();
-    //     ROS_INFO_STREAM("estimateGroundCoefficients");
-    //     estimateGroundCoefficients();
-    //     ROS_INFO_STREAM("removeGroundPoints");
-    //     removeGroundPoints();
-    //     ROS_INFO_STREAM("trimPoints");
-    //     trimPoints();
-    //     ROS_INFO_STREAM("generateGridmap");
-    //     generateGridmap();
-    //     ROS_INFO_STREAM("dimensionalityReductionGridmap");
-    //     dimensionalityReductionGridmap();
-    //     ROS_INFO_STREAM("classifyPoints");
-    //     classifyPoints();
-    //     ROS_INFO_STREAM("estimatePersonPosition");
-    //     estimatePersonPosition();
-    //     ROS_INFO_STREAM("predictPersonPosition");
-    //     predictPersonPosition();
-    //     ROS_INFO_STREAM("iteration finished");
-    // }else{
-    //     ROS_INFO_STREAM("not person detection");
-    // }
+
+    //boundingBoxesのテスト
+    // trimPoints(boundingBoxesMsg);
+    // cv_bridge::CvImage cvMask;
+    // cvMask.header = bridgeImage->header;
+    // cvMask.encoding = sensor_msgs::image_encodings::TYPE_8UC1;
+    // cvMask.image = mask.clone();
+    // bbMaskImage_pub.publish(cvMask.toImageMsg());
+    // bbImage_pub.publish(bridgeImage->toImageMsg());
+
+    // 実際の処理
+    if (bb->bounding_boxes.size() > 0){
+        ROS_INFO_STREAM("pickUpGroundPointCandidates");
+        pickUpGroundPointCandidates();
+        ROS_INFO_STREAM("estimateGroundCoefficients");
+        estimateGroundCoefficients();
+        ROS_INFO_STREAM("removeGroundPoints");
+        removeGroundPoints();
+        ROS_INFO_STREAM("trimPoints");
+        trimPoints(boundingBoxesMsg);
+        ROS_INFO_STREAM("generateGridmap");
+        generateGridmap();
+        ROS_INFO_STREAM("dimensionalityReductionGridmap");
+        dimensionalityReductionGridmap();
+        ROS_INFO_STREAM("classifyPoints");
+        classifyPoints();
+        ROS_INFO_STREAM("estimatePersonPosition");
+        estimatePersonPosition();
+        ROS_INFO_STREAM("predictPersonPosition");
+        predictPersonPosition();
+        ROS_INFO_STREAM("iteration finished");
+    }else{
+        ROS_INFO_STREAM("not person detection");
+    }
     // clearMsg(smdml);
     //ROS_INFO_STREAM("----------------------------------------");
 }
