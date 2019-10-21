@@ -58,9 +58,13 @@ void darknetImg::setCallback(){
 	server.setCallback(fc);
 }
 
-void darknetImg::setMaskSize(){
+void darknetImg::setMaskSize2(){
     mask2.resize(imageRows);
     for(auto& mask_row : mask2){
         mask_row.resize(imageCols);
     }
+}
+
+void darknetImg::setMaskSize(){
+    cv::resize(mask, mask, cv::Size(imageCols, imageRows), 0, 0);
 }

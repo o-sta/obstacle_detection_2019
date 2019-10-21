@@ -26,7 +26,7 @@ void darknetImgDebug::debug_callback(const darknet_ros_msgs::BoundingBoxes::Cons
         ROS_ERROR("Could not convert from '%s' to 'TYPE_32FC1'.",image->encoding.c_str());
         return;
     }
-    mask2.resize(bridgeImage->image.rows);
+    //mask2.resize(bridgeImage->image.rows);
     // mask2.resize(bridgeImage);
     //枠線描画用コード　debugの方に移動予定
     // bounding_boxedに書かれた枠の描画
@@ -42,8 +42,21 @@ void darknetImgDebug::debug_callback(const darknet_ros_msgs::BoundingBoxes::Cons
         imageCols = bridgeImage->image.cols;
         setMaskSize();
     }
+    int imageSize = imageRows * imageCols;
+    int it = 0;
+    auto *p = mask.ptr<char>(0);
+    while(it < imageSize){
+        *p = 0;
+        ++p;
+        ++it;
+    }
     trimPoints_v2(boundingBoxesMsg);
-    pub.publish(bridgeImage->toImageMsg());
+    //pub.publish(bridgeImage->toImageMsg());
+    cv_bridge::CvImage cvMask;
+    cvMask.header = bridgeImage->header;
+    cvMask.encoding = sensor_msgs::image_encodings::TYPE_8UC1;
+    cvMask.image = mask.clone();
+    pub.publish(cvMask.toImageMsg);
     // if (bb->bounding_boxes.size() > 0){
     //     ROS_INFO_STREAM("pickUpGroundPointCandidates");
     //     pickUpGroundPointCandidates();
@@ -278,7 +291,7 @@ void darknetImgDebug::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs
     ss << "N" << coreNumber << " : G" << groupNumber;
     cv::putText(bridgeImage->image, ss.str(), cv::Point(bbs.bounding_boxes[coreNumber].xmin, bbs.bounding_boxes[coreNumber].ymin), cv::FONT_HERSHEY_SIMPLEX,
     0.7, getColorFromColorMap(groupNumber-1), 2, CV_AA);
-    drawMask(bbs, coreNumber, (char)groupNumber, mask2);
+    drawMask(bbs, coreNumber, (char)groupNumber, mask);
 }
 
 

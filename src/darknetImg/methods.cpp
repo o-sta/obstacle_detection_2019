@@ -212,15 +212,29 @@ darknetImg::Relationship darknetImg::checkBoundingBoxesRelationship(darknet_ros_
     return darknetImg::Relationship::MIX;
 }
 
-void darknetImg::drawMask(darknet_ros_msgs::BoundingBoxes& bbs, int target_indexs, char value, std::vector<std::vector<char>>& output_mask){
-    std::vector<char> mask_row(imageCols, 0);
-    std::fill(mask_row.begin() + bbs.bounding_boxes[target_indexs].xmin, 
-              mask_row.begin() + bbs.bounding_boxes[target_indexs].xmax, 
-              value);
-    std::fill(output_mask.begin() + bbs.bounding_boxes[target_indexs].ymin,
-              output_mask.begin() + bbs.bounding_boxes[target_indexs].ymax,
-              mask_row);
+// void darknetImg::drawMask(darknet_ros_msgs::BoundingBoxes& bbs, int target_index, char value, std::vector<std::vector<char>>& output_mask){
+//     std::fill(mask_row.begin() + bbs.bounding_boxes[target_index].xmin, 
+//               mask_row.begin() + bbs.bounding_boxes[target_index].xmax, 
+//               value);
+//     std::fill(output_mask.begin() + bbs.bounding_boxes[target_index].ymin,
+//               output_mask.begin() + bbs.bounding_boxes[target_index].ymax,
+//               mask_row);
+// }
+
+void drawMask(darknet_ros_msgs::BoundingBoxes& bbs, int target_indexs, char value,  cv::Mat& mask){
+    int row_min = bbs.bounding_boxes[target_indexs].ymin;
+    int row_max = bbs.bounding_boxes[target_indexs].ymax;
+    int col_min = bbs.bounding_boxes[target_indexs].xmin;
+    int col_max = bbs.bounding_boxes[target_indexs].xmax;
+    for(int row = row_min; row <= row_max; ++row){
+        auto *p = mask.ptr<char>(row) + col_min;
+        for(int col = col_min; col <= col_max; col++){
+            *p = value * 30;
+            ++p;
+        }
+    }
 }
+
 
 void darknetImg::generateGridmap(){
     int row = 0, col = 0, i; //深度画像の行と列
