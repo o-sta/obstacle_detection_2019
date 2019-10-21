@@ -213,7 +213,7 @@ darknetImg::Relationship darknetImg::checkBoundingBoxesRelationship(darknet_ros_
 }
 
 void darknetImg::drawMask(darknet_ros_msgs::BoundingBoxes& bbs, int target_indexs, char value, std::vector<std::vector<char>>& output_mask){
-    std::vector<char> mask_row(imageRows, 0);
+    std::vector<char> mask_row(imageCols, 0);
     std::fill(mask_row.begin() + bbs.bounding_boxes[target_indexs].xmin, 
               mask_row.begin() + bbs.bounding_boxes[target_indexs].xmax, 
               value);
