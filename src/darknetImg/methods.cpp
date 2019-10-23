@@ -81,7 +81,8 @@ void darknetImg::generateGridmap(){
     int mapRow, mapCol; // マップの行と列
     //初期設定
     //smdml = boost::make_shared<obstacle_detection_2019::SensorMapDataMultiLayer>();
-    smdml.layer.resize(boundingBoxesMsg.bounding_boxes.size());//■error
+    // smdml.layer.resize(boundingBoxesMsg.bounding_boxes.size());//■error
+    smdml.layer.resize(15);//■error
     for(auto& layer : smdml.layer){
         layer.header = smdml.header;
         layer.width.data = mapWidth;
