@@ -58,7 +58,7 @@ void darknetImg::drawMask(darknet_ros_msgs::BoundingBoxes& bbs, int target_index
     for(int row = row_min; row < row_max; ++row){
         auto *p = mask.ptr<char>(row) + col_min;
         for(int col = col_min; col < col_max; col++){
-            *p = value * 50;
+            *p = value;
             ++p;
         }
     }
