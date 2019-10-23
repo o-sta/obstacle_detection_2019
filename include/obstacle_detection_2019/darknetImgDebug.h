@@ -9,9 +9,11 @@
 class darknetImgDebug : public darknetImg {
     private:
         ros::Publisher bbImage_pub;         //BoundingBoxesのパブリッシャ
-        ros::Publisher bbMaskImage_pub;         //BoundingBoxesのパブリッシャ
+        ros::Publisher bbMaskImage_pub;     //BoundingBoxesのパブリッシャ
+        ros::Publisher pcl_pub;             //物体のポイントクラウドのパブリッシャ
         cv_bridge::CvImagePtr mapImageCB;   //クラスタ毎に色分けされたマップセル画像
         std::vector<int> colorMap;          //色付けを行うためのカラーマップ
+        sensor_msgs::PointCloud2 pcl_msg;   //物体のポイントクラウド
         int cellMargin;         //セルの余白[px]
         int cellSideLength;     //セルの辺の長さ[px]
         int mapImageRows;       //マップイメージの行
