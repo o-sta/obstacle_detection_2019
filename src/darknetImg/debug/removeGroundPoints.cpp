@@ -151,18 +151,20 @@ void darknetImgDebug::removeGroundPoints(){
         for(col = 0; col < cols; col++){
             zt = bi[col*ch];
             if(zt>0.5&&!std::isinf(zt)){
-                yt=((float)cols/2-row)*zt/f;//高さ算出
+                yt=((float)rows/2-row)*zt/f;//高さ算出
                 xt = -( ((float)col-(float)cols/2)*zt/f-camHeight);
                 float y_ground=(-a*zt-b*xt-d)/c;//床面の高さを算出
                 //高さが床面以上であればmask値を1に
                 yt > y_ground ? mi[col] = 1 : mi[col] = 0;
-                ground_points_temp.points[gp_size].x = zt;
-                ground_points_temp.points[gp_size].y = xt;
-                ground_points_temp.points[gp_size].z = yt;
-                ground_points_temp.points[gp_size].r = colorMap[9];
-                ground_points_temp.points[gp_size].g = colorMap[10];
-                ground_points_temp.points[gp_size].b = colorMap[11];
-                gp_size++;
+                if(yt > y_ground){
+                    ground_points_temp.points[gp_size].x = zt;
+                    ground_points_temp.points[gp_size].y = xt;
+                    ground_points_temp.points[gp_size].z = yt;
+                    ground_points_temp.points[gp_size].r = colorMap[9];
+                    ground_points_temp.points[gp_size].g = colorMap[10];
+                    ground_points_temp.points[gp_size].b = colorMap[11];
+                    gp_size++;
+                }
             } else{
                 mi[col] = 0;
             }
