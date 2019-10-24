@@ -27,6 +27,7 @@ void darknetImgDebug::depth2points(){
     ground_points->width=ground_points->points.size();
     ground_points->height=1;
     pcl::toROSMsg (*ground_points, depthPCL_msg);
+    depthPCL_msg.header.frame_id="/zed_camera_center";
     depth2points_pub.publish(depthPCL_msg);
     ROS_INFO_STREAM("ground_points->points.size():"<<ground_points->points.size()<<"\n");
     
