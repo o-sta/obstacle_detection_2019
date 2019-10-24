@@ -43,3 +43,7 @@ void darknetImgDebug::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs
     }
     drawMask(bbs, coreNumber, (char)groupNumber, mask);
 }
+
+void darknetImgDebug::publishTrimMask(){
+    //mask値を50倍にしてグレースケール画像として出力する
+}

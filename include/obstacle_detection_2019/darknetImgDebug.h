@@ -92,6 +92,7 @@ class darknetImgDebug : public darknetImg {
         void estimateGroundCoefficients();      //床面係数abcdの算出
         void removeGroundPoints();              //床面の点を除外する
         void depth2points();
+        void publishTrimMask();
 };
 
 #endif
