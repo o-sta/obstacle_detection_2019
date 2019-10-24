@@ -34,19 +34,22 @@ void darknetImgDebug::depth2points(){
     ground_points_ex.height=1;
     pcl::toROSMsg (ground_points_ex, depthPCL_msg);
     // depthPCL_msg.header.frame_id="/zed_camera_center";
-    depthPCL_msg.header.frame_id="/zed_left_camera_frame";
+    depthPCL_msg.header.frame_id="/zed_camera_center";
     depth2points_pub.publish(depthPCL_msg);
     ROS_INFO_STREAM("ground_points->points.size():"<<ground_points_ex.points.size()<<"\n");
     
 }
 
 void darknetImgDebug::pickUpGroundPointCandidates(){
+    pcl::PointCloud<pcl::PointXYZRGB> ground_points_ex;
+    pcl::PointXYZRGB pt_ex; //点の座標（ポイントクラウド型テンプレート）
     float xt, yt, zt; //点の座標（テンプレート）
     pcl::PointXYZ pt; //点の座標（ポイントクラウド型テンプレート）
     int rows = bridgeImage->image.rows; //深度画像の行
     int cols = bridgeImage->image.cols; //深度画像の列
     int candidateNum = 0;//床面候補点の数(ground_pointsのサイズ)
     ground_points->points.resize(rows/2*cols);//候補点の最大値でリサイズ
+    ground_points_ex.resize(rows/2*cols);
     int ch = bridgeImage->image.channels(); //チャンネル数
     //床面候補点抽出処理
     for(int i = rows/2+1; i<rows; i++){//画像下半分を走査
@@ -61,6 +64,13 @@ void darknetImgDebug::pickUpGroundPointCandidates(){
                     pt.y=xt;
                     pt.z=yt;
                     ground_points->points[candidateNum++] = pt;
+                    pt_ex.x=xt;
+                    pt_ex.y=yt;
+                    pt_ex.z=zt;
+                    pt_ex.r=colorMap[4];
+                    pt_ex.g=colorMap[5];
+                    pt_ex.b=colorMap[6];
+                    ground_points_ex.points[candidateNum] = pt_ex;
                 }
             }
         }
@@ -68,7 +78,10 @@ void darknetImgDebug::pickUpGroundPointCandidates(){
     ground_points->points.resize(candidateNum);
     ground_points->width=ground_points->points.size();
     ground_points->height=1;
-    pcl::toROSMsg(*ground_points, groundCanPCL_msg);
+    ground_points_ex.points.resize(candidateNum);
+    ground_points_ex.width=ground_points_ex.points.size();
+    ground_points_ex.height=1;
+    pcl::toROSMsg(ground_points_ex, groundCanPCL_msg);
     groundCanPCL_msg.header.frame_id="/zed_camera_center";
     pickUpGroundPointCandidates_pub.publish(groundCanPCL_msg);
     ROS_INFO_STREAM("ground_points->points.size():"<<ground_points->points.size()<<"\n");
