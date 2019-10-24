@@ -2,10 +2,20 @@
 topic: #ROSトピック
   publisher: #出力
     #sensor_msgs::Image 人間の周囲に枠線が描画された画像
-    image: image
+    bbImage: bbImage
+    #sensor_msgs::Image 人間部分のマスク(グレースケール)
+    bbMaskImage: bbMaskImage
     #sensor_msgs::Image クラスタを構成するセルが描画されたマップ画像
     clusterImage: clusterImage
     #sensor_msgs::PointColud2 クラスタをポイントクラウドで表示
     clusterPCL: clusterPCL
     #sensor_msgs::Image 一定以上の点を持つセルが表示されるマップ画像
     gridMapImage: gridMapImage
+    #sensor_msgs::PointColud2 深度画像の点群
+    depth2points: depth2points
+    #sensor_msgs::PointColud2 床面候補点の点群
+    pickUpGroundPointCandidates: pickUpGroundPointCandidates
+    #sensor_msgs::PointColud2 床面の点群
+    estimateGroundCoefficients: estimateGroundCoefficients
+    #sensor_msgs::PointColud2 床面除去後の点群
+    removeGroundPoints: removeGroundPoints

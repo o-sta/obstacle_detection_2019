@@ -8,8 +8,21 @@
 
 class darknetImgDebug : public darknetImg {
     private:
+        ros::Publisher bbImage_pub;         //BoundingBoxesのパブリッシャ
+        ros::Publisher bbMaskImage_pub;     //BoundingBoxesのパブリッシャ
+        ros::Publisher pcl_pub;             //物体のポイントクラウドのパブリッシャ
+        ros::Publisher depth2points_pub;
+        ros::Publisher pickUpGroundPointCandidates_pub;
+        ros::Publisher estimateGroundCoefficients_pub;
+        ros::Publisher removeGroundPoints_pub;
         cv_bridge::CvImagePtr mapImageCB;   //クラスタ毎に色分けされたマップセル画像
         std::vector<int> colorMap;          //色付けを行うためのカラーマップ
+        sensor_msgs::PointCloud2 pcl_msg;   //物体のポイントクラウド
+        sensor_msgs::PointCloud2 depthPCL_msg;      //深度画像全て
+        sensor_msgs::PointCloud2 groundCanPCL_msg;  //地面候補
+        sensor_msgs::PointCloud2 groundPCL_msg;     //地面点群
+        sensor_msgs::PointCloud2 obstaclePCL_msg;   //地面取り除いた後の点群
+
         int cellMargin;         //セルの余白[px]
         int cellSideLength;     //セルの辺の長さ[px]
         int mapImageRows;       //マップイメージの行
@@ -19,8 +32,12 @@ class darknetImgDebug : public darknetImg {
         std::string topic_clusterImage; //クラスタ用セルのパブリッシュトピック
         std::string topic_clusterPCL;   //クラスタ用ポイントクラウドのパブリッシュトピック
         std::string topic_gridMapImage; //グリッドマップ用ポイントクラウドのパブリッシュトピック
-        std::string topic_image;        //bbとdepthImageを結合した時のパブリッシュトピック
-        std::string topic_mask;         //Imageにマスクをかけた時のパブリッシュトピック
+        std::string topic_bbImage;        //bbとdepthImageを結合した時のパブリッシュトピック
+        std::string topic_bbMaskImage;         //Imageにマスクをかけた時のパブリッシュトピック
+        std::string topic_depth2points;  //
+        std::string topic_pickUpGroundPointCandidates;  //
+        std::string topic_estimateGroundCoefficients;
+        std::string topic_removeGroundPoints;
     protected:
         /**クラスタに属しているセルを探してマップ画像に色を付ける
          * cluster 入力クラスタ
@@ -45,7 +62,6 @@ class darknetImgDebug : public darknetImg {
         void setParam();
         void debug_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb,const sensor_msgs::Image::ConstPtr& image);
         void setCallback();     //コールバック関数の設定
-
 
         /**グリッドマップをポイントクラウドに変換
          * 実装予定無し
@@ -72,7 +88,10 @@ class darknetImgDebug : public darknetImg {
          */ 
         void mask2Image(std::vector<std::vector<char>> input_mask, sensor_msgs::Image input_image);
         void addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs, std::vector<bool>& checkFlag, int coreNumber, int groupNumber);
-
+        void pickUpGroundPointCandidates();     //床面候補点の選択
+        void estimateGroundCoefficients();      //床面係数abcdの算出
+        void removeGroundPoints();              //床面の点を除外する
+        void depth2points();
 };
 
 #endif

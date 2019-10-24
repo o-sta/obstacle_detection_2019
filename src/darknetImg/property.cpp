@@ -57,3 +57,4 @@ void darknetImg::setCallback(){
     fc = boost::bind(&darknetImg::configCallback, this, _1, _2);
 	server.setCallback(fc);
 }
+
