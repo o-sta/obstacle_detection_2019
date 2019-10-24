@@ -22,9 +22,9 @@ void darknetImgDebug::depth2points(){
                 pt.x=zt;
                 pt.y=xt;
                 pt.z=yt;
-                pt.r=colorMap[1];
-                pt.g=colorMap[2];
-                pt.b=colorMap[3];
+                pt.r=colorMap[0];
+                pt.g=colorMap[1];
+                pt.b=colorMap[2];
                 depth_points->points[candidateNum++] = pt;
             }
         }
@@ -63,12 +63,12 @@ void darknetImgDebug::pickUpGroundPointCandidates(){
                     pt.y=xt;
                     pt.z=yt;
                     ground_points->points[candidateNum++] = pt;
-                    pt_ex.x=xt;
-                    pt_ex.y=yt;
-                    pt_ex.z=zt;
-                    pt_ex.r=colorMap[4];
-                    pt_ex.g=colorMap[5];
-                    pt_ex.b=colorMap[6];
+                    pt_ex.x=zt;
+                    pt_ex.y=xt;
+                    pt_ex.z=yt;
+                    pt_ex.r=colorMap[3];
+                    pt_ex.g=colorMap[4];
+                    pt_ex.b=colorMap[5];
                     ground_points_temp.points[candidateNum] = pt_ex;
                 }
             }
@@ -118,9 +118,9 @@ void darknetImgDebug::estimateGroundCoefficients(){
         ground_points_temp.points[gp_size].x = depth_points->points[index].x;
         ground_points_temp.points[gp_size].y = depth_points->points[index].y;
         ground_points_temp.points[gp_size].z = depth_points->points[index].z;
-        ground_points_temp.points[gp_size].r = depth_points->points[index].r;
-        ground_points_temp.points[gp_size].g = depth_points->points[index].g;
-        ground_points_temp.points[gp_size].b = depth_points->points[index].b;
+        ground_points_temp.points[gp_size].r = colorMap[6];
+        ground_points_temp.points[gp_size].g = colorMap[7];
+        ground_points_temp.points[gp_size].b = colorMap[8];
         gp_size++;
     }
     ground_points_temp.points.resize(gp_size);
