@@ -7,6 +7,10 @@ void darknetImgDebug::setParam(){
     nhPub.param<std::string>("topic/publisher/clusterImage", topic_clusterImage, "clusterImage");
     nhPub.param<std::string>("topic/publisher/clusterPCL", topic_clusterPCL, "clusterPCL");
     nhPub.param<std::string>("topic/publisher/gridMapImage", topic_gridMapImage, "gridMapImage");
+    nhPub.param<std::string>("topic/publisher/pickUpGroundPointCandidatesDP", topic_depth2points, "pickUpGroundPointCandidatesDP");
+    nhPub.param<std::string>("topic/publisher/pickUpGroundPointCandidates", topic_pickUpGroundPointCandidates, "pickUpGroundPointCandidates");
+    nhPub.param<std::string>("topic/publisher/estimateGroundCoefficients", topic_estimateGroundCoefficients, "estimateGroundCoefficients");
+    nhPub.param<std::string>("topic/publisher/removeGroundPoints", topic_removeGroundPoints, "removeGroundPoints");
     ROS_INFO_STREAM("setparam debug mode");
 }
 

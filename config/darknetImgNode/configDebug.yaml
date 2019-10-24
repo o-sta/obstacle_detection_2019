@@ -11,3 +11,11 @@ topic: #ROSトピック
     clusterPCL: clusterPCL
     #sensor_msgs::Image 一定以上の点を持つセルが表示されるマップ画像
     gridMapImage: gridMapImage
+    #sensor_msgs::PointColud2 深度画像の点群
+    depth2points: depth2points
+    #sensor_msgs::PointColud2 床面候補点の点群
+    pickUpGroundPointCandidates: pickUpGroundPointCandidates
+    #sensor_msgs::PointColud2 床面の点群
+    estimateGroundCoefficients: estimateGroundCoefficients
+    #sensor_msgs::PointColud2 床面除去後の点群
+    removeGroundPoints: removeGroundPoints

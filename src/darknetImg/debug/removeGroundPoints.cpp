@@ -1,7 +1,37 @@
-#include <obstacle_detection_2019/darknetImg.h>
+#include <obstacle_detection_2019/darknetImgDebug.h>
 
+void darknetImgDebug::depth2points(){
+    float xt, yt, zt; //点の座標（テンプレート）
+    pcl::PointXYZ pt; //点の座標（ポイントクラウド型テンプレート）
+    int rows = bridgeImage->image.rows; //深度画像の行
+    int cols = bridgeImage->image.cols; //深度画像の列
+    int candidateNum = 0;//床面候補点の数(ground_pointsのサイズ)
+    ground_points->points.resize(rows/2*cols);//候補点の最大値でリサイズ
+    int ch = bridgeImage->image.channels(); //チャンネル数
+    //床面候補点抽出処理
+    for(int i = 0; i<rows; i++){//画像下半分を走査
+        float *p = bridgeImage->image.ptr<float>(i); //i行1列目のアドレス
+        for(int j = 0; j < cols; j++){//走査}
+            zt = p[j*ch];
+            if(zt > 0.5 && !std::isinf(zt)){
+                yt = ((float)rows/2-i)*zt/f; //高さ
+                xt = -( ((float)i-(float)cols/2)*zt/f-camHeight );
+                pt.x=zt;
+                pt.y=xt;
+                pt.z=yt;
+                ground_points->points[candidateNum++] = pt;
+            }
+        }
+    }
+    ground_points->points.resize(candidateNum);
+    ground_points->width=ground_points->points.size();
+    ground_points->height=1;
+    pcl::toROSMsg (*ground_points, depthPCL_msg);
+    ROS_INFO_STREAM("ground_points->points.size():"<<ground_points->points.size()<<"\n");
+    
+}
 
-void darknetImg::pickUpGroundPointCandidates(){
+void darknetImgDebug::pickUpGroundPointCandidates(){
     float xt, yt, zt; //点の座標（テンプレート）
     pcl::PointXYZ pt; //点の座標（ポイントクラウド型テンプレート）
     int rows = bridgeImage->image.rows; //深度画像の行
@@ -32,7 +62,7 @@ void darknetImg::pickUpGroundPointCandidates(){
     ROS_INFO_STREAM("ground_points->points.size():"<<ground_points->points.size()<<"\n");
 }
 
-void darknetImg::estimateGroundCoefficients(){
+void darknetImgDebug::estimateGroundCoefficients(){
     seg.setInputCloud(ground_points);
 	seg.segment(*inliers, *coefficients);
     a=coefficients->values[0];
@@ -58,7 +88,7 @@ void darknetImg::estimateGroundCoefficients(){
 }
 
 
-void darknetImg::removeGroundPoints(){
+void darknetImgDebug::removeGroundPoints(){
     int row = 0, col = 0;
     float xt, yt, zt;
     int ch = bridgeImage->image.channels();

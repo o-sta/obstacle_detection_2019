@@ -33,7 +33,7 @@ void darknetImgDebug::debug_callback(const darknet_ros_msgs::BoundingBoxes::Cons
     // cvMask.image = mask.clone();
     // bbMaskImage_pub.publish(cvMask.toImageMsg());
     // bbImage_pub.publish(bridgeImage->toImageMsg());
-
+    
     // 実際の処理
     if (bb->bounding_boxes.size() > 0){
         ROS_INFO_STREAM("pickUpGroundPointCandidates");
@@ -60,7 +60,7 @@ void darknetImgDebug::debug_callback(const darknet_ros_msgs::BoundingBoxes::Cons
     }else{
         ROS_INFO_STREAM("not person detection");
     }
-    
+
     // clearMsg(smdml);
     //ROS_INFO_STREAM("----------------------------------------");
 }

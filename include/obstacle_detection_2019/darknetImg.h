@@ -62,7 +62,7 @@ class darknetImg {
         //センサーデータ
         cv_bridge::CvImagePtr bridgeImage;                  //深度画像
         darknet_ros_msgs::BoundingBoxes boundingBoxesMsg;   //検出された人物の枠線
-    private:
+    protected:
         //メッセージフィルタ
         //topicパラメータ
         std::string topic_bb;           //BoundingBoxesのサブスクライブトピック
@@ -91,9 +91,9 @@ class darknetImg {
         obstacle_detection_2019::SensorMapDataMultiLayer smdml;             //複数マップ
         obstacle_detection_2019::SensorMapDataMultiLayer smdmlLowDimension; //複数マップ(cols=1)
         //深度画像のマスク（有効で1、無効で0）
-        bool is_size_initialized; //画像サイズが初期化されたか
         //ノードハンドルとサブスクライパ、パブリッシャ
     protected:
+        bool is_size_initialized; //画像サイズが初期化されたか
         //ローカルマップのパラメータ
         float mapWidth, mapHeight, mapResolution;   //ローカルマップの横幅[m]、縦幅[m]、解像度[m/pixel]
         int mapRows, mapCols, numberOfCells;        //ローカルマップの横幅[pixel]、縦幅[pixel]、マップのセル数[pixel]
@@ -119,9 +119,9 @@ class darknetImg {
         //パラメータ設定関数
         void createWindow();            //窓作成
         //床面除去関数
-        void pickUpGroundPointCandidates();     //床面候補点の選択
-        void estimateGroundCoefficients();      //床面係数abcdの算出
-        void removeGroundPoints();              //床面の点を除外する
+        virtual void pickUpGroundPointCandidates();     //床面候補点の選択
+        virtual void estimateGroundCoefficients();      //床面係数abcdの算出
+        virtual void removeGroundPoints();              //床面の点を除外する
         //歩行者位置推定関数
         void trimPoints(darknet_ros_msgs::BoundingBoxes& bbs);  //枠線を元に点をトリミング
         void generateGridmap();                 //深度画像からグリッドマップ作成
