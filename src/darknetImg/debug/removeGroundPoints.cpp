@@ -40,7 +40,7 @@ void darknetImgDebug::depth2points(){
 }
 
 void darknetImgDebug::pickUpGroundPointCandidates(){
-    pcl::PointCloud<pcl::PointXYZRGB> ground_points_ex;
+    pcl::PointCloud<pcl::PointXYZRGB> ground_points_temp;
     pcl::PointXYZRGB pt_ex; //点の座標（ポイントクラウド型テンプレート）
     float xt, yt, zt; //点の座標（テンプレート）
     pcl::PointXYZ pt; //点の座標（ポイントクラウド型テンプレート）
@@ -48,7 +48,7 @@ void darknetImgDebug::pickUpGroundPointCandidates(){
     int cols = bridgeImage->image.cols; //深度画像の列
     int candidateNum = 0;//床面候補点の数(ground_pointsのサイズ)
     ground_points->points.resize(rows/2*cols);//候補点の最大値でリサイズ
-    ground_points_ex.resize(rows/2*cols);
+    ground_points_temp.points.resize(rows/2*cols);
     int ch = bridgeImage->image.channels(); //チャンネル数
     //床面候補点抽出処理
     for(int i = rows/2+1; i<rows; i++){//画像下半分を走査
@@ -58,7 +58,7 @@ void darknetImgDebug::pickUpGroundPointCandidates(){
             if(zt > 0.5 && !std::isinf(zt)){
                 yt = ((float)rows/2-i)*zt/f; //高さ
                 if(std::abs(yt+camHeight) < groundCandidateY){ //高さがgroundCandidateY未満の時
-                    xt = -( ((float)i-(float)cols/2)*zt/f-camHeight );
+                    xt = -( ((float)j-(float)cols/2)*zt/f-camHeight );
                     pt.x=zt;
                     pt.y=xt;
                     pt.z=yt;
@@ -69,7 +69,7 @@ void darknetImgDebug::pickUpGroundPointCandidates(){
                     pt_ex.r=colorMap[4];
                     pt_ex.g=colorMap[5];
                     pt_ex.b=colorMap[6];
-                    ground_points_ex.points[candidateNum] = pt_ex;
+                    ground_points_temp.points[candidateNum] = pt_ex;
                 }
             }
         }
@@ -77,16 +77,18 @@ void darknetImgDebug::pickUpGroundPointCandidates(){
     ground_points->points.resize(candidateNum);
     ground_points->width=ground_points->points.size();
     ground_points->height=1;
-    ground_points_ex.points.resize(candidateNum);
-    ground_points_ex.width=ground_points_ex.points.size();
-    ground_points_ex.height=1;
-    pcl::toROSMsg(ground_points_ex, groundCanPCL_msg);
+    ground_points_temp.points.resize(candidateNum);
+    ground_points_temp.width=ground_points_temp.points.size();
+    ground_points_temp.height=1;
+    pcl::toROSMsg(ground_points_temp, groundCanPCL_msg);
     groundCanPCL_msg.header.frame_id="/zed_camera_center";
     pickUpGroundPointCandidates_pub.publish(groundCanPCL_msg);
     ROS_INFO_STREAM("ground_points->points.size():"<<ground_points->points.size()<<"\n");
 }
 
 void darknetImgDebug::estimateGroundCoefficients(){
+    pcl::PointCloud<pcl::PointXYZRGB> ground_points_temp;
+    int gp_size;
     seg.setInputCloud(ground_points);
 	seg.segment(*inliers, *coefficients);
     a=coefficients->values[0];
@@ -109,9 +111,25 @@ void darknetImgDebug::estimateGroundCoefficients(){
                                     << b << " "
                                     << c << " "
                                     << d << "\n");
-    
-}
 
+    gp_size = 0;
+    ground_points_temp.points.resize(depth_points->size());
+    for(auto index : inliers->indices){
+        ground_points_temp.points[gp_size].x = depth_points->points[index].x;
+        ground_points_temp.points[gp_size].y = depth_points->points[index].y;
+        ground_points_temp.points[gp_size].z = depth_points->points[index].z;
+        ground_points_temp.points[gp_size].r = depth_points->points[index].r;
+        ground_points_temp.points[gp_size].g = depth_points->points[index].g;
+        ground_points_temp.points[gp_size].b = depth_points->points[index].b;
+        gp_size++;
+    }
+    ground_points_temp.points.resize(gp_size);
+    ground_points_temp.width=ground_points_temp.points.size();
+    ground_points_temp.height=1;
+    pcl::toROSMsg(ground_points_temp, groundPCL_msg);
+    groundPCL_msg.header.frame_id="/zed_camera_center";
+    estimateGroundCoefficients_pub.publish(groundPCL_msg);
+}
 
 void darknetImgDebug::removeGroundPoints(){
     int row = 0, col = 0;
