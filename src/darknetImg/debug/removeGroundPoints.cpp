@@ -1,13 +1,13 @@
 #include <obstacle_detection_2019/darknetImgDebug.h>
 
 void darknetImgDebug::depth2points(){
-    pcl::PointCloud<pcl::PointXYZRGB> ground_points_ex;
+    // pcl::PointCloud<pcl::PointXYZRGB> ground_points_ex;
     float xt, yt, zt; //点の座標（テンプレート）
     pcl::PointXYZRGB pt; //点の座標（ポイントクラウド型テンプレート）
     int rows = bridgeImage->image.rows; //深度画像の行
     int cols = bridgeImage->image.cols; //深度画像の列
     int candidateNum = 0;//床面候補点の数(ground_pointsのサイズ)
-    ground_points_ex.points.resize(rows*cols);//候補点の最大値でリサイズ
+    depth_points->points.resize(rows*cols);//候補点の最大値でリサイズ
     int ch = bridgeImage->image.channels(); //チャンネル数
     float temp_rand;
     //床面候補点抽出処理
@@ -25,19 +25,18 @@ void darknetImgDebug::depth2points(){
                 pt.r=colorMap[1];
                 pt.g=colorMap[2];
                 pt.b=colorMap[3];
-                ground_points_ex.points[candidateNum++] = pt;
+                depth_points->points[candidateNum++] = pt;
             }
         }
     }
-    ground_points_ex.points.resize(candidateNum);
-    ground_points_ex.width=ground_points_ex.points.size();
-    ground_points_ex.height=1;
-    pcl::toROSMsg (ground_points_ex, depthPCL_msg);
+    depth_points->points.resize(candidateNum);
+    depth_points->width=depth_points->points.size();
+    depth_points->height=1;
+    pcl::toROSMsg (*depth_points, depthPCL_msg);
     // depthPCL_msg.header.frame_id="/zed_camera_center";
     depthPCL_msg.header.frame_id="/zed_camera_center";
     depth2points_pub.publish(depthPCL_msg);
-    ROS_INFO_STREAM("ground_points->points.size():"<<ground_points_ex.points.size()<<"\n");
-    
+    ROS_INFO_STREAM("ground_points->points.size():"<<depth_points->points.size()<<"\n");
 }
 
 void darknetImgDebug::pickUpGroundPointCandidates(){
@@ -110,6 +109,7 @@ void darknetImgDebug::estimateGroundCoefficients(){
                                     << b << " "
                                     << c << " "
                                     << d << "\n");
+    
 }
 
 
