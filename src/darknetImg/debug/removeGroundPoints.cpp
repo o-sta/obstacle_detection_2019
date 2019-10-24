@@ -17,7 +17,7 @@ void darknetImgDebug::depth2points(){
             zt = p[j*ch];
             if(zt > 0.5 && !std::isinf(zt)){
                 yt = ((float)rows/2-(float)i)*zt/f; //高さ
-                xt = -( ((float)i-(float)cols/2)*zt/f-camHeight );
+                xt = -( ((float)j-(float)cols/2)*zt/f-camHeight );
                 // temp_rand = 0.3*((float)std::rand()/(float)RAND_MAX);
                 pt.x=zt;
                 pt.y=xt;
