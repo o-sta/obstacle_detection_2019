@@ -39,6 +39,7 @@ void darknetImgDebug::debug_callback(const darknet_ros_msgs::BoundingBoxes::Cons
         depth2points();
         pickUpGroundPointCandidates();
         estimateGroundCoefficients();
+        removeGroundPoints();
         // ROS_INFO_STREAM("pickUpGroundPointCandidates");
         // pickUpGroundPointCandidates();
         // ROS_INFO_STREAM("estimateGroundCoefficients");
