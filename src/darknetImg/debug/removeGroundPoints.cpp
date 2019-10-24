@@ -17,7 +17,7 @@ void darknetImgDebug::depth2points(){
             if(zt > 0.5 && !std::isinf(zt)){
                 yt = ((float)rows/2-i)*zt/f; //高さ
                 xt = -( ((float)i-(float)cols/2)*zt/f-camHeight );
-                pt.x=zt;
+                pt.x=zt+2;
                 pt.y=xt;
                 pt.z=yt;
                 pt.r=colorMap[1];
