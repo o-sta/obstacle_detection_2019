@@ -115,9 +115,9 @@ void darknetImgDebug::estimateGroundCoefficients(){
     gp_size = 0;
     ground_points_temp.points.resize(depth_points->size());
     for(auto index : inliers->indices){
-        ground_points_temp.points[gp_size].x = depth_points->points[index].x;
-        ground_points_temp.points[gp_size].y = depth_points->points[index].y;
-        ground_points_temp.points[gp_size].z = depth_points->points[index].z;
+        ground_points_temp.points[gp_size].x = ground_points->points[index].x;
+        ground_points_temp.points[gp_size].y = ground_points->points[index].y;
+        ground_points_temp.points[gp_size].z = ground_points->points[index].z;
         ground_points_temp.points[gp_size].r = colorMap[6];
         ground_points_temp.points[gp_size].g = colorMap[7];
         ground_points_temp.points[gp_size].b = colorMap[8];
@@ -132,6 +132,8 @@ void darknetImgDebug::estimateGroundCoefficients(){
 }
 
 void darknetImgDebug::removeGroundPoints(){
+    pcl::PointCloud<pcl::PointXYZRGB> ground_points_temp;
+    int gp_size;
     int row = 0, col = 0;
     float xt, yt, zt;
     int ch = bridgeImage->image.channels();
@@ -141,6 +143,8 @@ void darknetImgDebug::removeGroundPoints(){
     if(is_size_initialized == false){
         cv::resize(mask, mask, cv::Size(rows,cols));
     }
+    ground_points_temp.points.resize(rows*cols);
+    gp_size = 0;
     for(row = 0; row < rows; row++){
         float *bi = bridgeImage->image.ptr<float>(row);
         char *mi = mask.ptr<char>(row);
@@ -148,13 +152,27 @@ void darknetImgDebug::removeGroundPoints(){
             zt = bi[col*ch];
             if(zt>0.5&&!std::isinf(zt)){
                 yt=((float)cols/2-row)*zt/f;//高さ算出
-                //xt=-( ((float)row-(float)rows/2)*zt/f-camHeight );
+                xt = -( ((float)col-(float)cols/2)*zt/f-camHeight);
                 float y_ground=(-a*zt-b*xt-d)/c;//床面の高さを算出
                 //高さが床面以上であればmask値を1に
                 yt > y_ground ? mi[col] = 1 : mi[col] = 0;
+                ground_points_temp.points[gp_size].x = zt;
+                ground_points_temp.points[gp_size].y = xt;
+                ground_points_temp.points[gp_size].z = yt;
+                ground_points_temp.points[gp_size].r = colorMap[9];
+                ground_points_temp.points[gp_size].g = colorMap[10];
+                ground_points_temp.points[gp_size].b = colorMap[11];
+                gp_size++;
             } else{
                 mi[col] = 0;
             }
         }
     }
+    ground_points_temp.points.resize(gp_size);
+    ground_points_temp.width=ground_points_temp.points.size();
+    ground_points_temp.height=1;
+    pcl::toROSMsg(ground_points_temp, obstaclePCL_msg);
+    obstaclePCL_msg.header.frame_id="/zed_camera_center";
+    removeGroundPoints_pub.publish(obstaclePCL_msg);
+    
 }
