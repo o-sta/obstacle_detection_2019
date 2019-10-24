@@ -36,27 +36,28 @@ void darknetImgDebug::debug_callback(const darknet_ros_msgs::BoundingBoxes::Cons
     
     // 実際の処理
     if (bb->bounding_boxes.size() > 0){
-        ROS_INFO_STREAM("pickUpGroundPointCandidates");
-        pickUpGroundPointCandidates();
-        ROS_INFO_STREAM("estimateGroundCoefficients");
-        estimateGroundCoefficients();
-        ROS_INFO_STREAM("removeGroundPoints");
-        removeGroundPoints();
-        ROS_INFO_STREAM("trimPoints");
-        trimPoints(boundingBoxesMsg);
-        ROS_INFO_STREAM("generateGridmap");
-        generateGridmap();
-        ROS_INFO_STREAM("dimensionalityReductionGridmap");
-        dimensionalityReductionGridmap();
-        ROS_INFO_STREAM("classifyPoints");
-        classifyPoints();
-        ROS_INFO_STREAM("estimatePersonPosition");
-        estimatePersonPosition();
-        ROS_INFO_STREAM("predictPersonPosition");
-        predictPersonPosition();
-        ROS_INFO_STREAM("iteration finished");
-        cluster2PointCloud(cd, pcl_msg);
-        pcl_pub.publish(pcl_msg);
+        depth2points();
+        // ROS_INFO_STREAM("pickUpGroundPointCandidates");
+        // pickUpGroundPointCandidates();
+        // ROS_INFO_STREAM("estimateGroundCoefficients");
+        // estimateGroundCoefficients();
+        // ROS_INFO_STREAM("removeGroundPoints");
+        // removeGroundPoints();
+        // ROS_INFO_STREAM("trimPoints");
+        // trimPoints(boundingBoxesMsg);
+        // ROS_INFO_STREAM("generateGridmap");
+        // generateGridmap();
+        // ROS_INFO_STREAM("dimensionalityReductionGridmap");
+        // dimensionalityReductionGridmap();
+        // ROS_INFO_STREAM("classifyPoints");
+        // classifyPoints();
+        // ROS_INFO_STREAM("estimatePersonPosition");
+        // estimatePersonPosition();
+        // ROS_INFO_STREAM("predictPersonPosition");
+        // predictPersonPosition();
+        // ROS_INFO_STREAM("iteration finished");
+        // cluster2PointCloud(cd, pcl_msg);
+        // pcl_pub.publish(pcl_msg);
     }else{
         ROS_INFO_STREAM("not person detection");
     }
