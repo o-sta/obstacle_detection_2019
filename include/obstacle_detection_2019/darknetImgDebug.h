@@ -22,7 +22,7 @@ class darknetImgDebug : public darknetImg {
         sensor_msgs::PointCloud2 groundCanPCL_msg;  //地面候補
         sensor_msgs::PointCloud2 groundPCL_msg;     //地面点群
         sensor_msgs::PointCloud2 obstaclePCL_msg;   //地面取り除いた後の点群
-
+        pcl::PointCloud<pcl::PointXYZRGB>::Ptr depth_points; //深度画像のポイントクラウド
         int cellMargin;         //セルの余白[px]
         int cellSideLength;     //セルの辺の長さ[px]
         int mapImageRows;       //マップイメージの行
@@ -35,8 +35,8 @@ class darknetImgDebug : public darknetImg {
         std::string topic_bbImage;        //bbとdepthImageを結合した時のパブリッシュトピック
         std::string topic_bbMaskImage;         //Imageにマスクをかけた時のパブリッシュトピック
         std::string topic_depth2points;  //
-        std::string topic_pickUpGroundPointCandidates;  //
-        std::string topic_estimateGroundCoefficients;
+        std::string topic_pickUpGroundPointCandidates;  //indices solution 
+        std::string topic_estimateGroundCoefficients;   
         std::string topic_removeGroundPoints;
     protected:
         /**クラスタに属しているセルを探してマップ画像に色を付ける

@@ -1,7 +1,8 @@
 #include <obstacle_detection_2019/darknetImgDebug.h>
 
 darknetImgDebug::darknetImgDebug()
-:mapImageCB(new cv_bridge::CvImage)
+:mapImageCB(new cv_bridge::CvImage),
+depth_points(new pcl::PointCloud<pcl::PointXYZRGB>)
 {
     setParam();
     bbImage_pub = nhPub.advertise<sensor_msgs::Image>(topic_bbImage, 1);
