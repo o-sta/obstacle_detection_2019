@@ -6,7 +6,7 @@ void darknetImgDebug::depth2points(){
     int rows = bridgeImage->image.rows; //深度画像の行
     int cols = bridgeImage->image.cols; //深度画像の列
     int candidateNum = 0;//床面候補点の数(ground_pointsのサイズ)
-    ground_points->points.resize(rows/2*cols);//候補点の最大値でリサイズ
+    ground_points->points.resize(rows*cols);//候補点の最大値でリサイズ
     int ch = bridgeImage->image.channels(); //チャンネル数
     //床面候補点抽出処理
     for(int i = 0; i<rows; i++){//画像下半分を走査
@@ -60,6 +60,7 @@ void darknetImgDebug::pickUpGroundPointCandidates(){
     ground_points->points.resize(candidateNum);
     ground_points->width=ground_points->points.size();
     ground_points->height=1;
+    pcl::toROSMsg(*ground_points, groundCanPCL_msg);
     ROS_INFO_STREAM("ground_points->points.size():"<<ground_points->points.size()<<"\n");
 }
 
