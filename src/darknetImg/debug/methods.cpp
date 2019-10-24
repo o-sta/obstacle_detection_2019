@@ -37,6 +37,8 @@ void darknetImgDebug::debug_callback(const darknet_ros_msgs::BoundingBoxes::Cons
     // 実際の処理
     if (bb->bounding_boxes.size() > 0){
         depth2points();
+        pickUpGroundPointCandidates();
+        estimateGroundCoefficients();
         // ROS_INFO_STREAM("pickUpGroundPointCandidates");
         // pickUpGroundPointCandidates();
         // ROS_INFO_STREAM("estimateGroundCoefficients");
