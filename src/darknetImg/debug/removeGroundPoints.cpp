@@ -9,6 +9,7 @@ void darknetImgDebug::depth2points(){
     int candidateNum = 0;//床面候補点の数(ground_pointsのサイズ)
     ground_points_ex.points.resize(rows*cols);//候補点の最大値でリサイズ
     int ch = bridgeImage->image.channels(); //チャンネル数
+    float temp_rand;
     //床面候補点抽出処理
     for(int i = 0; i<rows; i++){//画像下半分を走査
         float *p = bridgeImage->image.ptr<float>(i); //i行1列目のアドレス
@@ -17,9 +18,10 @@ void darknetImgDebug::depth2points(){
             if(zt > 0.5 && !std::isinf(zt)){
                 yt = ((float)rows/2-i)*zt/f; //高さ
                 xt = -( ((float)i-(float)cols/2)*zt/f-camHeight );
-                pt.x=zt;
-                pt.y=xt+2;
-                pt.z=yt;
+                temp_rand = 0.3*((float)std::rand()/(float)RAND_MAX);
+                pt.x=zt+temp_rand;
+                pt.y=xt+temp_rand;
+                pt.z=yt+temp_rand;
                 pt.r=colorMap[1];
                 pt.g=colorMap[2];
                 pt.b=colorMap[3];
