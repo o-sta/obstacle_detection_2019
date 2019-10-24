@@ -176,5 +176,4 @@ void darknetImgDebug::removeGroundPoints(){
     pcl::toROSMsg(ground_points_temp, obstaclePCL_msg);
     obstaclePCL_msg.header.frame_id="/zed_camera_center";
     removeGroundPoints_pub.publish(obstaclePCL_msg);
-    
 }
