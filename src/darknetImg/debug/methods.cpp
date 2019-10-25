@@ -41,6 +41,7 @@ void darknetImgDebug::debug_callback(const darknet_ros_msgs::BoundingBoxes::Cons
         estimateGroundCoefficients();
         removeGroundPoints();
         trimPoints(boundingBoxesMsg);
+        publishTrimMask();
         cv_bridge::CvImage cvMask;
         cvMask.header = bridgeImage->header;
         cvMask.encoding = sensor_msgs::image_encodings::TYPE_8UC1;

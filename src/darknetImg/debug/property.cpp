@@ -11,6 +11,7 @@ void darknetImgDebug::setParam(){
     nhPub.param<std::string>("topic/publisher/pickUpGroundPointCandidates", topic_pickUpGroundPointCandidates, "pickUpGroundPointCandidates");
     nhPub.param<std::string>("topic/publisher/estimateGroundCoefficients", topic_estimateGroundCoefficients, "estimateGroundCoefficients");
     nhPub.param<std::string>("topic/publisher/removeGroundPoints", topic_removeGroundPoints, "removeGroundPoints");
+    nhPub.param<std::string>("topic/publisher/trimPoints", topic_trimPoints, "trimPoints");
     ROS_INFO_STREAM("setparam debug mode");
 }
 

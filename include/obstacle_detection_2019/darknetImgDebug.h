@@ -15,6 +15,7 @@ class darknetImgDebug : public darknetImg {
         ros::Publisher pickUpGroundPointCandidates_pub;
         ros::Publisher estimateGroundCoefficients_pub;
         ros::Publisher removeGroundPoints_pub;
+        ros::Publisher trimPoints_pub;
         cv_bridge::CvImagePtr mapImageCB;   //クラスタ毎に色分けされたマップセル画像
         std::vector<int> colorMap;          //色付けを行うためのカラーマップ
         sensor_msgs::PointCloud2 pcl_msg;   //物体のポイントクラウド
@@ -38,6 +39,7 @@ class darknetImgDebug : public darknetImg {
         std::string topic_pickUpGroundPointCandidates;  //indices solution 
         std::string topic_estimateGroundCoefficients;   
         std::string topic_removeGroundPoints;
+        std::string topic_trimPoints;
     protected:
         /**クラスタに属しているセルを探してマップ画像に色を付ける
          * cluster 入力クラスタ
