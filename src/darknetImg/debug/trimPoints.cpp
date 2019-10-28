@@ -45,7 +45,6 @@ void darknetImgDebug::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs
 }
 
 void darknetImgDebug::publishTrimMask(){
-    auto mask_p = mask.ptr<char>(0);
     cv_bridge::CvImage cvi;
     cvi.image = cv::Mat(mask.rows, mask.cols, CV_8UC3, cv::Scalar(0,0,0));
     int ch = cvi.image.channels();
@@ -54,14 +53,12 @@ void darknetImgDebug::publishTrimMask(){
         auto image_p = cvi.image.ptr<char>(row);
         for(int col = 0; col < mask.cols; col++){
             if(mask_p[col] > 0){
-                image_p[col*ch] = colorMap[(mask_p[col] - 1)*3];
-                image_p[col*ch+1] = colorMap[(mask_p[col] - 1)*3 + 1];
-                image_p[col*ch+2] = colorMap[(mask_p[col] - 1)*3 + 2];
+                int colorIndex = ((mask_p[col] - 1)*3)%colorMap.size();
+                image_p[col*ch] = colorMap[colorIndex];
+                image_p[col*ch+1] = colorMap[colorIndex];
+                image_p[col*ch+2] = colorMap[colorIndex];
             }
         }
     }
     trimPoints_pub.publish(cvi.toImageMsg());
-
-
-    //パブリッシュコマンド
 }
