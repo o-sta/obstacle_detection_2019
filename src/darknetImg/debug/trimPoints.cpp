@@ -46,9 +46,10 @@ void darknetImgDebug::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs
 
 void darknetImgDebug::publishTrimMask(){
     cv_bridge::CvImage cvi;
-    cvi.image = cv::Mat(mask.rows, mask.cols, CV_8UC3, cv::Scalar(0,0,0));
+    cvi.image = cv::Mat(mask.rows, mask.cols, CV_8UC3, cv::Scalar(50,50,50));
     cvi.encoding = sensor_msgs::image_encodings::RGB8;
     int ch = cvi.image.channels();
+    ROS_INFO_STREAM("opencv cvi channnel " << ch);
     for(int row = 0; row < mask.rows; row++){
         auto mask_p = mask.ptr<char>(row);
         auto image_p = cvi.image.ptr<char>(row);
