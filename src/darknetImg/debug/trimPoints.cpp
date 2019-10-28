@@ -56,8 +56,8 @@ void darknetImgDebug::publishTrimMask(){
             if(mask_p[col] > 0){
                 int colorIndex = ((mask_p[col] - 1)*3)%colorMap.size();
                 image_p[col*ch] = colorMap[colorIndex];
-                image_p[col*ch+1] = colorMap[colorIndex];
-                image_p[col*ch+2] = colorMap[colorIndex];
+                image_p[col*ch+1] = colorMap[colorIndex+1];
+                image_p[col*ch+2] = colorMap[colorIndex+2];
             }
         }
     }
