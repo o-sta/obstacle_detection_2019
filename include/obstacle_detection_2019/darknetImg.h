@@ -55,7 +55,7 @@ class darknetImg {
         message_filters::Synchronizer<MySyncPolicy> sync;
         //BBのマスク用変数
         cv::Mat mask;
-        std::vector<std::vector<char>> mask2;
+        cv::Mat obstacle_mask;
         // --rqt_reconfigure用サーバ
         dynamic_reconfigure::Server<obstacle_detection_2019::darknetImgConfig> server;
         dynamic_reconfigure::Server<obstacle_detection_2019::darknetImgConfig>::CallbackType fc;

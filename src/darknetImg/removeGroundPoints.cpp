@@ -17,7 +17,7 @@ void darknetImg::pickUpGroundPointCandidates(){
             if(zt > 0.5 && !std::isinf(zt)){
                 yt = ((float)rows/2-i)*zt/f; //高さ
                 if(std::abs(yt+camHeight) < groundCandidateY){ //高さがgroundCandidateY未満の時
-                    xt = -( ((float)i-(float)cols/2)*zt/f-camHeight );
+                    xt = -( ((float)j-(float)cols/2)*zt/f-camHeight );
                     pt.x=zt;
                     pt.y=xt;
                     pt.z=yt;
@@ -66,18 +66,18 @@ void darknetImg::removeGroundPoints(){
     int cols = bridgeImage->image.cols; //深度画像の列
     //マスクのりサイズ
     if(is_size_initialized == false){
-        cv::resize(mask, mask, cv::Size(rows,cols));
+        cv::resize(obstacle_mask, obstacle_mask, cv::Size(rows,cols));
     }
     for(row = 0; row < rows; row++){
         float *bi = bridgeImage->image.ptr<float>(row);
-        char *mi = mask.ptr<char>(row);
+        char *mi = obstacle_mask.ptr<char>(row);
         for(col = 0; col < cols; col++){
             zt = bi[col*ch];
             if(zt>0.5&&!std::isinf(zt)){
-                yt=((float)cols/2-row)*zt/f;//高さ算出
-                //xt=-( ((float)row-(float)rows/2)*zt/f-camHeight );
+                yt=((float)rows/2-row)*zt/f;//高さ算出
+                xt = -(((float)col-(float)cols/2)*zt/f-camHeight);
                 float y_ground=(-a*zt-b*xt-d)/c;//床面の高さを算出
-                //高さが床面以上であればmask値を1に
+                //高さが床面以上であればobstacle_mask値を1に
                 yt > y_ground ? mi[col] = 1 : mi[col] = 0;
             } else{
                 mi[col] = 0;

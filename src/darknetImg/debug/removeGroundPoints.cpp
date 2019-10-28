@@ -141,28 +141,30 @@ void darknetImgDebug::removeGroundPoints(){
     int cols = bridgeImage->image.cols; //深度画像の列
     //マスクのりサイズ
     if(is_size_initialized == false){
-        cv::resize(mask, mask, cv::Size(rows,cols));
+        cv::resize(obstacle_mask, obstacle_mask, cv::Size(rows,cols));
     }
     ground_points_temp.points.resize(rows*cols);
     gp_size = 0;
     for(row = 0; row < rows; row++){
         float *bi = bridgeImage->image.ptr<float>(row);
-        char *mi = mask.ptr<char>(row);
+        char *mi = obstacle_mask.ptr<char>(row);
         for(col = 0; col < cols; col++){
             zt = bi[col*ch];
             if(zt>0.5&&!std::isinf(zt)){
-                yt=((float)cols/2-row)*zt/f;//高さ算出
+                yt=((float)rows/2-row)*zt/f;//高さ算出
                 xt = -( ((float)col-(float)cols/2)*zt/f-camHeight);
                 float y_ground=(-a*zt-b*xt-d)/c;//床面の高さを算出
-                //高さが床面以上であればmask値を1に
+                //高さが床面以上であればobstacle_mask値を1に
                 yt > y_ground ? mi[col] = 1 : mi[col] = 0;
-                ground_points_temp.points[gp_size].x = zt;
-                ground_points_temp.points[gp_size].y = xt;
-                ground_points_temp.points[gp_size].z = yt;
-                ground_points_temp.points[gp_size].r = colorMap[9];
-                ground_points_temp.points[gp_size].g = colorMap[10];
-                ground_points_temp.points[gp_size].b = colorMap[11];
-                gp_size++;
+                if(yt > y_ground){
+                    ground_points_temp.points[gp_size].x = zt;
+                    ground_points_temp.points[gp_size].y = xt;
+                    ground_points_temp.points[gp_size].z = yt;
+                    ground_points_temp.points[gp_size].r = colorMap[9];
+                    ground_points_temp.points[gp_size].g = colorMap[10];
+                    ground_points_temp.points[gp_size].b = colorMap[11];
+                    gp_size++;
+                }
             } else{
                 mi[col] = 0;
             }
@@ -174,5 +176,4 @@ void darknetImgDebug::removeGroundPoints(){
     pcl::toROSMsg(ground_points_temp, obstaclePCL_msg);
     obstaclePCL_msg.header.frame_id="/zed_camera_center";
     removeGroundPoints_pub.publish(obstaclePCL_msg);
-    
 }

@@ -19,3 +19,6 @@ topic: #ROSトピック
     estimateGroundCoefficients: estimateGroundCoefficients
     #sensor_msgs::PointColud2 床面除去後の点群
     removeGroundPoints: removeGroundPoints
+    #sensor_msgs::Image トリミング後のマスク画像
+    trimPoints: trimPoints
+

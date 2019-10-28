@@ -12,6 +12,7 @@ depth_points(new pcl::PointCloud<pcl::PointXYZRGB>)
     depth2points_pub = nhPub.advertise<sensor_msgs::PointCloud2>(topic_depth2points, 1);
     estimateGroundCoefficients_pub = nhPub.advertise<sensor_msgs::PointCloud2>(topic_estimateGroundCoefficients, 1);
     removeGroundPoints_pub = nhPub.advertise<sensor_msgs::PointCloud2>(topic_removeGroundPoints, 1);
+    trimPoints_pub = nhPub.advertise<sensor_msgs::Image>(topic_trimPoints, 1);
     ROS_INFO_STREAM("debug constructer");
     setCallback();
     setColorMap(colorMap);

@@ -10,6 +10,7 @@ image_sub(),
 sync(MySyncPolicy(10),bb_sub, image_sub),
 is_size_initialized(false),
 mask(1,1,CV_8UC1), 
+obstacle_mask(1,1,CV_8UC1),
 ground_points(new pcl::PointCloud<pcl::PointXYZ>),
 inliers (new pcl::PointIndices),
 coefficients(new pcl::ModelCoefficients)
