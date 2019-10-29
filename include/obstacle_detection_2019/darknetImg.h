@@ -62,6 +62,7 @@ class darknetImg {
         //センサーデータ
         cv_bridge::CvImagePtr bridgeImage;                  //深度画像
         darknet_ros_msgs::BoundingBoxes boundingBoxesMsg;   //検出された人物の枠線
+        int detection_total;                                //検出された人物(マスク)の数
     protected:
         //メッセージフィルタ
         //topicパラメータ
