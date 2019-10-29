@@ -63,6 +63,7 @@ void darknetImg::drawMask(darknet_ros_msgs::BoundingBoxes& bbs, int target_index
                 *mask_p = value;
             }
             ++mask_p; //次のピクセルにポインタを進める
+            ++obstacle_mask_p;
         }
     }
     ROS_INFO_STREAM("min[" << col_min << ", " << row_min << "], max[" << col_max << ", " << row_max << "]");
