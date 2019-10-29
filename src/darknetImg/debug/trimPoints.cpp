@@ -63,7 +63,6 @@ void darknetImgDebug::publishTrimMask(){
             }
         }
     }
-
     //obstacle_maskを出力する
     // for(int row = 0; row < mask.rows; row++){
     //     auto mask_p = obstacle_mask.ptr<char>(row);
