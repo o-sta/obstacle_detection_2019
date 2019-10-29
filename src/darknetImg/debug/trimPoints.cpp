@@ -46,32 +46,35 @@ void darknetImgDebug::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs
 
 void darknetImgDebug::publishTrimMask(){
     cv_bridge::CvImage cvi;
-    // cvi.image = cv::Mat(mask.rows, mask.cols, CV_8UC3, cv::Scalar(50,50,50));
-    // cvi.encoding = sensor_msgs::image_encodings::RGB8;
-    cvi.encoding = sensor_msgs::image_encodings::MONO8;
+    cvi.image = cv::Mat(mask.rows, mask.cols, CV_8UC3, cv::Scalar(50,50,50));
+    cvi.encoding = sensor_msgs::image_encodings::RGB8;
+    // cvi.encoding = sensor_msgs::image_encodings::MONO8;
     int ch = cvi.image.channels();
     ROS_INFO_STREAM("opencv cvi channnel " << ch);
-    // for(int row = 0; row < mask.rows; row++){
-    //     auto mask_p = mask.ptr<char>(row);
-    //     auto image_p = cvi.image.ptr<char>(row);
-    //     for(int col = 0; col < mask.cols; col++){
-    //         if(mask_p[col] > 0){
-    //             int colorIndex = ((mask_p[col] - 1)*3)%colorMap.size();
-    //             image_p[col*ch] = colorMap[colorIndex];
-    //             image_p[col*ch+1] = colorMap[colorIndex+1];
-    //             image_p[col*ch+2] = colorMap[colorIndex+2];
-    //         }
-    //     }
-    // }
-    //obstacle_maskを出力する
     for(int row = 0; row < mask.rows; row++){
-        auto mask_p = obstacle_mask.ptr<char>(row);
+        auto mask_p = mask.ptr<char>(row);
+        auto image_p = cvi.image.ptr<char>(row);
         for(int col = 0; col < mask.cols; col++){
             if(mask_p[col] > 0){
-                mask_p[col] = 50;
+                int colorIndex = ((mask_p[col] - 1)*3)%colorMap.size();
+                image_p[col*ch] = colorMap[colorIndex];
+                image_p[col*ch+1] = colorMap[colorIndex+1];
+                image_p[col*ch+2] = colorMap[colorIndex+2];
             }
         }
     }
-    cvi.image = obstacle_mask.clone();
+
+    //obstacle_maskを出力する
+    // for(int row = 0; row < mask.rows; row++){
+    //     auto mask_p = obstacle_mask.ptr<char>(row);
+    //     for(int col = 0; col < mask.cols; col++){
+    //         if(mask_p[col] > 0){
+    //             mask_p[col] = 50;
+    //         }
+    //     }
+    // }
+    // cvi.image = obstacle_mask.clone();
+
+    //最終的にパブリッシュ
     trimPoints_pub.publish(cvi.toImageMsg());
 }
