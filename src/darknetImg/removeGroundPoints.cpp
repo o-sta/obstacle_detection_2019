@@ -66,7 +66,7 @@ void darknetImg::removeGroundPoints(){
     int cols = bridgeImage->image.cols; //深度画像の列
     //マスクのりサイズ
     if(is_size_initialized == false){
-        cv::resize(obstacle_mask, obstacle_mask, cv::Size(rows,cols));
+        cv::resize(obstacle_mask, obstacle_mask, cv::Size(cols,rows));
     }
     for(row = 0; row < rows; row++){
         float *bi = bridgeImage->image.ptr<float>(row);
