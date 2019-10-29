@@ -71,24 +71,7 @@ void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr
 
 
 
-bool darknetImg::convertToGrid(const float& x,const float& y,int& xg,int& yg){
-	//マップ上の中心座標(ふつうは　センサ位置＝マップ中心座標　のため　cx=cy=0)
-	float cx=0;
-	float cy=0;
-    //マップ原点座標を画像原点座標(左上)に移動
-	float map_x = mapWidth/2 + (x - cx);
-	float map_y = mapHeight/2 + ( -(y - cy) );
-    //マップ外のデータの際はreturn false
-	if(map_x<0 || map_x>mapWidth)
-		return false;
-	if(map_y<0 || map_y>mapHeight)
-		return false;
-    //ピクセルデータに変換
-	xg = (int)(map_x/mapResolution);
-	yg = (int)(map_y/mapResolution);
-    //変換成功
-	return true;
-}
+
 
 
 void darknetImg::classifyPoints(){
