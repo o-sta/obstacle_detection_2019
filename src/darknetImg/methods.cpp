@@ -81,8 +81,8 @@ void darknetImg::generateGridmap(){
     int mapRow, mapCol; // マップの行と列
     //初期設定
     //smdml = boost::make_shared<obstacle_detection_2019::SensorMapDataMultiLayer>();
-    // smdml.layer.resize(boundingBoxesMsg.bounding_boxes.size());//■error
-    smdml.layer.resize(10);//
+    smdml.layer.resize(boundingBoxesMsg.bounding_boxes.size());//■error
+    // smdml.layer.resize(10);//
     for(auto& layer : smdml.layer){
         layer.header = smdml.header;
         layer.width.data = mapWidth;
@@ -103,8 +103,8 @@ void darknetImg::generateGridmap(){
     int count = 0;
     int *index;
     for(row = 0; row < rows; row++){
-        float *bi = bridgeImage->image.ptr<float>(row);
-        char *mi = mask.ptr<char>(row);
+        auto bi = bridgeImage->image.ptr<float>(row);
+        auto mi = mask.ptr<char>(row);
         for(col = 0; col < cols; col++){
             if(mi[col] != 0){
                 zt = bi[col*ch];
