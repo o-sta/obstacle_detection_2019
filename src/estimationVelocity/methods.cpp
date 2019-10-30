@@ -195,7 +195,9 @@ void velocityEstimation::decisionObstacleType(){
         }
 	}
 }
+//平均フィルタ
 void velocityEstimation::averageFilter(){
+	//average filter
 	for(int k=0; k<record_twists.size();k++){
 		ROS_INFO("record_twists[%d].n = %d",k,record_twists[k].n);
 		if(record_twists[k].n == filterN){
@@ -205,7 +207,8 @@ void velocityEstimation::averageFilter(){
 				record_twists[k].sum_twist.linear.y = record_twists[k].sum_twist.linear.y + record_twists[k].twistArray[i].linear.y;
 				record_twists[k].sum_twist.linear.z = record_twists[k].sum_twist.linear.z + record_twists[k].twistArray[i].linear.z;
 			}
-			filtedClstr.twist[k].linear.x = record_twists[k].sum_twist.linear.x / filterN; 
+			//平均を求め
+			filtedClstr.twist[k].linear.x = record_twists[k].sum_twist.linear.x / filterN;//反転 
 			filtedClstr.twist[k].linear.y = record_twists[k].sum_twist.linear.y / filterN; 
 			filtedClstr.twist[k].linear.z = record_twists[k].sum_twist.linear.z / filterN; 
 		}
@@ -263,6 +266,20 @@ void velocityEstimation::recordTwistData(){
 	record_twists = record_twists_temp;
 }
 void velocityEstimation::publishData(){//データ送信
+
+	//データ修正 (x軸が反転しているのを修正) 
+	for(int k=0; k<filtedClstr.twist.size();k++){
+		filtedClstr.twist[k].linear.x = - filtedClstr.twist[k].linear.x;//反転 
+		filtedClstr.twist[k].linear.y = filtedClstr.twist[k].linear.y; 
+		filtedClstr.twist[k].linear.z = filtedClstr.twist[k].linear.z; 
+	}
+	//データ修正 (x軸が反転しているのを修正) 
+	for(int k=0; k<filtedClstr.twist.size();k++){
+		filtedClstr.data[k].gc.x = - filtedClstr.data[k].gc.x;//反転 
+		filtedClstr.data[k].gc.y = filtedClstr.data[k].gc.y; 
+		filtedClstr.data[k].gc.z = filtedClstr.data[k].gc.z; 
+	}
+	//データパブリッシュ
     pub.publish(filtedClstr);
 }
 void velocityEstimation::renewMessages(){

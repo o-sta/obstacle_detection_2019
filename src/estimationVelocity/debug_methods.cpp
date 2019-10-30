@@ -126,10 +126,10 @@ void velocityEstimation::showMarker(){
         marker.text = "("+std::to_string(filtedClstr.twist[k].linear.x) +","+ std::to_string(filtedClstr.twist[k].linear.y)+")";
         //position
         marker.pose.position.x = filtedClstr.data[k].gc.y;
-        marker.pose.position.y = filtedClstr.data[k].gc.x;
+        marker.pose.position.y = -filtedClstr.data[k].gc.x;
         marker.pose.position.z = filtedClstr.data[k].gc.z + 1.0;
         //angle
-        double yaw = std::atan2(filtedClstr.twist[k].linear.x,filtedClstr.twist[k].linear.y);
+        double yaw = std::atan2(-filtedClstr.twist[k].linear.x,filtedClstr.twist[k].linear.y);
         //culc Quaternion
         marker.pose.orientation = tf::createQuaternionMsgFromYaw(yaw);
         marker.color.a = 1.0;
