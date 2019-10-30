@@ -13,7 +13,8 @@
  <arg name="window/DivisionDegree" default="3"/>
  <arg name="window/height" default="0.15"/>
  <arg name="window/width" default="0.3"/>
- <arg name="window/minPts" default="1000"/>
+ <arg name="window/minPts" default="800"/>
+ <arg name="window/baseDistance" default="3.0"/>
  <!-- rqt_reconfigure -->
  <arg name="groundEstimate/rqt_reconfigure" default="false"/>
  <arg name="classification/rqt_reconfigure" default="false"/>
@@ -50,6 +51,7 @@
    <param name="window/height" value="$(arg window/height)"/>
    <param name="window/width" value="$(arg window/width)"/>
    <param name="window/minPts" value="$(arg window/minPts)"/>
+   <param name="window/baseDistance" value="$(arg window/baseDistance)"/>
     <!-- rqt_reconfigure -->
     <param name="classification/rqt_reconfigure" value="$(arg classification/rqt_reconfigure)"/>
  </node>

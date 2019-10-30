@@ -1,8 +1,8 @@
 <launch>
   <arg name="robot_name"        default="robot2"/>
   <!--map-->
-  <arg name="localMap/width/float" value="12.0"/>
-  <arg name="localMap/height/float" value="12.0"/>
+  <arg name="localMap/width/float" value="14.0"/>
+  <arg name="localMap/height/float" value="14.0"/>
   <arg name="localMap/resolution" value="0.05"/>
  <!-- rqt_reconfigure -->
  <arg name="groundEstimate/rqt_reconfigure" value="true"/>

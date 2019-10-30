@@ -138,11 +138,24 @@ void classificationClass::classificationDBSCAN(){//カメラ
 			// (smdCamera.height/2+smdCamera.cp) : センサからマップの上端までの距離
 			// taskIndex[n] / smdCamera.widthInt * smdCamera.res : マップ上端から障害物セルまでの距離
 			float y=(smdCamera.height.data/2.0+smdCamera.cp.y) - taskIndex[n] / smdCamera.widthInt.data * smdCamera.res.data;
-			//奥行yに対する評価式らしい
-			// int minPts=(int)( -35*y*y+1200 );
+			float x= (smdCamera.width.data/2.0+smdCamera.cp.x) - taskIndex[n] % smdCamera.widthInt.data * smdCamera.res.data;
+			float d=sqrt(pow(x,2.0)+ pow(y,2.0));
+			//奥行dに対する評価式
+			int minPts_d;
+
+			if(d < baseDistance){
+				// minPts_d=minPts;
+				minPts_d=(int)( minPts + pow(d-baseDistance,2.0) * minPts );
+			}
+			else{
+				minPts_d=(int)( minPts - pow(d-baseDistance,2.0) * minPts );
+			}
+			if(minPts_d < 1){
+				minPts_d = 1;
+			}
 			// int minPts=10;
 			//評価式よりカウントが小さい時: スキップ
-			if(count < minPts){
+			if(count < minPts_d){
 				continue;
 			}
 			//コア点をクラスタに追加
