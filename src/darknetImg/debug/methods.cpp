@@ -45,7 +45,7 @@ void darknetImgDebug::debug_callback(const darknet_ros_msgs::BoundingBoxes::Cons
         for(int row=0; row < bridgeImage->image.rows; row++){
             auto mi = mask.ptr<char>(row);
             for(int col=0; col < bridgeImage->image.cols; col++){
-                if(mi[col] > 5){
+                if(mi[col] > detection_total){
                     ROS_WARN_STREAM("over detection total ... " << row << " " << col << " " << mi[col]);
                 }
             }
