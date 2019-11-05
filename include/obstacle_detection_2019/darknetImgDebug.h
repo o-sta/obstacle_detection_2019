@@ -19,7 +19,7 @@ class darknetImgDebug : public darknetImg {
         ros::Publisher gridMapPCL_pub;
         cv_bridge::CvImagePtr mapImageCB;   //クラスタ毎に色分けされたマップセル画像
         std::vector<int> colorMap;          //色付けを行うためのカラーマップ
-        std::vector<int> colorMapGrad;      //色付けを行うためのカラーマップ(グラデーション)
+        std::vector<float> colorMapGrad;      //色付けを行うためのカラーマップ(グラデーション)
         sensor_msgs::PointCloud2 pcl_msg;   //物体のポイントクラウド
         sensor_msgs::PointCloud2 depthPCL_msg;      //深度画像全て
         sensor_msgs::PointCloud2 groundCanPCL_msg;  //地面候補
