@@ -38,7 +38,7 @@ void darknetImg::generateGridmap(){
         auto mi = mask.ptr<char>(row);
         for(col = 0; col < cols; col++){
             if(mi[col] > 10){
-                ROS_WARN_STREAM("invalid mask number ... " << mi[col]);
+                ROS_WARN_STREAM("invalid mask number ... " << (int)mi[col]);
                 continue;
             }
             if(mi[col] != 0){
