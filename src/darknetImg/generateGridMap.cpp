@@ -42,16 +42,16 @@ void darknetImg::generateGridmap(){
             if(mi[col] > 10){
                 ROS_WARN_STREAM("invalid mask number ... " << (int)mi[col]);
                 continue;
-            }
+            } 
             if(mi[col] != 0){
                 zt = bi[col*ch];
-                xt=-(((float)row-(float)rows/2)*zt/f-camHeight);
+                xt = -( ((float)col-(float)cols/2)*zt/f);
                 if(convertToGrid(xt, zt, mapCol, mapRow) == true){
                     index = &smdml.layer[mi[col]-1].index[mapRow*mapCols+mapCol].data;
                     if(index < 0){
                         *index = count++;
                     }
-                    yt = ((float)rows/2-row)*zt/f;
+                    yt=((float)rows/2-row)*zt/f+camHeight;//高さ算出
                     smdml.layer[mi[col]-1].size[*index].data++;
                     smdml.layer[mi[col]-1].pt[*index].x += xt;
                     smdml.layer[mi[col]-1].pt[*index].y += yt;

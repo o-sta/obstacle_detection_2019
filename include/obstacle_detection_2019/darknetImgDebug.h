@@ -100,6 +100,7 @@ class darknetImgDebug : public darknetImg {
         void depth2points();
         void publishTrimMask();
         void publishGridMap();
+        void generateGridMapDebug();
 };
 
 #endif
