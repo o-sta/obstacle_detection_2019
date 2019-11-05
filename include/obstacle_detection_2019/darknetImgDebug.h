@@ -67,6 +67,7 @@ class darknetImgDebug : public darknetImg {
         void setParam();
         void debug_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb,const sensor_msgs::Image::ConstPtr& image);
         void setCallback();     //コールバック関数の設定
+        int serectColor(float value, float minValue, float maxValue, int palletSize);
 
         /**グリッドマップをポイントクラウドに変換
          * 実装予定無し

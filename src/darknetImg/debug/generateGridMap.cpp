@@ -49,14 +49,13 @@ void darknetImgDebug::publishGridMap(){
             map.points[ptIndex].b = (uint8_t)(colorMap[colorIndex+2] * 255);
         }
     }
-
     
     pcl::toROSMsg(map, map_msg);
     map_msg.header.stamp = ros::Time::now();
     map_msg.header.frame_id = "/map";
 }
 
-int serectColor(float value, float minValue, float maxValue, int palletSize){
+int darknetImgDebug::serectColor(float value, float minValue, float maxValue, int palletSize){
     if(value <= minValue){
         return 0;
     }else if(maxValue <= value){
