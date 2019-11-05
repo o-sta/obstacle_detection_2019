@@ -33,33 +33,33 @@ void darknetImg::generateGridmap(){
         std::fill(layer.pt.begin(), layer.pt.end(), pt);
     }
     //処理
-    // int count = 0;
-    // int *index;
-    // for(row = 0; row < rows; row++){
-    //     auto bi = bridgeImage->image.ptr<float>(row);
-    //     auto mi = mask.ptr<char>(row);
-    //     for(col = 0; col < cols; col++){
-    //         if(mi[col] > 10){
-    //             ROS_WARN_STREAM("invalid mask number ... " << (int)mi[col]);
-    //             continue;
-    //         }
-    //         if(mi[col] != 0){
-    //             zt = bi[col*ch];
-    //             xt=-(((float)row-(float)rows/2)*zt/f-camHeight);
-    //             if(convertToGrid(xt, zt, mapCol, mapRow) == true){
-    //                 index = &smdml.layer[mi[col]-1].index[mapRow*mapCols+mapCol].data;
-    //                 if(index < 0){
-    //                     *index = count++;
-    //                 }
-    //                 yt = ((float)rows/2-row)*zt/f;
-    //                 smdml.layer[mi[col]-1].size[*index].data++;
-    //                 smdml.layer[mi[col]-1].pt[*index].x += xt;
-    //                 smdml.layer[mi[col]-1].pt[*index].y += yt;
-    //                 smdml.layer[mi[col]-1].pt[*index].z += zt;
-    //             }
-    //         }
-    //     }
-    // }
+    int count = 0;
+    int *index;
+    for(row = 0; row < rows; row++){
+        auto bi = bridgeImage->image.ptr<float>(row);
+        auto mi = mask.ptr<char>(row);
+        for(col = 0; col < cols; col++){
+            if(mi[col] > 10){
+                ROS_WARN_STREAM("invalid mask number ... " << (int)mi[col]);
+                continue;
+            }
+            if(mi[col] != 0){
+                zt = bi[col*ch];
+                xt=-(((float)row-(float)rows/2)*zt/f-camHeight);
+                if(convertToGrid(xt, zt, mapCol, mapRow) == true){
+                    index = &smdml.layer[mi[col]-1].index[mapRow*mapCols+mapCol].data;
+                    if(index < 0){
+                        *index = count++;
+                    }
+                    yt = ((float)rows/2-row)*zt/f;
+                    smdml.layer[mi[col]-1].size[*index].data++;
+                    smdml.layer[mi[col]-1].pt[*index].x += xt;
+                    smdml.layer[mi[col]-1].pt[*index].y += yt;
+                    smdml.layer[mi[col]-1].pt[*index].z += zt;
+                }
+            }
+        }
+    }
 }
 
 
