@@ -17,7 +17,8 @@ depth_points(new pcl::PointCloud<pcl::PointXYZRGB>)
     ROS_INFO_STREAM("debug constructer");
     setCallback();
     setColorMap("colorMap/data", colorMap);
-    setColorMap("colorMap/grad_jet", colorMapGrad);
+    nhPub.param("colorMap/grad_jet", colorMapGrad, colorMapGrad);
+    colorMapGrad.resize(colorMapGrad.size() - (colorMapGrad.size() % 3)); //要素数が3の倍数(RGB)になるようにリサイズ
     num_temp.resize(numberOfCells);
 
 }
