@@ -56,6 +56,9 @@ void darknetImgDebug::publishTrimMask(){
         auto image_p = cvi.image.ptr<char>(row);
         for(int col = 0; col < mask.cols; col++){
             if(mask_p[col] > 0){
+                if(mask_p[col] > 10){
+                    ROS_WARN_STREAM("mask number invalid ... " << mask_p[col]);
+                }
                 int colorIndex = ((mask_p[col] - 1)*3)%colorMap.size();
                 image_p[col*ch] = colorMap[colorIndex];
                 image_p[col*ch+1] = colorMap[colorIndex+1];
