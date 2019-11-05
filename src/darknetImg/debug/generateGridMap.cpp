@@ -132,6 +132,6 @@ void darknetImgDebug::generateGridMapDebug(){
 
     pcl::toROSMsg(map, map_msg);
     map_msg.header.stamp = ros::Time::now();
-    map_msg.header.frame_id = "/zed_camera_left";
+    map_msg.header.frame_id = "/zed_left_camera_frame";
     gridMapPCL_pub.publish(map_msg);
 }
