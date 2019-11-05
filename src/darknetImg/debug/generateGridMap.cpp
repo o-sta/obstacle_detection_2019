@@ -82,8 +82,6 @@ void darknetImgDebug::generateGridMapDebug(){
     map_pts.resize(mapRows*mapCols);
 
     //処理
-    int count = 0;
-    int *index;
     for(int row = 0; row < rows; row++){
         auto bi = bridgeImage->image.ptr<float>(row);
         auto mi = mask.ptr<char>(row);
@@ -118,7 +116,6 @@ void darknetImgDebug::generateGridMapDebug(){
     int colorIndex;
     int ptIndex;
     int cell_pts;
-    int index;
     for(int row = 0; row < mapRows; ++row){
         for(int col = 0; col < mapCols; ++col){
             ptIndex = row*mapCols + col;
