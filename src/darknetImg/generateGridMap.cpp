@@ -37,6 +37,10 @@ void darknetImg::generateGridmap(){
         auto bi = bridgeImage->image.ptr<float>(row);
         auto mi = mask.ptr<char>(row);
         for(col = 0; col < cols; col++){
+            if(mi[col] > 10){
+                ROS_WARN_STREAM("invalid mask number ... " << mi[col]);
+                continue;
+            }
             if(mi[col] != 0){
                 zt = bi[col*ch];
                 xt=-(((float)row-(float)rows/2)*zt/f-camHeight);
