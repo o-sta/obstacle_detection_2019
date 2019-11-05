@@ -123,10 +123,16 @@ void darknetImgDebug::generateGridMapDebug(){
             map.points[ptIndex].x = (double)((int)(mapRows/2) - row)*mapResolution - mapResolution/2;
             map.points[ptIndex].y = (double)(col-(int)(mapCols/2))*mapResolution + mapResolution/2;
             map.points[ptIndex].z = 0;
-            colorIndex = serectColor((float)cell_pts, (float)min_cell_pts, (float)max_cell_pts, colorMapGrad.size()/3)*3;
-            map.points[ptIndex].r = (uint8_t)(colorMapGrad[colorIndex] * 255);
-            map.points[ptIndex].g = (uint8_t)(colorMapGrad[colorIndex+1] * 255);
-            map.points[ptIndex].b = (uint8_t)(colorMapGrad[colorIndex+2] * 255);
+            if(cell_pts > 0){
+                colorIndex = serectColor((float)cell_pts, (float)min_cell_pts, (float)max_cell_pts, colorMapGrad.size()/3)*3;
+                map.points[ptIndex].r = (uint8_t)(colorMapGrad[colorIndex] * 255);
+                map.points[ptIndex].g = (uint8_t)(colorMapGrad[colorIndex+1] * 255);
+                map.points[ptIndex].b = (uint8_t)(colorMapGrad[colorIndex+2] * 255);
+            }else{
+                map.points[ptIndex].r = 0;
+                map.points[ptIndex].g = 0;
+                map.points[ptIndex].b = 0;
+            }
         }
     }
 
