@@ -242,6 +242,7 @@ add_executable(${PROJECT_NAME}_darknet_debug # darknet_ros
   src/darknetImg/property.cpp
   src/darknetImg/removeGroundPoints.cpp
   src/darknetImg/trimPoints.cpp
+  src/darknetImg/generateGridMap.cpp
   src/darknetImg/debug/constructor.cpp
   src/darknetImg/debug/methods.cpp
   src/darknetImg/debug/property.cpp
