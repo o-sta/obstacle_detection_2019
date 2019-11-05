@@ -13,6 +13,7 @@ void darknetImg::trimPoints(darknet_ros_msgs::BoundingBoxes& bbs){
         }
     }
     detection_total = groupNumber;
+    ROS_INFO_STREAM("detection_total " << groupNumber);
 }
 
 void darknetImg::addBBGroupRecursively(darknet_ros_msgs::BoundingBoxes& bbs, std::vector<bool>& checkFlag, int coreNumber, int groupNumber){

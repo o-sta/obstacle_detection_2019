@@ -43,7 +43,7 @@ void darknetImgDebug::debug_callback(const darknet_ros_msgs::BoundingBoxes::Cons
         trimPoints(boundingBoxesMsg);
         publishTrimMask();
         generateGridmap();
-        publishGridMap();
+        // publishGridMap();
         // ROS_INFO_STREAM("pickUpGroundPointCandidates");
         // pickUpGroundPointCandidates();
         // ROS_INFO_STREAM("estimateGroundCoefficients");
