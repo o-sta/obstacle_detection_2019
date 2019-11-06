@@ -139,16 +139,25 @@ void velocityEstimation::kalmanFilter(){//
 		// z_t(2,0)=preClstr.twist[i].linear.y;
 		// z_t(3,0)=preClstr.twist[i].linear.x;
 		//軸反転なし
-		z_t(0,0)=preClstr.data[i].gc.x;
-		z_t(1,0)=preClstr.data[i].gc.y;
-		z_t(2,0)=preClstr.twist[i].linear.x;
-		z_t(3,0)=preClstr.twist[i].linear.y;
+		// z_t(0,0)=preClstr.data[i].gc.x;
+		// z_t(1,0)=preClstr.data[i].gc.y;
+		// z_t(2,0)=preClstr.twist[i].linear.x;
+		// z_t(3,0)=preClstr.twist[i].linear.y;
+		// std::cout<<"z_t,gc.x:"<<curClstr.data[i].gc.x<<std::endl;
+		// std::cout<<"z_t,gc.y:"<<curClstr.data[i].gc.y<<std::endl;
+		// std::cout<<"z_t,linear.x:"<<curClstr.twist[i].linear.x<<std::endl;
+		// std::cout<<"z_t,linear.y:"<<curClstr.twist[i].linear.y<<std::endl;
+		z_t(0,0)=curClstr.data[i].gc.x;
+		z_t(1,0)=curClstr.data[i].gc.y;
+		z_t(2,0)=curClstr.twist[i].linear.x;
+		z_t(3,0)=curClstr.twist[i].linear.y;
 		float dt = curClstr.dt;
 		//set ut
 		if(curClstr.match[i] < 0){//マッチングなし
 			// ROS_INFO("no matching[%d]",i);
 			// std::cout<<z_t<<std::endl;
-			xh_t[i] = z_t;//過去の観測データを推定結果としてそのまま出力
+			// xh_t[i] = z_t;//過去の観測データを推定結果としてそのまま出力
+			xh_t[i] = z_t;//現在の観測データを推定結果としてそのまま出力
 			sig_xh_t[i]=sig_x0;//推定値の共分散は初期分散		
 		}
 		else{//マッチングあり
@@ -193,6 +202,11 @@ void velocityEstimation::decisionObstacleType(){
         else{
 			//no process
         }
+		//障害物の状態を確認
+		std::cout<<"\t gc:"<< filtedClstr.data[k].gc.x <<","<<filtedClstr.data[k].gc.y << std::endl;
+		std::cout<<"\t twist:"<< filtedClstr.twist[k].linear.x <<","<<filtedClstr.twist[k].linear.y << std::endl;
+		std::cout<<"\t trackingNum:"<< filtedClstr.trackingNum[k] << std::endl;
+		
 	}
 }
 //平均フィルタ

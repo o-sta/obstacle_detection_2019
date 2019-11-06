@@ -249,10 +249,17 @@ void measurementVelocity::measurementProcess(){//
 			float dy = curClstr.data[k].gc.y - prvClstr.data[ matchResult[k] ].gc.y;
 			float dz = curClstr.data[k].gc.z - prvClstr.data[ matchResult[k] ].gc.z;
 			//--速度計算
-			// std::cout<<" "<<dx<<"/"<< dt << " ";
-			cvd.twist[k].linear.x = dx/dt;
-			cvd.twist[k].linear.y = dy/dt;
-			cvd.twist[k].linear.z = dz/dt;
+			std::cout<<" "<<dx<<"/"<< dt << " ";
+			if(dt==0){
+				cvd.twist[k].linear.x = 0;
+				cvd.twist[k].linear.y = 0;
+				cvd.twist[k].linear.z = 0;
+			}
+			else{
+				cvd.twist[k].linear.x = dx/dt;
+				cvd.twist[k].linear.y = dy/dt;
+				cvd.twist[k].linear.z = dz/dt;
+			}
 			cvd.twist[k].angular.x = 0;
 			cvd.twist[k].angular.y = 0;
 			cvd.twist[k].angular.z = 0;
