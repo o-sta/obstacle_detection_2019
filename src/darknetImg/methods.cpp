@@ -198,10 +198,6 @@ void darknetImg::classifyPoints(){
 
 
 void darknetImg::estimatePersonPosition(){
-    int i;
-    for(auto& ce : cd.data){
-        ROS_INFO_STREAM("person[" << i++ <<"] : [" << ce.gc.x << ce.gc.y << ce.gc.z << "]");
-    }
 }
 
 

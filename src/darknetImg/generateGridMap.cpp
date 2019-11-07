@@ -1,65 +1,157 @@
 #include <obstacle_detection_2019/darknetImg.h>
 
-void darknetImg::generateGridmap(){
-    int row = 0, col = 0, i; //深度画像の行と列
+//旧バージョン
+// void darknetImg::generateGridmap(){
+//     int row = 0, col = 0, i; //深度画像の行と列
+//     float xt, yt, zt;
+//     int ch = bridgeImage->image.channels();
+//     int rows = bridgeImage->image.rows; //深度画像の行幅
+//     int cols = bridgeImage->image.cols; //深度画像の列幅
+//     std_msgs::Int32 initial_value;
+//     geometry_msgs::Point pt;
+//     pt.x = 0; pt.y = 0; pt.z = 0;
+//     int mapRow, mapCol; // マップの行と列
+//     //初期設定
+//     //smdml = boost::make_shared<obstacle_detection_2019::SensorMapDataMultiLayer>();
+//     smdml.layer.resize(detection_total);//■error
+//     // smdml.layer.resize(10);//
+//     int count_layer = 0;
+//     for(auto& layer : smdml.layer){
+//         ROS_INFO_STREAM("count_layer " << count_layer <<" "<< detection_total);
+//         layer.header = smdml.header;
+//         layer.width.data = mapWidth;
+//         layer.height.data = mapHeight;
+//         layer.res.data = mapResolution;
+//         layer.widthInt.data = mapCols;
+//         layer.heightInt.data = mapRows;
+//         layer.index.resize(numberOfCells);
+//         layer.size.resize(numberOfCells);
+//         layer.pt.resize(numberOfCells);
+//         initial_value.data = -1;
+//         std::fill(layer.index.begin(), layer.index.end(), initial_value); //std::vectorの全要素を-1で埋める
+//         initial_value.data = 0;
+//         std::fill(layer.size.begin(), layer.size.end(), initial_value);
+//         std::fill(layer.pt.begin(), layer.pt.end(), pt);
+//     }
+//     //処理
+//     int count = 0;
+//     int *index;
+//     for(row = 0; row < rows; row++){
+//         auto bi = bridgeImage->image.ptr<float>(row);
+//         auto mi = mask.ptr<char>(row);
+//         for(col = 0; col < cols; col++){
+//             if(mi[col] > 10){
+//                 ROS_WARN_STREAM("invalid mask number ... " << (int)mi[col]);
+//                 continue;
+//             } 
+//             if(mi[col] != 0){
+//                 zt = bi[col*ch];
+//                 xt = -( ((float)col-(float)cols/2)*zt/f);
+//                 if(convertToGrid(xt, zt, mapCol, mapRow) == true){
+//                     index = &smdml.layer[mi[col]-1].index[mapRow*mapCols+mapCol].data;
+//                     if(index < 0){
+//                         *index = count++;
+//                     }
+//                     yt=((float)rows/2-row)*zt/f+camHeight;//高さ算出
+//                     smdml.layer[mi[col]-1].size[*index].data++;
+//                     smdml.layer[mi[col]-1].pt[*index].x += xt;
+//                     smdml.layer[mi[col]-1].pt[*index].y += yt;
+//                     smdml.layer[mi[col]-1].pt[*index].z += zt;
+//                 }
+//             }
+//         }
+//     }
+// }
+
+void darknetImg::generateGridMap(){
+    int max_cell_pts = 0; //最大点数
+    const int min_cell_pts = 0; //最小点数
     float xt, yt, zt;
     int ch = bridgeImage->image.channels();
     int rows = bridgeImage->image.rows; //深度画像の行幅
     int cols = bridgeImage->image.cols; //深度画像の列幅
-    std_msgs::Int32 initial_value;
-    geometry_msgs::Point pt;
-    pt.x = 0; pt.y = 0; pt.z = 0;
     int mapRow, mapCol; // マップの行と列
-    //初期設定
-    //smdml = boost::make_shared<obstacle_detection_2019::SensorMapDataMultiLayer>();
-    smdml.layer.resize(detection_total);//■error
-    // smdml.layer.resize(10);//
-    int count_layer = 0;
-    for(auto& layer : smdml.layer){
-        ROS_INFO_STREAM("count_layer " << count_layer <<" "<< detection_total);
-        layer.header = smdml.header;
-        layer.width.data = mapWidth;
-        layer.height.data = mapHeight;
-        layer.res.data = mapResolution;
-        layer.widthInt.data = mapCols;
-        layer.heightInt.data = mapRows;
-        layer.index.resize(numberOfCells);
-        layer.size.resize(numberOfCells);
-        layer.pt.resize(numberOfCells);
-        initial_value.data = -1;
-        std::fill(layer.index.begin(), layer.index.end(), initial_value); //std::vectorの全要素を-1で埋める
-        initial_value.data = 0;
-        std::fill(layer.size.begin(), layer.size.end(), initial_value);
-        std::fill(layer.pt.begin(), layer.pt.end(), pt);
-    }
+    std::vector<std::vector<int>> cell_exists(detection_total, std::vector<int>(numberOfCells, -1)); //セルが存在している場合は配列番号を書き込
+    int exist;
+    //PersonGridMap初期化 
+    int pgm_count = 0; //index, size, ptの数
+    pgm.header.stamp = bridgeImage->header.stamp;
+    pgm.height = mapHeight;
+    pgm.width = mapWidth;
+    pgm.resolution = mapResolution;
+    pgm.groupSize = detection_total;
+    pgm.index.resize(numberOfCells * detection_total);
+    pgm.size.resize(numberOfCells * detection_total);
+    pgm.pt.resize(numberOfCells * detection_total);
+
     //処理
-    int count = 0;
-    int *index;
-    for(row = 0; row < rows; row++){
+    for(int row = 0; row < rows; row++){
         auto bi = bridgeImage->image.ptr<float>(row);
         auto mi = mask.ptr<char>(row);
-        for(col = 0; col < cols; col++){
-            if(mi[col] > 10){
-                ROS_WARN_STREAM("invalid mask number ... " << (int)mi[col]);
-                continue;
-            } 
-            if(mi[col] != 0){
+        for(int col = 0; col < cols; col++){
+            if(mi[col] > 0){
                 zt = bi[col*ch];
                 xt = -( ((float)col-(float)cols/2)*zt/f);
                 if(convertToGrid(xt, zt, mapCol, mapRow) == true){
-                    index = &smdml.layer[mi[col]-1].index[mapRow*mapCols+mapCol].data;
-                    if(index < 0){
-                        *index = count++;
+                    exist = cell_exists[mapRow*mapCols+mapCol];
+                    if(exist == -1){
+                        cell_exists[mapRow*mapCols+mapCol] = pgm_count;
+                        pgm.index[pgm_count] = mapRow*mapCols+mapCol;
+                        pgm.size[pgm_count] = 1;
+                        pgm.pt[pgm_count].x = -(((float)col-(float)cols/2)*zt/f);
+                        pgm.pt[pgm_count].y = ((float)rows/2-row)*zt/f+camHeight;
+                        pgm.pt[pgm_count].z = bi[col*ch];
+                        pgm_count++;
+                    }else{
+                        pgm.size[exist]++;
+                        pgm.pt[exist].x += -(((float)col-(float)cols/2)*zt/f);
+                        pgm.pt[exist].y += ((float)rows/2-row)*zt/f+camHeight;
+                        pgm.pt[exist].z += bi[col*ch];
                     }
-                    yt=((float)rows/2-row)*zt/f+camHeight;//高さ算出
-                    smdml.layer[mi[col]-1].size[*index].data++;
-                    smdml.layer[mi[col]-1].pt[*index].x += xt;
-                    smdml.layer[mi[col]-1].pt[*index].y += yt;
-                    smdml.layer[mi[col]-1].pt[*index].z += zt;
                 }
             }
         }
     }
+    pgm.index.resize(pgm_count);
+    pgm.size.resize(pgm_count);
+    pgm.pt.resize(pgm_count);
+
+    // int max_cell_pts_layer_index; //最大点数を持つセルの所属レイヤー（不要かも）
+    // int max_cell_pts_index; //最大点数を持つセル番号（不要かも）
+    //最大値算出
+    for(auto cell_pts : map_pts){
+        if(max_cell_pts < cell_pts){
+            max_cell_pts = cell_pts;
+        }
+    }
+
+    int colorIndex;
+    int ptIndex;
+    int cell_pts;
+    for(int row = 0; row < mapRows; ++row){
+        for(int col = 0; col < mapCols; ++col){
+            ptIndex = row*mapCols + col;
+            cell_pts = map_pts[ptIndex];
+            map.points[ptIndex].x = (double)((int)(mapRows/2) - row)*mapResolution - mapResolution/2;
+            map.points[ptIndex].y = (double)(col-(int)(mapCols/2))*mapResolution + mapResolution/2;
+            map.points[ptIndex].z = 0;
+            if(cell_pts > 0){
+                colorIndex = serectColor((float)cell_pts, (float)min_cell_pts, (float)max_cell_pts, colorMapGrad.size()/3)*3;
+                map.points[ptIndex].r = (uint8_t)(colorMapGrad[colorIndex] * 255);
+                map.points[ptIndex].g = (uint8_t)(colorMapGrad[colorIndex+1] * 255);
+                map.points[ptIndex].b = (uint8_t)(colorMapGrad[colorIndex+2] * 255);
+            }else{
+                map.points[ptIndex].r = 0;
+                map.points[ptIndex].g = 0;
+                map.points[ptIndex].b = 0;
+            }
+        }
+    }
+
+    pcl::toROSMsg(map, map_msg);
+    map_msg.header.stamp = ros::Time::now();
+    map_msg.header.frame_id = "/zed_left_camera_frame";
+    gridMapPCL_pub.publish(map_msg);
 }
 
 

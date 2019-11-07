@@ -71,6 +71,7 @@ add_message_files(
   SensorMapDataMultiLayer.msg
   synchronizedImage.msg
   recordData.msg
+  PersonGridMap.msg
 )
 
 ## Generate services in the 'srv' folder

@@ -24,6 +24,7 @@
 //obstacle_detection_2019_msgs
 #include <obstacle_detection_2019/SensorMapDataMultiLayer.h>
 #include <obstacle_detection_2019/ClassificationData.h>
+#include <obstacle_detection_2019/PersonGridMap.h>
 //geometry_msgs
 #include <geometry_msgs/Point.h>
 //メッセージフィルタ
@@ -91,6 +92,7 @@ class darknetImg {
         pcl::PointCloud<pcl::PointXYZ>::Ptr ground_points;                  //床面候補点
         obstacle_detection_2019::SensorMapDataMultiLayer smdml;             //複数マップ
         obstacle_detection_2019::SensorMapDataMultiLayer smdmlLowDimension; //複数マップ(cols=1)
+        obstacle_detection_2019::PersonGridMap pgm; //複数マップ(cols=1)
         //深度画像のマスク（有効で1、無効で0）
         //ノードハンドルとサブスクライパ、パブリッシャ
     protected:
@@ -125,7 +127,7 @@ class darknetImg {
         virtual void removeGroundPoints();              //床面の点を除外する
         //歩行者位置推定関数
         void trimPoints(darknet_ros_msgs::BoundingBoxes& bbs);  //枠線を元に点をトリミング
-        void generateGridmap();                 //深度画像からグリッドマップ作成
+        void generateGridMap();                 //深度画像からグリッドマップ作成
         void dimensionalityReductionGridmap();  // グリッドマップのを行のみ（奥行きのみ）のマップに変換
         void classifyPoints();                  //DBSCANによるクラスタリング
         void estimatePersonPosition();          //歩行者位置推定
