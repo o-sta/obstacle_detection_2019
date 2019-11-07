@@ -71,7 +71,7 @@ void darknetImg::generateGridMap(){
     int rows = bridgeImage->image.rows; //深度画像の行幅
     int cols = bridgeImage->image.cols; //深度画像の列幅
     int mapRow, mapCol; // マップの行と列
-    std::vector<std::vector<int>> cell_exists(detection_total, std::vector<int>(numberOfCells, -1)); //セルが存在している場合は配列番号を書き込
+    std::vector<std::vector<int>> cell_exists(detection_total, std::vector<int>(numberOfCells, -1)); //セルが存在している場合は配列番号を書き込む
     int exist;
     //PersonGridMap初期化 
     int pgm_count = 0; //index, size, ptの数
