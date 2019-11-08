@@ -73,18 +73,19 @@ void darknetImg::generateGridMap(){
     int mapRow, mapCol; // マップの行と列
     std::vector<std::vector<int>> cell_exists(detection_total, std::vector<int>(numberOfCells, -1)); //セルが存在している場合は配列番号を書き込む
     int exist;
+    int target_layer;
     //PersonGridMap初期化 
-    int pgm_count = 0; //index, size, ptの数
+    std::vector<int> pgm_count(detection_total, 0); //index, size, ptの数
     pgm.header.stamp = bridgeImage->header.stamp;
     pgm.height = mapHeight;
     pgm.width = mapWidth;
     pgm.resolution = mapResolution;
     pgm.layer.resize(detection_total);
-    pgm.layer.index = ;
-    pgm.index.resize(numberOfCells * detection_total);
-    pgm.size.resize(numberOfCells * detection_total);
-    pgm.pt.resize(numberOfCells * detection_total);
-
+    for(auto& layer : pgm.layer){
+        layer.index.resize(numberOfCells);
+        layer.size.resize(numberOfCells);
+        layer.pt.resize(numberOfCells);
+    }
     //処理
     for(int row = 0; row < rows; row++){
         auto bi = bridgeImage->image.ptr<float>(row);
@@ -94,65 +95,31 @@ void darknetImg::generateGridMap(){
                 zt = bi[col*ch];
                 xt = -( ((float)col-(float)cols/2)*zt/f);
                 if(convertToGrid(xt, zt, mapCol, mapRow) == true){
-                    exist = cell_exists[mapRow*mapCols+mapCol];
+                    target_layer = mi[col] - 1;
+                    exist = cell_exists[target_layer][mapRow*mapCols+mapCol];
                     if(exist == -1){
-                        cell_exists[mapRow*mapCols+mapCol] = pgm_count;
-                        pgm.index[pgm_count] = mapRow*mapCols+mapCol;
-                        pgm.size[pgm_count] = 1;
-                        pgm.pt[pgm_count].x = -(((float)col-(float)cols/2)*zt/f);
-                        pgm.pt[pgm_count].y = ((float)rows/2-row)*zt/f+camHeight;
-                        pgm.pt[pgm_count].z = bi[col*ch];
-                        pgm_count++;
+                        cell_exists[target_layer][mapRow*mapCols+mapCol] = pgm_count[target_layer];
+                        pgm.layer[target_layer].index[pgm_count[target_layer]] = mapRow*mapCols+mapCol;
+                        pgm.layer[target_layer].size[pgm_count[target_layer]] = 1;
+                        pgm.layer[target_layer].pt[pgm_count[target_layer]].x = -(((float)col-(float)cols/2)*zt/f);
+                        pgm.layer[target_layer].pt[pgm_count[target_layer]].y = ((float)rows/2-row)*zt/f+camHeight;
+                        pgm.layer[target_layer].pt[pgm_count[target_layer]].z = bi[col*ch];
+                        pgm_count[target_layer]++;
                     }else{
-                        pgm.size[exist]++;
-                        pgm.pt[exist].x += -(((float)col-(float)cols/2)*zt/f);
-                        pgm.pt[exist].y += ((float)rows/2-row)*zt/f+camHeight;
-                        pgm.pt[exist].z += bi[col*ch];
+                        pgm.layer[target_layer].size[exist]++;
+                        pgm.layer[target_layer].pt[exist].x += -(((float)col-(float)cols/2)*zt/f);
+                        pgm.layer[target_layer].pt[exist].y += ((float)rows/2-row)*zt/f+camHeight;
+                        pgm.layer[target_layer].pt[exist].z += bi[col*ch];
                     }
                 }
             }
         }
     }
-    pgm.index.resize(pgm_count);
-    pgm.size.resize(pgm_count);
-    pgm.pt.resize(pgm_count);
-
-    // int max_cell_pts_layer_index; //最大点数を持つセルの所属レイヤー（不要かも）
-    // int max_cell_pts_index; //最大点数を持つセル番号（不要かも）
-    //最大値算出
-    for(auto cell_pts : map_pts){
-        if(max_cell_pts < cell_pts){
-            max_cell_pts = cell_pts;
-        }
+    for(int i = 0; i < detection_total; i++){
+        pgm.layer[i].index.resize(pgm_count[i]);
+        pgm.layer[i].size.resize(pgm_count[i]);
+        pgm.layer[i].pt.resize(pgm_count[i]);
     }
-
-    int colorIndex;
-    int ptIndex;
-    int cell_pts;
-    for(int row = 0; row < mapRows; ++row){
-        for(int col = 0; col < mapCols; ++col){
-            ptIndex = row*mapCols + col;
-            cell_pts = map_pts[ptIndex];
-            map.points[ptIndex].x = (double)((int)(mapRows/2) - row)*mapResolution - mapResolution/2;
-            map.points[ptIndex].y = (double)(col-(int)(mapCols/2))*mapResolution + mapResolution/2;
-            map.points[ptIndex].z = 0;
-            if(cell_pts > 0){
-                colorIndex = serectColor((float)cell_pts, (float)min_cell_pts, (float)max_cell_pts, colorMapGrad.size()/3)*3;
-                map.points[ptIndex].r = (uint8_t)(colorMapGrad[colorIndex] * 255);
-                map.points[ptIndex].g = (uint8_t)(colorMapGrad[colorIndex+1] * 255);
-                map.points[ptIndex].b = (uint8_t)(colorMapGrad[colorIndex+2] * 255);
-            }else{
-                map.points[ptIndex].r = 0;
-                map.points[ptIndex].g = 0;
-                map.points[ptIndex].b = 0;
-            }
-        }
-    }
-
-    pcl::toROSMsg(map, map_msg);
-    map_msg.header.stamp = ros::Time::now();
-    map_msg.header.frame_id = "/zed_left_camera_frame";
-    gridMapPCL_pub.publish(map_msg);
 }
 
 
