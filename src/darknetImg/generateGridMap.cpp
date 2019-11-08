@@ -122,58 +122,58 @@ void darknetImg::generateGridMap(){
     }
 }
 
-
-void darknetImg::dimensionalityReductionGridmap(){
-    std_msgs::Int32 initial_value;
-    geometry_msgs::Point pt;
-    pt.x = 0; pt.y = 0; pt.z = 0;
-    int *index, index_smdml;
-    int layer_i = 0; //layerのイテレータ
-    int rowOfCell;
-    int count = 0;
-    smdmlLowDimension.header = smdml.header;
-    smdmlLowDimension.layer.resize(smdml.layer.size());
-    for(auto& layer : smdmlLowDimension.layer){ //全てのSensorMapDataで走査
-        count = 0;
-        layer.header = smdml.header;
-        layer.width.data = mapWidth;
-        layer.height.data = mapHeight;
-        layer.res.data = mapResolution;
-        layer.widthInt.data = 1;
-        layer.heightInt.data = mapRows;
-        layer.index.resize(mapRows);
-        layer.size.resize(mapRows);
-        layer.pt.resize(mapRows);
-        initial_value.data = -1;
-        std::fill(layer.index.begin(), layer.index.end(), initial_value); //std::vectorの全要素を-1で埋める
-        initial_value.data = 0;
-        std::fill(layer.size.begin(), layer.size.end(), initial_value);
-        std::fill(layer.pt.begin(), layer.pt.end(), pt);
-        int mapIndexSize = smdml.layer[layer_i].index.size();
-        for(int cell=0; cell<mapIndexSize; cell++){ //
-            if(smdml.layer[layer_i].index[cell].data < 0){ //smdmlのセルが空の場合はスキップ
-                continue;
-            }
-            rowOfCell = cell / smdml.layer[layer_i].widthInt.data;
-            index = &layer.index[rowOfCell].data;
-            if(*index < 0){
-                *index = count++;
-            }
-            index_smdml = smdml.layer[layer_i].index[cell].data;
-            layer.pt[*index].x += smdml.layer[layer_i].pt[index_smdml].x * (double)smdml.layer[layer_i].size[index_smdml].data;
-            layer.pt[*index].y += smdml.layer[layer_i].pt[index_smdml].y * (double)smdml.layer[layer_i].size[index_smdml].data;
-            layer.pt[*index].z += smdml.layer[layer_i].pt[index_smdml].z * (double)smdml.layer[layer_i].size[index_smdml].data;
-            layer.size[*index].data += smdml.layer[layer_i].size[index_smdml].data;
-        }
-        layer.index.resize(count);
-        for(auto index_layer : layer.index){
-            layer.pt[index_layer.data].x /= (double)layer.size[index_layer.data].data;
-            layer.pt[index_layer.data].y /= (double)layer.size[index_layer.data].data;
-            layer.pt[index_layer.data].z /= (double)layer.size[index_layer.data].data;
-        }
-        layer_i++;
-    }
-}
+//採用しない方針
+// void darknetImg::dimensionalityReductionGridmap(){
+//     std_msgs::Int32 initial_value;
+//     geometry_msgs::Point pt;
+//     pt.x = 0; pt.y = 0; pt.z = 0;
+//     int *index, index_smdml;
+//     int layer_i = 0; //layerのイテレータ
+//     int rowOfCell;
+//     int count = 0;
+//     smdmlLowDimension.header = smdml.header;
+//     smdmlLowDimension.layer.resize(smdml.layer.size());
+//     for(auto& layer : smdmlLowDimension.layer){ //全てのSensorMapDataで走査
+//         count = 0;
+//         layer.header = smdml.header;
+//         layer.width.data = mapWidth;
+//         layer.height.data = mapHeight;
+//         layer.res.data = mapResolution;
+//         layer.widthInt.data = 1;
+//         layer.heightInt.data = mapRows;
+//         layer.index.resize(mapRows);
+//         layer.size.resize(mapRows);
+//         layer.pt.resize(mapRows);
+//         initial_value.data = -1;
+//         std::fill(layer.index.begin(), layer.index.end(), initial_value); //std::vectorの全要素を-1で埋める
+//         initial_value.data = 0;
+//         std::fill(layer.size.begin(), layer.size.end(), initial_value);
+//         std::fill(layer.pt.begin(), layer.pt.end(), pt);
+//         int mapIndexSize = smdml.layer[layer_i].index.size();
+//         for(int cell=0; cell<mapIndexSize; cell++){ //
+//             if(smdml.layer[layer_i].index[cell].data < 0){ //smdmlのセルが空の場合はスキップ
+//                 continue;
+//             }
+//             rowOfCell = cell / smdml.layer[layer_i].widthInt.data;
+//             index = &layer.index[rowOfCell].data;
+//             if(*index < 0){
+//                 *index = count++;
+//             }
+//             index_smdml = smdml.layer[layer_i].index[cell].data;
+//             layer.pt[*index].x += smdml.layer[layer_i].pt[index_smdml].x * (double)smdml.layer[layer_i].size[index_smdml].data;
+//             layer.pt[*index].y += smdml.layer[layer_i].pt[index_smdml].y * (double)smdml.layer[layer_i].size[index_smdml].data;
+//             layer.pt[*index].z += smdml.layer[layer_i].pt[index_smdml].z * (double)smdml.layer[layer_i].size[index_smdml].data;
+//             layer.size[*index].data += smdml.layer[layer_i].size[index_smdml].data;
+//         }
+//         layer.index.resize(count);
+//         for(auto index_layer : layer.index){
+//             layer.pt[index_layer.data].x /= (double)layer.size[index_layer.data].data;
+//             layer.pt[index_layer.data].y /= (double)layer.size[index_layer.data].data;
+//             layer.pt[index_layer.data].z /= (double)layer.size[index_layer.data].data;
+//         }
+//         layer_i++;
+//     }
+// }
 
 
 bool darknetImg::convertToGrid(const float& x,const float& y,int& xg,int& yg){
