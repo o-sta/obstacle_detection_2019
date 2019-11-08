@@ -79,7 +79,8 @@ void darknetImg::generateGridMap(){
     pgm.height = mapHeight;
     pgm.width = mapWidth;
     pgm.resolution = mapResolution;
-    pgm.groupSize = detection_total;
+    pgm.layer.resize(detection_total);
+    pgm.layer.index = ;
     pgm.index.resize(numberOfCells * detection_total);
     pgm.size.resize(numberOfCells * detection_total);
     pgm.pt.resize(numberOfCells * detection_total);

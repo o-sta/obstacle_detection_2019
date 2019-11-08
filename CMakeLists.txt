@@ -72,6 +72,7 @@ add_message_files(
   synchronizedImage.msg
   recordData.msg
   PersonGridMap.msg
+  PersonGridMapData.msg
 )
 
 ## Generate services in the 'srv' folder
