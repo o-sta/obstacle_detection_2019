@@ -82,7 +82,8 @@ void darknetImgDebug::publishGridMap(){
     //最下層レイヤー描画
     //最下層レイヤーのときは、点が存在しないセルも黒色で表示する
     //上層レイヤーのときは、存在しないセルは表示しない。zを浮かして表示する。
-    for(auto index : pgm.layer[0].index){
+    for(int i=0; i < pgm.layer[0].index.size(); ++i){
+    // for(auto index : pgm.layer[0].index){
         //存在しないセルをポイントクラウドに追加
         // for(int i=prev_index; i < index; ++i){
         //     row = i / mapCols;
@@ -96,17 +97,17 @@ void darknetImgDebug::publishGridMap(){
         //     ptIndex++;
         // }
         //存在するセルをポイントクラウドに追加
-        row = index / mapCols;
-        col = index % mapCols;
+        row = pgm.layer[0].index[i] / mapCols;
+        col = pgm.layer[0].index[i] % mapCols;
         map.points[ptIndex].x = (double)((int)(mapRows/2) - row)*mapResolution - mapResolution/2;
         map.points[ptIndex].y = (double)(col-(int)(mapCols/2))*mapResolution + mapResolution/2;
         map.points[ptIndex].z = 0;
-        colorIndex = serectColor((float)cell_pts, 0.0, (float)max_cell_pts[0], colorMapGrad.size()/3)*3;
+        colorIndex = serectColor((float)pgm.layer[0].size[i], 0.0, (float)max_cell_pts[0], colorMapGrad.size()/3)*3;
         map.points[ptIndex].r = (uint8_t)(colorMap[colorIndex] * 255);
         map.points[ptIndex].g = (uint8_t)(colorMap[colorIndex+1] * 255);
         map.points[ptIndex].b = (uint8_t)(colorMap[colorIndex+2] * 255);
         ptIndex++;
-        prev_index = index + 1;
+        prev_index = pgm.layer[0].index[i] + 1;
     }
     //最後の存在しないセルを追加
     // for(int i=prev_index; i < numberOfCells; ++i){
