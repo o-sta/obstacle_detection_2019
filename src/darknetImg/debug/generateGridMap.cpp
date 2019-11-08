@@ -123,22 +123,23 @@ void darknetImgDebug::publishGridMap(){
     // }
 
     //上層レイヤー描画
-    // for(int layer_i=1; layer_i < detection_total; ++layer_i){
-    //     for(auto index : pgm.layer[layer_i].index){
-    //         //存在するセルをポイントクラウドに追加
-    //         row = index / mapCols;
-    //         col = index % mapCols;
-    //         map.points[ptIndex].x = (double)((int)(mapRows/2) - row)*mapResolution - mapResolution/2;
-    //         map.points[ptIndex].y = (double)(col-(int)(mapCols/2))*mapResolution + mapResolution/2;
-    //         map.points[ptIndex].z = (double)layer_i * 0.3;
-    //         colorIndex = serectColor((float)cell_pts, 0.0, (float)max_cell_pts[layer_i], colorMapGrad.size()/3)*3;
-    //         map.points[ptIndex].r = (uint8_t)(colorMap[colorIndex] * 255);
-    //         map.points[ptIndex].g = (uint8_t)(colorMap[colorIndex+1] * 255);
-    //         map.points[ptIndex].b = (uint8_t)(colorMap[colorIndex+2] * 255);
-    //         ptIndex++;
-    //         prev_index = index + 1;
-    //     }
-    // }
+    for(int layer_i=1; layer_i < detection_total; ++layer_i){
+        for(int i=0; i < pgm.layer[layer_i].index.size(); ++i){
+        // for(auto index : pgm.layer[layer_i].index){
+            //存在するセルをポイントクラウドに追加
+            row = pgm.layer[layer_i].size[i] / mapCols;
+            col = pgm.layer[layer_i].size[i] % mapCols;
+            map.points[ptIndex].x = (double)((int)(mapRows/2) - row)*mapResolution - mapResolution/2;
+            map.points[ptIndex].y = (double)(col-(int)(mapCols/2))*mapResolution + mapResolution/2;
+            map.points[ptIndex].z = (double)layer_i * 0.3;
+            colorIndex = serectColor((float)pgm.layer[layer_i].size[i], 0.0, (float)max_cell_pts[layer_i], colorMapGrad.size()/3)*3;
+            map.points[ptIndex].r = (uint8_t)(colorMapGrad[colorIndex] * 255);
+            map.points[ptIndex].g = (uint8_t)(colorMapGrad[colorIndex+1] * 255);
+            map.points[ptIndex].b = (uint8_t)(colorMapGrad[colorIndex+2] * 255);
+            ptIndex++;
+            prev_index = pgm.layer[layer_i].size[i] + 1;
+        }
+    }
     map.points.resize(ptIndex);
     map.width=ptIndex;
     pcl::toROSMsg(map, map_msg);
