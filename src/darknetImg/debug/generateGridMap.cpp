@@ -84,17 +84,17 @@ void darknetImgDebug::publishGridMap(){
     //上層レイヤーのときは、存在しないセルは表示しない。zを浮かして表示する。
     for(auto index : pgm.layer[0].index){
         //存在しないセルをポイントクラウドに追加
-        for(int i=prev_index; i < index; ++i){
-            row = i / mapCols;
-            col = i % mapCols;
-            map.points[ptIndex].x = (double)((int)(mapRows/2) - row)*mapResolution - mapResolution/2;
-            map.points[ptIndex].y = (double)(col-(int)(mapCols/2))*mapResolution + mapResolution/2;
-            map.points[ptIndex].z = 0;
-            map.points[ptIndex].r = 0;
-            map.points[ptIndex].g = 0;
-            map.points[ptIndex].b = 0;
-            ptIndex++;
-        }
+        // for(int i=prev_index; i < index; ++i){
+        //     row = i / mapCols;
+        //     col = i % mapCols;
+        //     map.points[ptIndex].x = (double)((int)(mapRows/2) - row)*mapResolution - mapResolution/2;
+        //     map.points[ptIndex].y = (double)(col-(int)(mapCols/2))*mapResolution + mapResolution/2;
+        //     map.points[ptIndex].z = 0;
+        //     map.points[ptIndex].r = 0;
+        //     map.points[ptIndex].g = 0;
+        //     map.points[ptIndex].b = 0;
+        //     ptIndex++;
+        // }
         //存在するセルをポイントクラウドに追加
         row = index / mapCols;
         col = index % mapCols;
@@ -109,17 +109,17 @@ void darknetImgDebug::publishGridMap(){
         prev_index = index + 1;
     }
     //最後の存在しないセルを追加
-    for(int i=prev_index; i < numberOfCells; ++i){
-            row = i / mapCols;
-            col = i % mapCols;
-            map.points[ptIndex].x = (double)((int)(mapRows/2) - row)*mapResolution - mapResolution/2;
-            map.points[ptIndex].y = (double)(col-(int)(mapCols/2))*mapResolution + mapResolution/2;
-            map.points[ptIndex].z = 0;
-            map.points[ptIndex].r = 0;
-            map.points[ptIndex].g = 0;
-            map.points[ptIndex].b = 0;
-            ptIndex++;
-    }
+    // for(int i=prev_index; i < numberOfCells; ++i){
+    //         row = i / mapCols;
+    //         col = i % mapCols;
+    //         map.points[ptIndex].x = (double)((int)(mapRows/2) - row)*mapResolution - mapResolution/2;
+    //         map.points[ptIndex].y = (double)(col-(int)(mapCols/2))*mapResolution + mapResolution/2;
+    //         map.points[ptIndex].z = 0;
+    //         map.points[ptIndex].r = 0;
+    //         map.points[ptIndex].g = 0;
+    //         map.points[ptIndex].b = 0;
+    //         ptIndex++;
+    // }
 
     //上層レイヤー描画
     // for(int layer_i=1; layer_i < detection_total; ++layer_i){
