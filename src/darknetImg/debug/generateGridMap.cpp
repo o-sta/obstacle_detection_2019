@@ -58,7 +58,7 @@
 
 void darknetImgDebug::publishGridMap(){
     pcl::PointCloud<pcl::PointXYZRGB> map;
-    pcl::PointXYZRGB cell;
+    //pcl::PointXYZRGB cell;
     sensor_msgs::PointCloud2 map_msg;
     std::vector<int> max_cell_pts(detection_total, 0); //最大点数
     map_msg.header.stamp = pgm.header.stamp;
@@ -139,6 +139,7 @@ void darknetImgDebug::publishGridMap(){
     //     }
     // }
     map.points.resize(ptIndex);
+    map.width=ptIndex;
     pcl::toROSMsg(map, map_msg);
     map_msg.header.stamp = ros::Time::now();
     map_msg.header.frame_id = "/zed_camera_center";
