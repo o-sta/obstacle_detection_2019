@@ -127,8 +127,8 @@ void darknetImgDebug::publishGridMap(){
         for(int i=0; i < pgm.layer[layer_i].index.size(); ++i){
         // for(auto index : pgm.layer[layer_i].index){
             //存在するセルをポイントクラウドに追加
-            row = pgm.layer[layer_i].size[i] / mapCols;
-            col = pgm.layer[layer_i].size[i] % mapCols;
+            row = pgm.layer[layer_i].index[i] / mapCols;
+            col = pgm.layer[layer_i].index[i] % mapCols;
             map.points[ptIndex].x = (double)((int)(mapRows/2) - row)*mapResolution - mapResolution/2;
             map.points[ptIndex].y = (double)(col-(int)(mapCols/2))*mapResolution + mapResolution/2;
             map.points[ptIndex].z = (double)layer_i * 0.3;
