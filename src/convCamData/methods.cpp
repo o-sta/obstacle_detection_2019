@@ -58,9 +58,9 @@ void convCamDataClass::groundEstimationRANSAC(){
             // z_temp=depth_image.at<float>(h,w);
             z_temp = p[w*ch];//上行と同じ内容
             if(z_temp>0.5&&!std::isinf(z_temp)){
-                y_temp=((float)hMax/2-h)*z_temp/f;//高さ算出 ■この計算式どこから？
+                y_temp=((float)hMax/2-h)*z_temp/f + camHeight;//高さ算出 ■この計算式どこから？
                 if(std::abs(y_temp+camHeight)<groundCandidateY){//高さがgroundCandidateY未満の時
-                    x_temp=-( ((float)w-(float)wMax/2)*z_temp/f-camHeight );
+                    x_temp=-( ((float)w-(float)wMax/2)*z_temp/f);
                     //座標系の変換
                     p_temp.x=z_temp;
                     p_temp.y=x_temp;
@@ -169,8 +169,8 @@ void convCamDataClass::createPubDataRANSAC(){
         for(int w=0;w<wMax;w++){
             z_temp = p[w*ch];//
             if(z_temp>0.5&&!std::isinf(z_temp)){
-                y_temp=((float)hMax/2-h)*z_temp/f;//高さ算出
-                x_temp=-( ((float)w-(float)wMax/2)*z_temp/f-camHeight );
+                y_temp=((float)hMax/2-h)*z_temp/f+camHeight;//高さ算出
+                x_temp=-( ((float)w-(float)wMax/2)*z_temp/f);
                 float y_ground=(-a*z_temp-b*x_temp-d)/c;//床面の高さを算出
                 //高さが床面以上height_th以下の範囲を検出
                 if(y_temp-y_ground<=0||y_temp-y_ground>height_th){
