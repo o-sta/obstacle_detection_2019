@@ -103,9 +103,9 @@ void darknetImgDebug::publishGridMap(){
         map.points[ptIndex].y = (double)(col-(int)(mapCols/2))*mapResolution + mapResolution/2;
         map.points[ptIndex].z = 0;
         colorIndex = serectColor((float)pgm.layer[0].size[i], 0.0, (float)max_cell_pts[0], colorMapGrad.size()/3)*3;
-        map.points[ptIndex].r = (uint8_t)(colorMap[colorIndex] * 255);
-        map.points[ptIndex].g = (uint8_t)(colorMap[colorIndex+1] * 255);
-        map.points[ptIndex].b = (uint8_t)(colorMap[colorIndex+2] * 255);
+        map.points[ptIndex].r = (uint8_t)(colorMapGrad[colorIndex] * 255);
+        map.points[ptIndex].g = (uint8_t)(colorMapGrad[colorIndex+1] * 255);
+        map.points[ptIndex].b = (uint8_t)(colorMapGrad[colorIndex+2] * 255);
         ptIndex++;
         prev_index = pgm.layer[0].index[i] + 1;
     }
