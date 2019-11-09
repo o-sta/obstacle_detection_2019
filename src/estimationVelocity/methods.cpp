@@ -288,10 +288,15 @@ void velocityEstimation::publishData(){//データ送信
 		filtedClstr.twist[k].linear.z = filtedClstr.twist[k].linear.z; 
 	}
 	//データ修正 (x軸が反転しているのを修正) 
-	for(int k=0; k<filtedClstr.twist.size();k++){
+	for(int k=0; k<filtedClstr.data.size();k++){
 		filtedClstr.data[k].gc.x = - filtedClstr.data[k].gc.x;//反転 
 		filtedClstr.data[k].gc.y = filtedClstr.data[k].gc.y; 
 		filtedClstr.data[k].gc.z = filtedClstr.data[k].gc.z; 
+		for(int l=0; l<filtedClstr.data[k].pt.size();l++){
+			filtedClstr.data[k].pt[l].x = - filtedClstr.data[k].pt[l].x;//反転 
+			filtedClstr.data[k].pt[l].y = filtedClstr.data[k].pt[l].y; 
+			filtedClstr.data[k].pt[l].z = filtedClstr.data[k].pt[l].z; 
+		}
 	}
 	//データパブリッシュ
     pub.publish(filtedClstr);
