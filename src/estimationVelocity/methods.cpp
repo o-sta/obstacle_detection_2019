@@ -19,6 +19,12 @@ void velocityEstimation::manage(){
 	ROS_INFO("kalmanFilter");
 	kalmanFilter();
 	//
+	ROS_INFO("recordTwistData");
+	recordTwistData();
+	ROS_INFO("averageFilter");
+	averageFilter();
+	ROS_INFO("decisionObstacleType");
+	decisionObstacleType();
 	ROS_INFO("publishData");
 	publishData();
 	ROS_INFO("debug");
@@ -133,16 +139,25 @@ void velocityEstimation::kalmanFilter(){//
 		// z_t(2,0)=preClstr.twist[i].linear.y;
 		// z_t(3,0)=preClstr.twist[i].linear.x;
 		//軸反転なし
-		z_t(0,0)=preClstr.data[i].gc.x;
-		z_t(1,0)=preClstr.data[i].gc.y;
-		z_t(2,0)=preClstr.twist[i].linear.x;
-		z_t(3,0)=preClstr.twist[i].linear.y;
+		// z_t(0,0)=preClstr.data[i].gc.x;
+		// z_t(1,0)=preClstr.data[i].gc.y;
+		// z_t(2,0)=preClstr.twist[i].linear.x;
+		// z_t(3,0)=preClstr.twist[i].linear.y;
+		// std::cout<<"z_t,gc.x:"<<curClstr.data[i].gc.x<<std::endl;
+		// std::cout<<"z_t,gc.y:"<<curClstr.data[i].gc.y<<std::endl;
+		// std::cout<<"z_t,linear.x:"<<curClstr.twist[i].linear.x<<std::endl;
+		// std::cout<<"z_t,linear.y:"<<curClstr.twist[i].linear.y<<std::endl;
+		z_t(0,0)=curClstr.data[i].gc.x;
+		z_t(1,0)=curClstr.data[i].gc.y;
+		z_t(2,0)=curClstr.twist[i].linear.x;
+		z_t(3,0)=curClstr.twist[i].linear.y;
 		float dt = curClstr.dt;
 		//set ut
 		if(curClstr.match[i] < 0){//マッチングなし
 			// ROS_INFO("no matching[%d]",i);
 			// std::cout<<z_t<<std::endl;
-			xh_t[i] = z_t;//過去の観測データを推定結果としてそのまま出力
+			// xh_t[i] = z_t;//過去の観測データを推定結果としてそのまま出力
+			xh_t[i] = z_t;//現在の観測データを推定結果としてそのまま出力
 			sig_xh_t[i]=sig_x0;//推定値の共分散は初期分散		
 		}
 		else{//マッチングあり
@@ -165,8 +180,125 @@ void velocityEstimation::kalmanFilter(){//
 		filtedClstr.twist[i].linear.y = xh_t[i](3,0);
 	}
 }
+void velocityEstimation::decisionObstacleType(){
+	//移動障害物かどうかを判断
+	//静止障害物->速度ゼロ
+	//移動障害物->推定速度
+	float cellSize = filtedClstr.res.data * filtedClstr.res.data;
+	for(int k=0; k<filtedClstr.data.size(); k++){
+		//判断
+		std::cout<<"size "<< k << " = "<< filtedClstr.data[k].size.data << " * " << cellSize << std::endl;
+		if( std::sqrt(sig_xh_t[k](2, 2) + sig_xh_t[k](3, 3) ) 
+            > std::sqrt(std::pow(filtedClstr.twist[k].linear.x, 2.0) + std::pow(filtedClstr.twist[k].linear.y, 2.0))
+            || std::sqrt(std::pow(filtedClstr.twist[k].linear.x, 2.0) + std::pow(filtedClstr.twist[k].linear.y, 2.0)) >= velMaxThreshold
+            || std::sqrt(std::pow(filtedClstr.twist[k].linear.x, 2.0) + std::pow(filtedClstr.twist[k].linear.y, 2.0)) <= velMinThreshold
+			|| filtedClstr.data[k].size.data * cellSize < sizeMinThreshold
+			|| filtedClstr.data[k].size.data * cellSize > sizeMaxThreshold
+			|| filtedClstr.trackingNum[k] < trackThreshold){
+				filtedClstr.twist[k].linear.x = 0;
+				filtedClstr.twist[k].linear.y = 0;
+				filtedClstr.twist[k].linear.z = 0;
+        }
+        else{
+			//no process
+        }
+		//障害物の状態を確認
+		std::cout<<"\t gc:"<< filtedClstr.data[k].gc.x <<","<<filtedClstr.data[k].gc.y << std::endl;
+		std::cout<<"\t twist:"<< filtedClstr.twist[k].linear.x <<","<<filtedClstr.twist[k].linear.y << std::endl;
+		std::cout<<"\t trackingNum:"<< filtedClstr.trackingNum[k] << std::endl;
+		
+	}
+}
+//平均フィルタ
+void velocityEstimation::averageFilter(){
+	//average filter
+	for(int k=0; k<record_twists.size();k++){
+		ROS_INFO("record_twists[%d].n = %d",k,record_twists[k].n);
+		if(record_twists[k].n == filterN){
+			record_twists[k].sum_twist = record_twists[k].twistArray[0];
+			for(int i=1;i<record_twists[k].n; i++){
+				record_twists[k].sum_twist.linear.x = record_twists[k].sum_twist.linear.x + record_twists[k].twistArray[i].linear.x;
+				record_twists[k].sum_twist.linear.y = record_twists[k].sum_twist.linear.y + record_twists[k].twistArray[i].linear.y;
+				record_twists[k].sum_twist.linear.z = record_twists[k].sum_twist.linear.z + record_twists[k].twistArray[i].linear.z;
+			}
+			//平均を求め
+			filtedClstr.twist[k].linear.x = record_twists[k].sum_twist.linear.x / filterN;//反転 
+			filtedClstr.twist[k].linear.y = record_twists[k].sum_twist.linear.y / filterN; 
+			filtedClstr.twist[k].linear.z = record_twists[k].sum_twist.linear.z / filterN; 
+		}
+	}
+}
+void velocityEstimation::recordTwistData(){
 
+	std::vector<record_twist> record_twists_temp;
+	record_twists_temp.resize(filtedClstr.data.size() );
+
+	if((int)record_twists.size() <= 0){
+		//記録データが皆無
+		//完全に初期処理
+		//推定データをそのまま確保する
+		record_twists_temp.resize(filtedClstr.data.size());
+		for(int k=0; k<filtedClstr.data.size();k++){
+			record_twists_temp[k].n = 1;
+			record_twists_temp[k].twistArray.resize(1);
+			record_twists_temp[k].twistArray[0] =  filtedClstr.twist[k];
+		}
+	}
+	else{
+		//データがある時
+		//処理回数２回以上
+		for(int k=0; k<filtedClstr.data.size();k++){
+			int prev_n =filtedClstr.match[k];
+			//データマッチングが取れない
+			//障害物を見失ったとき
+			if(prev_n == -1){
+				//データ追加(初期データ)
+				record_twists_temp[k].n = 1;
+				record_twists_temp[k].twistArray.resize(1);
+				record_twists_temp[k].twistArray[0] = filtedClstr.twist[k];
+			}
+			else{
+				//追跡中の障害物
+				//記録中データに取得データを追加する
+				//取得データ
+				record_twists_temp[k].n = 1;
+				record_twists_temp[k].twistArray.resize(1);
+				record_twists_temp[k].twistArray[0] = filtedClstr.twist[k];
+				//記録データを加算
+				record_twists_temp[k].n += record_twists[prev_n].n;
+				record_twists_temp[k].twistArray.reserve(filterN+1);
+				std::copy(record_twists[prev_n].twistArray.begin(),record_twists[prev_n].twistArray.end(),std::back_inserter(record_twists_temp[k].twistArray));
+				//サイズ超過時
+				while(record_twists_temp[k].n > filterN){
+					//一番後ろの要素を削除
+					record_twists_temp[k].twistArray.pop_back();
+					record_twists_temp[k].n -= 1;
+				}
+			}
+		}
+	}
+	record_twists = record_twists_temp;
+}
 void velocityEstimation::publishData(){//データ送信
+
+	//データ修正 (x軸が反転しているのを修正) 
+	for(int k=0; k<filtedClstr.twist.size();k++){
+		filtedClstr.twist[k].linear.x = - filtedClstr.twist[k].linear.x;//反転 
+		filtedClstr.twist[k].linear.y = filtedClstr.twist[k].linear.y; 
+		filtedClstr.twist[k].linear.z = filtedClstr.twist[k].linear.z; 
+	}
+	//データ修正 (x軸が反転しているのを修正) 
+	for(int k=0; k<filtedClstr.data.size();k++){
+		filtedClstr.data[k].gc.x = - filtedClstr.data[k].gc.x;//反転 
+		filtedClstr.data[k].gc.y = filtedClstr.data[k].gc.y; 
+		filtedClstr.data[k].gc.z = filtedClstr.data[k].gc.z; 
+		for(int l=0; l<filtedClstr.data[k].pt.size();l++){
+			filtedClstr.data[k].pt[l].x = - filtedClstr.data[k].pt[l].x;//反転 
+			filtedClstr.data[k].pt[l].y = filtedClstr.data[k].pt[l].y; 
+			filtedClstr.data[k].pt[l].z = filtedClstr.data[k].pt[l].z; 
+		}
+	}
+	//データパブリッシュ
     pub.publish(filtedClstr);
 }
 void velocityEstimation::renewMessages(){

@@ -33,7 +33,14 @@ void velocityEstimation::setLaunchParam(){
     n.getParam("estimationSigma/4/2",sig_x0(3,1));
     //追跡閾値
     n.getParam("measurementVelocity/trackThreshold", trackThreshold);
-    //デバッグ
+	n.getParam("measurementVelocity/sizeMinThreshold", sizeMinThreshold);
+	n.getParam("measurementVelocity/sizeMaxThreshold", sizeMaxThreshold);
+	n.getParam("measurementVelocity/velSigmaThreshold", velSigmaThreshold);
+	n.getParam("measurementVelocity/velMinThreshold", velMinThreshold);
+	n.getParam("measurementVelocity/velMaxThreshold", velMaxThreshold);
+    //平均フィルタ
+	n.getParam("measurementVelocity/filterN", filterN);
+	//デバッグ
     n.getParam("measurementVelocity/debugType",debugType);
     n.getParam("measurementVelocity/timeRange",timeRange);
     n.getParam("measurementVelocity/timeInteval",timeInteval);
@@ -73,8 +80,16 @@ void velocityEstimation::configCallback(obstacle_detection_2019::velocityEstimat
 	sig_x0(1,3) = config.estimationSigma31;
 	sig_x0(2,0) = config.estimationSigma24;
 	sig_x0(3,1) = config.estimationSigma42;
-	//デバッグ
+	//移動障害物判断パラメータ
     trackThreshold = config.trackThreshold;
+	sizeMinThreshold = config.sizeMinThreshold;
+	sizeMaxThreshold = config.sizeMaxThreshold;
+	velSigmaThreshold = config.velSigmaThreshold;
+	velMinThreshold = config.velMinThreshold;
+	velMaxThreshold = config.velMaxThreshold;
+	//average filter
+	filterN = config.filterN;
+	//デバッグ
     debugType = config.debugType;
     timeRange = config.timeRange;
     timeInteval = config.timeInteval;

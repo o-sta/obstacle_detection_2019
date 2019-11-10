@@ -88,7 +88,7 @@ void recordExData::transObstaclePos() {
     //--header
     turtle_odom.header.seq += 1;
     turtle_odom.header.stamp = timeNow;
-
+    
 }
 //対象の障害物番号を探索するメソッド
 //対象の番号をtargetNumに格納
