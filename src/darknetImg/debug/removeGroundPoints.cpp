@@ -16,8 +16,8 @@ void darknetImgDebug::depth2points(){
         for(int j = 0; j < cols; j++){//走査}
             zt = p[j*ch];
             if(zt > 0.5 && !std::isinf(zt)){
-                yt = ((float)rows/2-(float)i)*zt/f; //高さ
-                xt = -( ((float)j-(float)cols/2)*zt/f-camHeight );
+                yt = ((float)rows/2-(float)i)*zt/f+camHeight; //高さ
+                xt = -( ((float)j-(float)cols/2)*zt/f );
                 // temp_rand = 0.3*((float)std::rand()/(float)RAND_MAX);
                 pt.x=zt;
                 pt.y=xt;
@@ -56,9 +56,9 @@ void darknetImgDebug::pickUpGroundPointCandidates(){
         for(int j = 0; j < cols; j++){//走査}
             zt = p[j*ch];
             if(zt > 0.5 && !std::isinf(zt)){
-                yt = ((float)rows/2-i)*zt/f; //高さ
+                yt = ((float)rows/2-i)*zt/f+camHeight; //高さ
                 if(std::abs(yt+camHeight) < groundCandidateY){ //高さがgroundCandidateY未満の時
-                    xt = -( ((float)j-(float)cols/2)*zt/f-camHeight );
+                    xt = -( ((float)j-(float)cols/2)*zt/f);
                     pt.x=zt;
                     pt.y=xt;
                     pt.z=yt;
@@ -141,7 +141,7 @@ void darknetImgDebug::removeGroundPoints(){
     int cols = bridgeImage->image.cols; //深度画像の列
     //マスクのりサイズ
     if(is_size_initialized == false){
-        cv::resize(obstacle_mask, obstacle_mask, cv::Size(rows,cols));
+        cv::resize(obstacle_mask, obstacle_mask, cv::Size(cols,rows));
     }
     ground_points_temp.points.resize(rows*cols);
     gp_size = 0;
@@ -151,8 +151,8 @@ void darknetImgDebug::removeGroundPoints(){
         for(col = 0; col < cols; col++){
             zt = bi[col*ch];
             if(zt>0.5&&!std::isinf(zt)){
-                yt=((float)rows/2-row)*zt/f;//高さ算出
-                xt = -( ((float)col-(float)cols/2)*zt/f-camHeight);
+                yt=((float)rows/2-row)*zt/f+camHeight;//高さ算出
+                xt = -( ((float)col-(float)cols/2)*zt/f);
                 float y_ground=(-a*zt-b*xt-d)/c;//床面の高さを算出
                 //高さが床面以上であればobstacle_mask値を1に
                 yt > y_ground ? mi[col] = 1 : mi[col] = 0;

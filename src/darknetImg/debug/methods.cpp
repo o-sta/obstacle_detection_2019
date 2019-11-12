@@ -42,12 +42,18 @@ void darknetImgDebug::debug_callback(const darknet_ros_msgs::BoundingBoxes::Cons
         removeGroundPoints();
         trimPoints(boundingBoxesMsg);
         publishTrimMask();
-        cv_bridge::CvImage cvMask;
-        cvMask.header = bridgeImage->header;
-        cvMask.encoding = sensor_msgs::image_encodings::TYPE_8UC1;
-        cvMask.image = mask.clone();
-        bbMaskImage_pub.publish(cvMask.toImageMsg());
-        bbImage_pub.publish(bridgeImage->toImageMsg());
+        for(int row=0; row < bridgeImage->image.rows; row++){
+            auto mi = mask.ptr<char>(row);
+            for(int col=0; col < bridgeImage->image.cols; col++){
+                if((int)(mi[col]) > detection_total){
+                    ROS_WARN_STREAM("over detection total ... " << row << " " << col << " " << mi[col] << " " << (int)mi[col] << " " << detection_total);
+                }
+            }
+        }
+        generateGridMap();
+        publishGridMap();
+        // generateGridmap();
+        // publishGridMap();
         // ROS_INFO_STREAM("pickUpGroundPointCandidates");
         // pickUpGroundPointCandidates();
         // ROS_INFO_STREAM("estimateGroundCoefficients");

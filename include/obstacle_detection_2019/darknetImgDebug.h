@@ -16,8 +16,10 @@ class darknetImgDebug : public darknetImg {
         ros::Publisher estimateGroundCoefficients_pub;
         ros::Publisher removeGroundPoints_pub;
         ros::Publisher trimPoints_pub;
+        ros::Publisher gridMapPCL_pub;
         cv_bridge::CvImagePtr mapImageCB;   //クラスタ毎に色分けされたマップセル画像
         std::vector<int> colorMap;          //色付けを行うためのカラーマップ
+        std::vector<float> colorMapGrad;      //色付けを行うためのカラーマップ(グラデーション)
         sensor_msgs::PointCloud2 pcl_msg;   //物体のポイントクラウド
         sensor_msgs::PointCloud2 depthPCL_msg;      //深度画像全て
         sensor_msgs::PointCloud2 groundCanPCL_msg;  //地面候補
@@ -40,6 +42,7 @@ class darknetImgDebug : public darknetImg {
         std::string topic_estimateGroundCoefficients;   
         std::string topic_removeGroundPoints;
         std::string topic_trimPoints;
+        std::string topic_gridMapPCL;
     protected:
         /**クラスタに属しているセルを探してマップ画像に色を付ける
          * cluster 入力クラスタ
@@ -55,7 +58,7 @@ class darknetImgDebug : public darknetImg {
 
         /**カラーマップの配列を3の倍数(BGR?)に設定
          */ 
-        void setColorMap(std::vector<int>&);
+        void setColorMap(std::string ,std::vector<int>&);
         cv::Scalar getColorFromColorMap(int colorIndex);
     public:
         darknetImgDebug();
@@ -64,6 +67,7 @@ class darknetImgDebug : public darknetImg {
         void setParam();
         void debug_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb,const sensor_msgs::Image::ConstPtr& image);
         void setCallback();     //コールバック関数の設定
+        int serectColor(float value, float minValue, float maxValue, int palletSize);
 
         /**グリッドマップをポイントクラウドに変換
          * 実装予定無し
@@ -95,6 +99,8 @@ class darknetImgDebug : public darknetImg {
         void removeGroundPoints();              //床面の点を除外する
         void depth2points();
         void publishTrimMask();
+        void publishGridMap();
+        void generateGridMapDebug();
 };
 
 #endif

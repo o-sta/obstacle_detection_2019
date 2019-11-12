@@ -71,6 +71,8 @@ add_message_files(
   SensorMapDataMultiLayer.msg
   synchronizedImage.msg
   recordData.msg
+  PersonGridMap.msg
+  PersonGridMapData.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -242,11 +244,13 @@ add_executable(${PROJECT_NAME}_darknet_debug # darknet_ros
   src/darknetImg/property.cpp
   src/darknetImg/removeGroundPoints.cpp
   src/darknetImg/trimPoints.cpp
+  src/darknetImg/generateGridMap.cpp
   src/darknetImg/debug/constructor.cpp
   src/darknetImg/debug/methods.cpp
   src/darknetImg/debug/property.cpp
   src/darknetImg/debug/trimPoints.cpp
   src/darknetImg/debug/removeGroundPoints.cpp
+  src/darknetImg/debug/generateGridMap.cpp
 )
 
 ## Rename C++ executable without prefix

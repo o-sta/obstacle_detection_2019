@@ -13,9 +13,12 @@ depth_points(new pcl::PointCloud<pcl::PointXYZRGB>)
     estimateGroundCoefficients_pub = nhPub.advertise<sensor_msgs::PointCloud2>(topic_estimateGroundCoefficients, 1);
     removeGroundPoints_pub = nhPub.advertise<sensor_msgs::PointCloud2>(topic_removeGroundPoints, 1);
     trimPoints_pub = nhPub.advertise<sensor_msgs::Image>(topic_trimPoints, 1);
+    gridMapPCL_pub = nhPub.advertise<sensor_msgs::PointCloud2>(topic_gridMapPCL, 1);
     ROS_INFO_STREAM("debug constructer");
     setCallback();
-    setColorMap(colorMap);
+    setColorMap("colorMap/data", colorMap);
+    nhPub.param("colorMap/grad_jet", colorMapGrad, colorMapGrad);
+    colorMapGrad.resize(colorMapGrad.size() - (colorMapGrad.size() % 3)); //要素数が3の倍数(RGB)になるようにリサイズ
     num_temp.resize(numberOfCells);
 
 }

@@ -21,4 +21,6 @@ topic: #ROSトピック
     removeGroundPoints: removeGroundPoints
     #sensor_msgs::Image トリミング後のマスク画像
     trimPoints: trimPoints
+    #sensor_msgs::PointColud2 グリッドマップ
+    gridMapPCL: gridMapPCL
 

@@ -12,6 +12,7 @@ void darknetImgDebug::setParam(){
     nhPub.param<std::string>("topic/publisher/estimateGroundCoefficients", topic_estimateGroundCoefficients, "estimateGroundCoefficients");
     nhPub.param<std::string>("topic/publisher/removeGroundPoints", topic_removeGroundPoints, "removeGroundPoints");
     nhPub.param<std::string>("topic/publisher/trimPoints", topic_trimPoints, "trimPoints");
+    nhPub.param<std::string>("topic/publisher/gridMapPCL", topic_gridMapPCL, "gridMapPCL");
     ROS_INFO_STREAM("setparam debug mode");
 }
 
@@ -23,8 +24,8 @@ void darknetImgDebug::setCallback(){
 	// server.setCallback(fc);
 }
 
-void darknetImgDebug::setColorMap(std::vector<int>& colorMap){
-    nhPub.param("colorMap/data", colorMap, colorMap);
+void darknetImgDebug::setColorMap(std::string paramName, std::vector<int>& colorMap){
+    nhPub.param(paramName, colorMap, colorMap);
     colorMap.resize(colorMap.size() - (colorMap.size() % 3)); //要素数が3の倍数(RGB)になるようにリサイズ
 }
 

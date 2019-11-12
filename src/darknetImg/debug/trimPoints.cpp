@@ -48,6 +48,7 @@ void darknetImgDebug::publishTrimMask(){
     cv_bridge::CvImage cvi;
     cvi.image = cv::Mat(mask.rows, mask.cols, CV_8UC3, cv::Scalar(50,50,50));
     cvi.encoding = sensor_msgs::image_encodings::RGB8;
+    // cvi.encoding = sensor_msgs::image_encodings::MONO8;
     int ch = cvi.image.channels();
     ROS_INFO_STREAM("opencv cvi channnel " << ch);
     for(int row = 0; row < mask.rows; row++){
@@ -62,5 +63,17 @@ void darknetImgDebug::publishTrimMask(){
             }
         }
     }
+    //obstacle_maskを出力する
+    // for(int row = 0; row < mask.rows; row++){
+    //     auto mask_p = obstacle_mask.ptr<char>(row);
+    //     for(int col = 0; col < mask.cols; col++){
+    //         if(mask_p[col] > 0){
+    //             mask_p[col] = 50;
+    //         }
+    //     }
+    // }
+    // cvi.image = obstacle_mask.clone();
+
+    //最終的にパブリッシュ
     trimPoints_pub.publish(cvi.toImageMsg());
 }

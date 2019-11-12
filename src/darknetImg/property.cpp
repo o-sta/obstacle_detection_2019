@@ -5,8 +5,8 @@ void darknetImg::setParam(){
     nhPub.param<std::string>("topic/subscriber/boundingBoxes", topic_bb, "darknet_ros/bounding_boxes");
     nhPub.param<std::string>("topic/subscriber/depthImage", topic_depthImage, "left/image_rect_color");
     nhPub.param<float>("camera/focus", f, f);
-    nhPub.param<float>("localMap/float", mapWidth, 8.0);
-    nhPub.param<float>("localMap/float", mapHeight, 8.0);
+    nhPub.param<float>("localMap/width", mapWidth, 8.0);
+    nhPub.param<float>("localMap/height", mapHeight, 8.0);
     nhPub.param<float>("localMap/resolution", mapResolution, 0.05);
     nhPub.param<float>("groundEstimate/cameraHeight", camHeight, 0.3);
     nhPub.param<float>("groundEstimate/candidateY", groundCandidateY, 0.5);
