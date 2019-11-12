@@ -24,11 +24,11 @@ convCamDataClass::convCamDataClass()
 	sub=nhSub.subscribe("converted_depthImage",1,&convCamDataClass::sensor_callback,this);
 	// sub=nhSub.subscribe("/zed/depth/depth_registered",1,&convCamDataClass::sensor_callback,this);
 	//publisher
-    pubConv= nhPub1.advertise<obstacle_detection_2019::SensorMapData>("cameraMapData", 1);
+    // pubConv= nhPub1.advertise<obstacle_detection_2019::SensorMapData>("cameraMapData", 1);
 	//マスク画像
     pubMask= nhPub2.advertise<obstacle_detection_2019::MaskImageData>("maskImageData", 1);
 	// lanchファイルの読み込み
-	setLaunchParam();
+	// setLaunchParam();
     //床面抽出パラメータ
 	seg.setOptimizeCoefficients (true);
 	//seg.setModelType (pcl::SACMODEL_PLANE);//全平面抽出
@@ -39,11 +39,11 @@ convCamDataClass::convCamDataClass()
 	seg.setAxis(Eigen::Vector3f (0.0,0.0,1.0));//法線ベクトル
 	seg.setEpsAngle(epsAngle * (M_PI/180.0f));//許容出来る平面
 	//床面除去パラメータ
-	// f=350.505;
-	// groundCandidateY=0.3;
-	// ground_th=0.2;
-	// camHeight=0.4125;
-	// height_th=1.0;
+	f=350.505;
+	groundCandidateY=0.3;
+	ground_th=0.2;
+	camHeight=0.4125;
+	height_th=1.0;
 	//
 	//rqt_reconfigure
     if(rqt_reconfigure){

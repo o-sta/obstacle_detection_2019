@@ -82,4 +82,8 @@ class d_convCamDataClass : public convCamDataClass{
             d_pubImg.publish(d_cvb->toImageMsg());
         }
         
+        void manage(){
+            convCamDataClass::manage();
+            d_mid2mat();
+        }
 };

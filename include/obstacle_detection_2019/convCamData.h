@@ -87,7 +87,7 @@ class convCamDataClass{
         //--rqt_reconfigureからの読み込み
         void configCallback(obstacle_detection_2019::convCamDataConfig &config, uint32_t level);
         //--manage
-        void manage();
+        virtual void manage();
         //--床面推定、床面除去
         //----RANSAC
         void groundEstimationRANSAC();
