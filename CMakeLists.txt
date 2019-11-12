@@ -71,6 +71,8 @@ add_message_files(
   SensorMapDataMultiLayer.msg
   synchronizedImage.msg
   recordData.msg
+  PersonGridMap.msg
+  PersonGridMapData.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -241,6 +243,7 @@ add_executable(${PROJECT_NAME}_gr # ground plane remove
 #   src/darknetImg/main.cpp
 #   src/darknetImg/methods.cpp
 # )
+
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -278,6 +281,7 @@ add_dependencies(${PROJECT_NAME}_gr ${PROJECT_NAME}_gencfg)
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_cc ${catkin_LIBRARIES}) # classification
 target_link_libraries(${PROJECT_NAME}_gr ${catkin_LIBRARIES}) # ground plane remove
+
 # target_link_libraries(${PROJECT_NAME}_lrf ${catkin_LIBRARIES}) # laser range finder
 # target_link_libraries(${PROJECT_NAME}_im ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # image matching
 # target_link_libraries(${PROJECT_NAME}_mv ${catkin_LIBRARIES} ) # measurement velocity
@@ -288,6 +292,7 @@ target_link_libraries(${PROJECT_NAME}_gr ${catkin_LIBRARIES}) # ground plane rem
 # target_link_libraries(${PROJECT_NAME}_red ${catkin_LIBRARIES} ) # record experiment data
 # target_link_libraries(${PROJECT_NAME}_person ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # manege 
 # target_link_libraries(${PROJECT_NAME}_darknet ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) # manege 
+
 
 
 

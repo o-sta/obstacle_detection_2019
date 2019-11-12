@@ -52,5 +52,4 @@ convCamDataClass::convCamDataClass()
 	}
 }
 convCamDataClass::~convCamDataClass(){
-
 }

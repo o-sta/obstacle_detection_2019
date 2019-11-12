@@ -10,74 +10,6 @@
 // }
 
 // sensor_callback2用コンストラクタ
-darknetImg::darknetImg(/* args */)
-:
-bb_sub(nhSub, "/darknet_ros/bounding_boxes", 1), 
-image_sub(nhSub, "/robot2/zed_node/left/image_rect_color", 1), 
-sync(MySyncPolicy(10),bb_sub, image_sub),
-is_size_initialized(false),
-mask(1,1,CV_8UC1),
-ground_points(new pcl::PointCloud<pcl::PointXYZ>)
-{
-    ROS_INFO_STREAM("debug setParam");
-    pub = nhPub.advertise<sensor_msgs::Image>("/dphog/boximage", 1);
-    ROS_INFO_STREAM("debug setParam");
-    sync.registerCallback(boost::bind(&darknetImg::sensor_callback, this, _1, _2));
-    setParam(); //パラメータのセットアップ
-    mapRows = (int)(mapHeight/mapResolution);
-    mapCols = (int)(mapWidth/mapResolution);
-    numberOfCells = mapRows*mapCols;
-    cellsInWindow.resize(mapRows*mapCols);
-    int count = 0;
-    for(int row=-1; row<2; row++){
-            cellsInWindow[count++] = row;
-    }
-    cellsInWindow.resize(count);
-    //RANSACパラメータ設定
-    seg.setOptimizeCoefficients (true);
-	//seg.setModelType (pcl::SACMODEL_PLANE);//全平面抽出
-	seg.setModelType (pcl::SACMODEL_PERPENDICULAR_PLANE);//ある軸に垂直な平面を抽出
-	seg.setMethodType (pcl::SAC_RANSAC);
-	seg.setMaxIterations (ransacNum);//RANSACの繰り返し回数
-	seg.setDistanceThreshold (distanceThreshold);//モデルとどのくらい離れていてもいいか(モデルの評価に使用)
-	seg.setAxis(Eigen::Vector3f (0.0,0.0,1.0));//法線ベクトル
-	seg.setEpsAngle(epsAngle * (M_PI/180.0f));//許容出来る平面
-    // rqt_reconfigure
-    fc = boost::bind(&darknetImg::configCallback, this, _1, _2);
-	server.setCallback(fc);
-    ROS_INFO_STREAM("Started darknetImg");
-}
-
-
-darknetImg::~darknetImg(){}
-
-
-void darknetImg::createWindow(){
-    cellsInWindow.resize(mapRows*mapCols);
-    int count = 0;
-    for(int row=-1; row<2; row++){
-            cellsInWindow[count++] = row;
-    }
-    cellsInWindow.resize(count);
-}
-
-
-void darknetImg::setParam(){
-    ROS_INFO_STREAM("debug setParam");
-    nhPub.param<float>("camera/focus", f, f);
-    nhPub.param<float>("localMap/width/float", mapWidth, 8.0);
-    nhPub.param<float>("localMap/height/float", mapHeight, 8.0);
-    nhPub.param<float>("localMap/resolution", mapResolution, 0.05);
-    nhPub.param<float>("groundEstimate/cameraHeight", camHeight, 0.3);
-    nhPub.param<float>("groundEstimate/candidateY", groundCandidateY, 0.5);
-    nhPub.param<int>("groundEstimate/ransac/num", ransacNum, 10);
-    nhPub.param<float>("groundEstimate/ransac/distanceThreshold", distanceThreshold, 0.5);
-    nhPub.param<float>("groundEstimate/ransac/epsAngle", epsAngle, 15.0);
-    nhPub.param<int>("window/minPts", minPts, 1600);
-    nhPub.param<int>("window/rangeCell", windowRangeCell, 2);
-}
-
-
 void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb, const sensor_msgs::Image::ConstPtr& image)
 {
     // debug移行予定
@@ -92,6 +24,8 @@ void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr
         ROS_ERROR("Could not convert from '%s' to 'TYPE_32FC1'.",image->encoding.c_str());
         return;
     }
+
+    //枠線描画用コード　debugの方に移動予定
     // bounding_boxedに書かれた枠の描画
     auto iter = bb->bounding_boxes.begin();
     for (; iter != bb->bounding_boxes.end(); ++iter){
@@ -99,256 +33,45 @@ void darknetImg::sensor_callback(const darknet_ros_msgs::BoundingBoxes::ConstPtr
     }
     // パブリッシュ(debgu移行予定)
     pub.publish(bridgeImage->toImageMsg());
+
+    boundingBoxesMsg = *bb;
+    // if (imageRows != bridgeImage->image.rows || imageCols != bridgeImage->image.cols){
+    //     imageRows = bridgeImage->image.rows;
+    //     imageCols = bridgeImage->image.cols;
+    //     setMaskSize();
+    // }
+    // if (bb->bounding_boxes.size() > 0){
+    //     ROS_INFO_STREAM("pickUpGroundPointCandidates");
+    //     pickUpGroundPointCandidates();
+    //     ROS_INFO_STREAM("estimateGroundCoefficients");
+    //     estimateGroundCoefficients();
+    //     ROS_INFO_STREAM("removeGroundPoints");
+    //     removeGroundPoints();
+    //     ROS_INFO_STREAM("trimPoints");
+    //     trimPoints();
+    //     ROS_INFO_STREAM("generateGridmap");
+    //     generateGridmap();
+    //     ROS_INFO_STREAM("dimensionalityReductionGridmap");
+    //     dimensionalityReductionGridmap();
+    //     ROS_INFO_STREAM("classifyPoints");
+    //     classifyPoints();
+    //     ROS_INFO_STREAM("estimatePersonPosition");
+    //     estimatePersonPosition();
+    //     ROS_INFO_STREAM("predictPersonPosition");
+    //     predictPersonPosition();
+    //     ROS_INFO_STREAM("iteration finished");
+    // }else{
+    //     ROS_INFO_STREAM("not person detection");
+    // }
+    // clearMsg(smdml);
+    ROS_INFO_STREAM("----------------------------------------");
 }
 
 
-void darknetImg::configCallback(obstacle_detection_2019::darknetImgConfig &config, uint32_t level){
-    ROS_INFO_STREAM("Reconfigure Request:"
-                    << " " << config.cameraHeight
-                    << " " << config.groundThreshold
-                    << " " << config.windowMinPts
-                    << " " << config.windowRangeCell
-                    << " " << config.ransacNum
-                    << " " << config.ransacDistanceThreshold
-                    << " " << config.ransacEpsAngle
-                    << " " << config.estimateCandidateY
-                    );
-    //ransac パラメータ
-    ransacNum = config.ransacNum;
-    distanceThreshold = config.ransacDistanceThreshold;
-    epsAngle = config.ransacEpsAngle;
-    //ground パラメータ
-    groundCandidateY = config.estimateCandidateY;
-    camHeight = config.cameraHeight;
-    ground_th = config.groundThreshold;
-    //window パラメータ
-    minPts = config.windowMinPts;
-    windowRangeCell = config.windowRangeCell;   
-    createWindow();
-}
 
 
-void darknetImg::pickUpGroundPointCandidates(){
-    float xt, yt, zt; //点の座標（テンプレート）
-    pcl::PointXYZ pt; //点の座標（ポイントクラウド型テンプレート）
-    int rows = bridgeImage->image.rows; //深度画像の行
-    int cols = bridgeImage->image.cols; //深度画像の列
-    int candidateNum = 0;//床面候補点の数(ground_pointsのサイズ)
-    ground_points->points.resize(rows/2*cols);//候補点の最大値でリサイズ
-    int ch = bridgeImage->image.channels(); //チャンネル数
-    //床面候補点抽出処理
-    for(int i = rows/2+1; i<rows; i++){//画像下半分を走査
-        float *p = bridgeImage->image.ptr<float>(i); //i行1列目のアドレス
-        for(int j = 0; j < cols; j++){//走査}
-            zt = p[j*ch];
-            if(zt > 0.5 && !std::isinf(zt)){
-                yt = ((float)rows/2-i)*zt/f; //高さ
-                if(std::abs(yt+camHeight) < groundCandidateY){ //高さがgroundCandidateY未満の時
-                    xt = -( ((float)i-(float)cols/2)*zt/f-camHeight );
-                    pt.x=zt;
-                    pt.y=xt;
-                    pt.z=yt;
-                    ground_points->points[candidateNum++] = pt;
-                }
-            }
-        }
-    }
-    ground_points->points.resize(candidateNum);
-    ground_points->width=ground_points->points.size();
-    ground_points->height=1;
-    ROS_INFO_STREAM("ground_points->points.size():"<<ground_points->points.size()<<"\n");
-}
 
 
-void darknetImg::estimateGroundCoefficients(){
-    seg.setInputCloud(ground_points);
-	seg.segment(*inliers, *coefficients);
-    a=coefficients->values[0];
-    b=coefficients->values[1];
-    c=coefficients->values[2];
-    d=coefficients->values[3];
-    //床面式の確認と再設定
-	//const float ground_th=0.20;//床面式から高さground_thまでのデータを床面とする
-    if(std::abs(d-camHeight>=0.15)){//推定値があまりにも変な場合
-        //事前に決めた値を使用
-		a=-0.08;
-		b=0;
-		c=1;
-		d=camHeight-ground_th;
-	}
-	else{
-		d-=ground_th;
-	}
-    ROS_INFO_STREAM("Model coefficients: " << a << " "
-                                    << b << " "
-                                    << c << " "
-                                    << d << "\n");
-}
-
-
-void darknetImg::removeGroundPoints(){
-    int row = 0, col = 0;
-    float xt, yt, zt;
-    int ch = bridgeImage->image.channels();
-    int rows = bridgeImage->image.rows; //深度画像の行
-    int cols = bridgeImage->image.cols; //深度画像の列
-    //マスクのりサイズ
-    if(is_size_initialized == false){
-        cv::resize(mask, mask, cv::Size(rows,cols));
-    }
-    for(row = 0; row < rows; row++){
-        float *bi = bridgeImage->image.ptr<float>(row);
-        char *mi = mask.ptr<char>(row);
-        for(col = 0; col < cols; col++){
-            zt = bi[col*ch];
-            if(zt>0.5&&!std::isinf(zt)){
-                yt=((float)cols/2-row)*zt/f;//高さ算出
-                //xt=-( ((float)row-(float)rows/2)*zt/f-camHeight );
-                float y_ground=(-a*zt-b*xt-d)/c;//床面の高さを算出
-                //高さが床面以上であればmask値を1に
-                yt > y_ground ? mi[col] = 1 : mi[col] = 0;
-            } else{
-                mi[col] = 0;
-            }
-        }
-    }
-}
-
-
-void darknetImg::trimPoints(){
-    int i = 0;
-    for(const auto& bb : boundingBoxesMsg.bounding_boxes){
-        cv::rectangle(mask, cv::Point(bb.xmin, bb.ymin), cv::Point(bb.xmax, bb.ymax), cv::Scalar(++i), -1, CV_FILLED);
-    }
-}
-
-
-void darknetImg::generateGridmap(){
-    int row = 0, col = 0, i; //深度画像の行と列
-    float xt, yt, zt;
-    int ch = bridgeImage->image.channels();
-    int rows = bridgeImage->image.rows; //深度画像の行幅
-    int cols = bridgeImage->image.cols; //深度画像の列幅
-    std_msgs::Int32 initial_value;
-    geometry_msgs::Point pt;
-    pt.x = 0; pt.y = 0; pt.z = 0;
-    int mapRow, mapCol; // マップの行と列
-    //初期設定
-    smdml.layer.resize(boundingBoxesMsg.bounding_boxes.size());
-    for(auto& layer : smdml.layer){
-        layer.header = smdml.header;
-        layer.width.data = mapWidth;
-        layer.height.data = mapHeight;
-        layer.res.data = mapResolution;
-        layer.widthInt.data = mapCols;
-        layer.heightInt.data = mapRows;
-        layer.index.resize(numberOfCells);
-        layer.size.resize(numberOfCells);
-        layer.pt.resize(numberOfCells);
-        initial_value.data = -1;
-        std::fill(layer.index.begin(), layer.index.end(), initial_value); //std::vectorの全要素を-1で埋める
-        initial_value.data = 0;
-        std::fill(layer.size.begin(), layer.size.end(), initial_value);
-        std::fill(layer.pt.begin(), layer.pt.end(), pt);
-    }
-    //処理
-    int count = 0;
-    int *index;
-    for(row = 0; row < rows; row++){
-        float *bi = bridgeImage->image.ptr<float>(row);
-        char *mi = mask.ptr<char>(row);
-        for(col = 0; col < cols; col++){
-            if(mi[col] != 0){
-                zt = bi[col*ch];
-                xt=-(((float)row-(float)rows/2)*zt/f-camHeight);
-                if(convertToGrid(xt, zt, mapCol, mapRow) == true){
-                    index = &smdml.layer[mi[col]].index[mapRow*mapCols+mapCol].data;
-                    if(index < 0){
-                        *index = count++;
-                    }
-                    yt = ((float)rows/2-row)*zt/f;
-                    smdml.layer[mi[col]].size[*index].data++;
-                    smdml.layer[mi[col]].pt[*index].x += xt;
-                    smdml.layer[mi[col]].pt[*index].y += yt;
-                    smdml.layer[mi[col]].pt[*index].z += zt;
-                }
-            }
-        }
-    }
-}
-
-
-void darknetImg::dimensionalityReductionGridmap(){
-    std_msgs::Int32 initial_value;
-    geometry_msgs::Point pt;
-    pt.x = 0; pt.y = 0; pt.z = 0;
-    int *index, index_smdml;
-    int layer_i = 0; //layerのイテレータ
-    int rowOfCell;
-    int count = 0;
-    smdmlLowDimension.header = smdml.header;
-    smdmlLowDimension.layer.resize(smdml.layer.size());
-    for(auto& layer : smdmlLowDimension.layer){ //全てのSensorMapDataで走査
-        count = 0;
-        layer.header = smdml.header;
-        layer.width.data = mapWidth;
-        layer.height.data = mapHeight;
-        layer.res.data = mapResolution;
-        layer.widthInt.data = 1;
-        layer.heightInt.data = mapRows;
-        layer.index.resize(mapRows);
-        layer.size.resize(mapRows);
-        layer.pt.resize(mapRows);
-        initial_value.data = -1;
-        std::fill(layer.index.begin(), layer.index.end(), initial_value); //std::vectorの全要素を-1で埋める
-        initial_value.data = 0;
-        std::fill(layer.size.begin(), layer.size.end(), initial_value);
-        std::fill(layer.pt.begin(), layer.pt.end(), pt);
-        int mapIndexSize = smdml.layer[layer_i].index.size();
-        for(int cell=0; cell<mapIndexSize; cell++){ //
-            if(smdml.layer[layer_i].index[cell].data < 0){ //smdmlのセルが空の場合はスキップ
-                continue;
-            }
-            rowOfCell = cell / smdml.layer[layer_i].widthInt.data;
-            index = &layer.index[rowOfCell].data;
-            if(*index < 0){
-                *index = count++;
-            }
-            index_smdml = smdml.layer[layer_i].index[cell].data;
-            layer.pt[*index].x += smdml.layer[layer_i].pt[index_smdml].x * (double)smdml.layer[layer_i].size[index_smdml].data;
-            layer.pt[*index].y += smdml.layer[layer_i].pt[index_smdml].y * (double)smdml.layer[layer_i].size[index_smdml].data;
-            layer.pt[*index].z += smdml.layer[layer_i].pt[index_smdml].z * (double)smdml.layer[layer_i].size[index_smdml].data;
-            layer.size[*index].data += smdml.layer[layer_i].size[index_smdml].data;
-        }
-        layer.index.resize(count);
-        for(auto index_layer : layer.index){
-            layer.pt[index_layer.data].x /= (double)layer.size[index_layer.data].data;
-            layer.pt[index_layer.data].y /= (double)layer.size[index_layer.data].data;
-            layer.pt[index_layer.data].z /= (double)layer.size[index_layer.data].data;
-        }
-        layer_i++;
-    }
-}
-
-
-bool darknetImg::convertToGrid(const float& x,const float& y,int& xg,int& yg){
-	//マップ上の中心座標(ふつうは　センサ位置＝マップ中心座標　のため　cx=cy=0)
-	float cx=0;
-	float cy=0;
-    //マップ原点座標を画像原点座標(左上)に移動
-	float map_x = mapWidth/2 + (x - cx);
-	float map_y = mapHeight/2 + ( -(y - cy) );
-    //マップ外のデータの際はreturn false
-	if(map_x<0 || map_x>mapWidth)
-		return false;
-	if(map_y<0 || map_y>mapHeight)
-		return false;
-    //ピクセルデータに変換
-	xg = (int)(map_x/mapResolution);
-	yg = (int)(map_y/mapResolution);
-    //変換成功
-	return true;
-}
 
 
 void darknetImg::classifyPoints(){
@@ -475,10 +198,7 @@ void darknetImg::classifyPoints(){
 
 
 void darknetImg::estimatePersonPosition(){
-    int i;
-    for(auto& ce : cd.data){
-        ROS_INFO_STREAM("person[" << i++ <<"] : [" << ce.gc.x << ce.gc.y << ce.gc.z << "]");
-    }
+    
 }
 
 
@@ -486,3 +206,11 @@ void darknetImg::predictPersonPosition(){
     
 }
 
+void darknetImg::clearMsg(obstacle_detection_2019::SensorMapDataMultiLayer& smdml_msg){
+    for(auto smd_msg : smdml_msg.layer){
+    smd_msg.header.frame_id.clear();
+    smd_msg.index.clear();
+    smd_msg.pt.clear();
+    smd_msg.size.clear();
+    }
+}
