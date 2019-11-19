@@ -198,12 +198,22 @@ void darknetImg::classifyPoints(){
 
 
 void darknetImg::estimatePersonPosition(){
-    
+    std::vector<int> max_size;
+    max_size.resize(pgm.layer.size());
+    int i=0;
+    for(auto layer : pgm.layer){
+        max_size[i] = 0;
+        for(auto pt_size : layer.size){
+            if(max_size[i] < pt_size){
+                max_size[i] = pt_size;
+                layer.
+            }
+        }
+        ++i;
+    }
 }
 
-
 void darknetImg::predictPersonPosition(){
-    
 }
 
 void darknetImg::clearMsg(obstacle_detection_2019::SensorMapDataMultiLayer& smdml_msg){

@@ -280,7 +280,7 @@ add_dependencies(${PROJECT_NAME}_darknet_debug ${PROJECT_NAME}_generate_messages
 # c++ ROSノードのDynamic Reconfigureの依存の追加
 add_dependencies(${PROJECT_NAME}_cc ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_gr ${PROJECT_NAME}_gencfg)
-add_dependencies(${PROJECT_NAME}_estimate ${PROJECT_NAME}_gencfg)
+add_depe25535085900ndencies(${PROJECT_NAME}_estimate ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_im ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_mv ${PROJECT_NAME}_gencfg)
 add_dependencies(${PROJECT_NAME}_darknet_debug ${PROJECT_NAME}_gencfg)
